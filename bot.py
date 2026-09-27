@@ -265,10 +265,8 @@ def recalculate_all_players():
     c.execute("SELECT name FROM players")
     players = [r[0] for r in c.fetchall()]
 
-    # ابتدا امتیاز اولیه پیشرفته تمام بازیکنان را در این فصل روی 1000 تنظیم می‌کنیم
     player_adv_scores = {p_name: 1000.0 for p_name in players}
 
-    # استخراج تمام مسابقات فصل به ترتیب زمانی برای محاسبه پویا
     c.execute("""
         SELECT m.match_id
         FROM match_history m
@@ -287,11 +285,9 @@ def recalculate_all_players():
       if not winners or not losers:
         continue
 
-      # محاسبه میانگین مهارت تیم برنده و تیم بازنده پیش از این بازی
       avg_winner_skill = sum(player_adv_scores.get(w, 1000.0) for w in winners) / len(winners)
       avg_loser_skill = sum(player_adv_scores.get(l, 1000.0) for l in losers) / len(losers)
 
-      # اختلاف قدرت برای پویایی جدول (اگر تیم ضعیف ببرد پاداش بیشتر می‌گیرد)
       skill_diff = avg_loser_skill - avg_winner_skill
       dynamic_factor = max(-4.0, min(4.0, skill_diff / 50.0))
 
@@ -300,9 +296,9 @@ def recalculate_all_players():
           player_adv_scores[p_name] = 1000.0
 
         if won == 1:
-          base_delta = 10.0 + dynamic_factor  # برد تیم ضعیف پاداش بیشتر، برد تیم قوی پاداش کمتر
+          base_delta = 10.0 + dynamic_factor
         else:
-          base_delta = -8.0 + dynamic_factor  # باخت تیم قوی جریمه بیشتر، باخت تیم ضعیف جریمه کمتر
+          base_delta = -8.0 + dynamic_factor
 
         bonus_mvp_svp = (4.0 if mvp else (2.0 if svp else 0.0))
         player_adv_scores[p_name] += (base_delta + bonus_mvp_svp)
@@ -1048,20 +1044,21 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
     c = conn.cursor()
     if season_filter == "all":
       season_title = "کل تاریخچه (All-Time)"
-      c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players ORDER BY advanced_skill_score DESC")
+      # اعمال شرط total_games > 0 برای حذف بازیکنان بدون بازی
+      c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC")
       rows = c.fetchall()
     else:
       s_int = int(season_filter)
       season_title = f"فصل {s_int}"
       cur_season = get_current_season()
       if s_int == cur_season:
-        c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players ORDER BY advanced_skill_score DESC")
+        c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC")
         rows = c.fetchall()
       else:
         c.execute("""
             SELECT player_name, advanced_skill_score, total_games, wins, losses 
             FROM season_archives 
-            WHERE season = ? 
+            WHERE season = ? AND total_games > 0
             ORDER BY advanced_skill_score DESC
         """, (s_int,))
         rows = c.fetchall()
@@ -1725,7 +1722,7 @@ async def render_public_history_page(update: Update, page: int):
   if update.callback_query:
     try:
       await update.callback_query.message.reply_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
