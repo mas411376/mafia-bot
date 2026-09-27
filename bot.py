@@ -351,7 +351,7 @@ def recalculate_all_players():
                     raw_score = ?, total_games = ?, wins = ?, losses = ?,
                     mvp_count = ?, svp_count = ?,
                     citizen_games = ?, citizen_wins = ?,
-                    mafia_games = ?, mafia_wins = ?,
+                    mafia_games = ?, mafia_games = ?, mafia_wins = ?,
                     independent_games = ?, independent_wins = ?,
                     current_streak = ?, best_streak = ?,
                     night1_shots = ?, night1_outs = ?,
@@ -406,12 +406,15 @@ async def check_channel_membership(update: Update, context: ContextTypes.DEFAULT
   return False
 
 
-async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYPE, check_lock: bool = True) -> bool:
+  if not check_lock:
+    return True
+
   is_member = await check_channel_membership(update, context)
   if not is_member:
     keyboard = [[InlineKeyboardButton("📚 عضویت در کانال آموزش‌ها", url=TUTORIAL_CHANNEL_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    text = "⛔️ برای استفاده از ربات و قابلیت‌های آن، ابتدا باید در کانال آموزش‌ها عضو شوید!"
+    text = "⛔️ برای استفاده از بخش آمار و رده‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
     
     if update.callback_query:
       try:
@@ -464,7 +467,7 @@ def get_all_player_names():
 
 
 async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   log_feature_click(update.effective_user.id, "راهنمای امتیازدهی")
   text = (
@@ -499,7 +502,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def show_links_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   log_feature_click(update.effective_user.id, "لینک‌های پلتفرم و شبکه‌ها")
   text = (
@@ -546,7 +549,7 @@ async def show_links_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def show_rules_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   log_feature_click(update.effective_user.id, "قوانین بازی‌های گروه")
   text = (
@@ -651,7 +654,7 @@ async def show_rule_detail(update: Update, sec_num: str):
 
 
 async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
 
   log_feature_click(update.effective_user.id, "منوی اصلی آمار و رده‌بندی")
@@ -889,9 +892,6 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
 
 async def send_takamol_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
-    return
-
   user_id = update.effective_user.id
   keyboard = [
       [InlineKeyboardButton("📝 عضویت در لیگ گنگ ها", callback_data="btn_join_league")],
@@ -1318,7 +1318,7 @@ async def process_join_user(
 
 
 async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   await process_join_user(
       update.effective_user, context, reply_func=update.message.reply_text
@@ -1412,12 +1412,12 @@ async def render_public_history_page(update: Update, page: int):
       pass
   elif update.message:
     await update.message.reply_text(
-        text, reply_markup=reply_markup
+        text, reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
 async def public_history_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   await render_public_history_page(update, 1)
 
@@ -2000,7 +2000,7 @@ async def merge_players_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def rename(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
 
   user_id = update.effective_user.id
@@ -2437,7 +2437,7 @@ async def render_table_page_filtered(
 
 
 async def table(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   cur_season = get_current_season()
   await render_table_page_filtered(update, str(cur_season), 1)
@@ -2624,7 +2624,7 @@ async def render_bests_page_filtered(
 async def best_players_leaderboard(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   cur_season = get_current_season()
   await render_bests_page_filtered(update, str(cur_season), 1)
@@ -2941,7 +2941,7 @@ async def render_vs_comparison_filtered(
 
 
 async def vs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   await ask_vs_season_choice(update)
 
@@ -3492,19 +3492,19 @@ async def render_and_send_chart_filtered(
 
 
 async def chart(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   await show_chart_picker(update, context)
 
 
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=True):
     return
   await show_stats_picker(update, context)
 
 
 async def sides(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   cur_season = get_current_season()
   with sqlite3.connect("mafia_league.db") as conn:
@@ -3532,7 +3532,7 @@ async def sides(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def scenarios_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context):
+  if not await enforce_channel_lock(update, context, check_lock=False):
     return
   cur_season = get_current_season()
   try:
@@ -3647,19 +3647,19 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
   data = query.data
 
   if data == "btn_join_league":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=False):
       return
     await process_join_user(query.from_user, context, alert_func=query.answer)
     return
 
   if data == "open_community_links":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=False):
       return
     await show_links_menu(update, context)
     return
 
   if data == "open_rules_menu":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=False):
       return
     await show_rules_menu(update, context)
     return
@@ -3670,19 +3670,19 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "open_stats_hub":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await show_stats_hub(update, context)
     return
 
   if data == "ask_advanced_season":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await ask_advanced_season_choice(update)
     return
 
   if data.startswith("adv_table_page:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     parts = data.split(":")
     s_filt = parts[1]
@@ -3691,13 +3691,13 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "show_shots_lb":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await ask_shots_season_choice(update, context)
     return
 
   if data.startswith("shots_page:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     s_filt = data.split(":", 1)[1]
     await render_shots_leaderboard_filtered(update, s_filt)
@@ -3708,18 +3708,18 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "show_scoring_info":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await scoring_guide(update, context)
     return
 
   if data == "ask_table_season":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await ask_table_season_choice(update)
     return
   if data.startswith("table_page:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     parts = data.split(":")
     s_filt = parts[1]
@@ -3728,12 +3728,12 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "ask_bests_season":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await ask_bests_season_choice(update)
     return
   if data.startswith("bests_page:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     parts = data.split(":")
     s_filt = parts[1]
@@ -3742,24 +3742,24 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "ask_vs_season":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await ask_vs_season_choice(update)
     return
   if data.startswith("open_vs_picker_1:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     s_filt = data.split(":", 1)[1]
     await show_vs_picker_first(update, context, s_filt)
     return
   if data.startswith("vs_p1:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     _, s_filt, uid1 = data.split(":")
     await show_vs_picker_second(update, context, s_filt, int(uid1))
     return
   if data.startswith("vs_p2:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     _, s_filt, uid1, uid2 = data.split(":")
     await render_vs_comparison_filtered(update, s_filt, int(uid1), int(uid2))
@@ -3773,13 +3773,13 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data.startswith("pub_history_page:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=False):
       return
     p_num = int(data.split(":", 1)[1])
     await render_public_history_page(update, p_num)
     return
   if data.startswith("pub_match_view:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=False):
       return
     parts = data.split(":")
     m_id = int(parts[1])
@@ -3796,37 +3796,37 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
   if data == "open_stats_picker":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await show_stats_picker(update, context)
     return
 
   if data.startswith("ask_stat_season:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     u_id = int(data.split(":", 1)[1])
     await ask_stat_season_choice(update, u_id)
     return
   if data.startswith("view_stat_target:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     _, u_id, s_filt = data.split(":")
     await render_player_stats(update, int(u_id), s_filt)
     return
 
   if data == "open_chart_picker":
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     await show_chart_picker(update, context)
     return
   if data.startswith("ask_chart_season:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     u_id = int(data.split(":", 1)[1])
     await ask_chart_season_choice(update, u_id)
     return
   if data.startswith("view_chart_target:"):
-    if not await enforce_channel_lock(update, context):
+    if not await enforce_channel_lock(update, context, check_lock=True):
       return
     _, u_id, s_filt = data.split(":")
     await render_and_send_chart_filtered(update, int(u_id), s_filt)
@@ -4553,7 +4553,6 @@ async def finalize_and_save_game(query, flow, context):
 def main():
   builder = ApplicationBuilder().token(TOKEN).post_init(post_init)
 
-  # بخش پروکسیِ مشکل‌ساز از اینجا کاملاً پاک شد تا ارتباط بدون خطا برقرار شود
   builder.connect_timeout(30.0).read_timeout(30.0).write_timeout(30.0)
 
   app = builder.build()
