@@ -488,13 +488,17 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.callback_query:
     try:
       await update.callback_query.message.edit_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text,
+          reply_markup=reply_markup,
+          parse_mode="Markdown",
       )
     except Exception:
       pass
   elif update.message:
     await update.message.reply_text(
-        text, reply_markup=reply_markup, parse_mode="Markdown"
+        text,
+        reply_markup=reply_markup,
+        parse_mode="Markdown",
     )
 
 
@@ -532,13 +536,17 @@ async def show_links_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.callback_query:
     try:
       await update.callback_query.message.edit_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text,
+          reply_markup=reply_markup,
+          parse_mode="Markdown",
       )
     except Exception:
       pass
   elif update.message:
     await update.message.reply_text(
-        text, reply_markup=reply_markup, parse_mode="Markdown"
+        text,
+        reply_markup=reply_markup,
+        parse_mode="Markdown",
     )
 
 
@@ -1400,7 +1408,7 @@ async def render_public_history_page(update: Update, page: int):
   if update.callback_query:
     try:
       await update.callback_query.message.edit_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -2219,7 +2227,7 @@ async def render_table_page_filtered(
   if update.callback_query:
     try:
       await update.callback_query.message.edit_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -2227,6 +2235,13 @@ async def render_table_page_filtered(
     await update.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+
+async def table(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  cur_season = get_current_season()
+  await render_table_page_filtered(update, str(cur_season), 1)
 
 
 async def ask_bests_season_choice(update: Update):
@@ -2405,6 +2420,15 @@ async def render_bests_page_filtered(
     await update.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+
+async def best_players_leaderboard(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  cur_season = get_current_season()
+  await render_bests_page_filtered(update, str(cur_season), 1)
 
 
 async def ask_vs_season_choice(update: Update):
@@ -2715,6 +2739,12 @@ async def render_vs_comparison_filtered(
     )
   except Exception:
     pass
+
+
+async def vs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  await ask_vs_season_choice(update)
 
 
 async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
