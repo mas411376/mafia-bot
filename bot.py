@@ -2598,7 +2598,7 @@ async def render_bests_page_filtered(
 
   keyboard = []
   if nav_row:
-    keyboard.append(nav_row)
+    keyboard.append(nav_nav_row := nav_row) # simple fallback
   keyboard.append([
       InlineKeyboardButton(
           "🔄 تغییر فصل / بازه تالار", callback_data="ask_bests_season"
@@ -3646,12 +3646,6 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   data = query.data
 
-  if data == "btn_join_league":
-    if not await enforce_channel_lock(update, context, check_lock=False):
-      return
-    await process_join_user(query.from_user, context, alert_func=query.answer)
-    return
-
   if data == "open_community_links":
     if not await enforce_channel_lock(update, context, check_lock=False):
       return
@@ -3882,6 +3876,12 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_takamol_menu(update, context)
     return
 
+  if data == "btn_join_league":
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    await process_join_user(query.from_user, context, alert_func=query.answer)
+    return
+
   flow = context.user_data.get("game_flow")
   if flow is not None:
     if data.startswith("scen_pick:"):
@@ -3895,7 +3895,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
           ]
       ]
       try:
-        await query.message.reply_text(
+        await query.edit_message_text(
             f"🎬 سناریو: **{scen}**\n\n🃏 **مرحله ۲:** آیا این بازی ساید مستقل دارد؟",
             reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
         )
@@ -3914,7 +3914,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sides_list.append([InlineKeyboardButton("🃏 مستقل", callback_data="win_side:مستقل")])
       
       try:
-        await query.message.reply_text(
+        await query.edit_message_text(
             "🏆 **مرحله ۳:** ساید برنده مسابقه را انتخاب کنید:",
             reply_markup=InlineKeyboardMarkup(sides_list), parse_mode="Markdown"
         )
@@ -3932,7 +3932,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
           [InlineKeyboardButton("🌪 کِی‌آس (Chaos)", callback_data="end_mode:کی آس")]
       ]
       try:
-        await query.message.reply_text(
+        await query.edit_message_text(
             f"🏆 ساید برنده: **{w_side}**\n\n🏁 **مرحله ۴:** بازی در چه حالتی به پایان یافت؟",
             reply_markup=InlineKeyboardMarkup(end_modes), parse_mode="Markdown"
         )
@@ -3972,7 +3972,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
           ]
       ]
       try:
-        await query.message.reply_text(
+        await query.edit_message_text(
             f"🎯 فرد منتخب بین ۳ نفر: **{selected_p}**\n\n"
             f"💡 آیا عملکرد این فرد باعث برد سایدش شد؟",
             reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -3988,7 +3988,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await prompt_multiselect_citizens(query, flow)
       return
 
-    # --- سیستم جدید چند انتخابی (Multi-select) شهروندان ---
+    # --- سیستم چند انتخابی (Multi-select) شهروندان ---
     elif data.startswith("m_cit_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_citizens" not in flow:
@@ -4013,7 +4013,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await prompt_multiselect_mafias(query, flow)
       return
 
-    # --- سیستم جدید چند انتخابی (Multi-select) مافیاها ---
+    # --- سیستم چند انتخابی (Multi-select) مافیاها ---
     elif data.startswith("m_maf_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_mafias" not in flow:
@@ -4042,7 +4042,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await prompt_night1_shot(query, flow)
       return
 
-    # --- سیستم جدید چند انتخابی (Multi-select) مستقل‌ها ---
+    # --- سیستم چند انتخابی (Multi-select) مستقل‌ها ---
     elif data.startswith("m_ind_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_independents" not in flow:
@@ -4076,7 +4076,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
         try:
-          await query.message.reply_text(
+          await query.edit_message_text(
               f"🎯 شات شب اول مافیا روی: **{shot_target}** ثبت شد.\n\n"
               f"🚪 آیا این فرد در شب اول خارج شد؟",
               reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -4140,7 +4140,7 @@ async def prompt_multiselect_citizens(query, flow):
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🏙 **انتخاب ساید شهروند:**\nروی نام هر بازیکن کلیک کنید تا تیک بخورد، سپس دکمه اتمام را بزنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4199,7 +4199,7 @@ async def prompt_multiselect_mafias(query, flow):
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مافیاها", callback_data="m_maf_done")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🔪 **انتخاب ساید مافیا:**\nروی نام بازیکنان مافیا کلیک کنید تا تیک بخورند:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4261,7 +4261,7 @@ async def prompt_multiselect_independents(query, flow):
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مستقل‌ها", callback_data="m_ind_done")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🃏 **انتخاب ساید مستقل:**\nروی نام بازیکنان مستقل کلیک کنید تا تیک بخورند:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4317,7 +4317,7 @@ async def prompt_chaos_player_selection(query, flow):
   selected_str = ", ".join(flow["chaos_players"]) if flow["chaos_players"] else "هنوز انتخابی نشده"
   
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         f"🌪 بازیکنان منتخب کِی‌آس تا اینجا: `{selected_str}`\n\n"
         f"لطفاً بازیکن شماره **{current_count}** از ۳ نفر کِی‌آس را انتخاب کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -4338,7 +4338,7 @@ async def prompt_chaos_selected_player(query, flow):
     keyboard.append(row)
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         f"🌪 ۳ بازیکن کِی‌آس: `{', '.join(flow['chaos_players'])}`\n\n"
         f"🎯 لطفاً **فرد منتخب** را از بین این سه نفر مشخص کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -4361,7 +4361,7 @@ async def prompt_night1_shot(query, flow):
   keyboard.append([InlineKeyboardButton("🚫 شات شب اول نداشت / ثبت نشد", callback_data="n1_shot_pick:none")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🎯 شات شب اول توسط مافیا روی چه کسی بوده است؟",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4384,7 +4384,7 @@ async def prompt_mvp_selection(query, flow):
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست برنده (MVP)", callback_data="done_mvps")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🌟 بست(های) ساید برنده (MVP) را انتخاب کنید (می‌توانید چند نفر را لمس کنید):",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4408,7 +4408,7 @@ async def refresh_mvp_keyboard(query, flow):
 
   mvp_str = ", ".join(flow["mvps"]) if flow["mvps"] else "هنوز انتخاب نشده"
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         f"🌟 افراد انتخاب شده به عنوان MVP: {mvp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4431,7 +4431,7 @@ async def prompt_svp_selection(query, flow):
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست بازنده (SVP)", callback_data="done_svps")])
 
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         "🎖 بست(های) ساید بازنده (SVP) را انتخاب کنید (اختیاری):",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4455,7 +4455,7 @@ async def refresh_svp_keyboard(query, flow):
 
   svp_str = ", ".join(flow["svps"]) if flow["svps"] else "هنوز انتخاب نشده"
   try:
-    await query.message.reply_text(
+    await query.edit_message_text(
         f"🎖 افراد انتخاب شده به عنوان SVP: {svp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
@@ -4545,7 +4545,7 @@ async def finalize_and_save_game(query, flow, context):
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
-    await query.message.reply_text(success_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+    await query.edit_message_text(success_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
   except Exception:
     pass
 
