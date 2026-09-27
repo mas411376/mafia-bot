@@ -894,7 +894,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 async def send_takamol_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user_id = update.effective_user.id
   keyboard = [
-      [InlineKeyboardButton("🤖 عضویت در ربات", url="https://t.me/roundgangs_bot")],
+      [InlineKeyboardButton("🤖 عضویت در ربات", callback_data="btn_join_league")],
       [
           InlineKeyboardButton(
               "🌐 ورود به سایت و گروه بازی‌ها",
@@ -1406,7 +1406,7 @@ async def render_public_history_page(update: Update, page: int):
   if update.callback_query:
     try:
       await update.callback_query.message.reply_text(
-          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+          text, reply_markup=reply_markup, parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -3645,6 +3645,12 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pass
 
   data = query.data
+
+  if data == "btn_join_league":
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    await process_join_user(query.from_user, context, alert_func=query.answer)
+    return
 
   if data == "open_community_links":
     if not await enforce_channel_lock(update, context, check_lock=False):
