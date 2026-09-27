@@ -848,12 +848,34 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
     if season_filter == "all":
       season_title = "کل تاریخچه (All-Time)"
       c.execute("""
-            SELECT name, best_streak, total_games, wins 
-            FROM players 
-            WHERE best_streak > 0 
-            ORDER BY best_streak DESC, wins DESC
+            SELECT p.player_name, p.won, m.created_at
+            FROM match_participants p
+            JOIN match_history m ON p.match_id = m.match_id
+            ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC
         """)
-      rows = c.fetchall()
+      all_records = c.fetchall()
+      
+      player_streaks = {}
+      for p_name, won, _ in all_records:
+        if p_name not in player_streaks:
+          player_streaks[p_name] = {"best": 0, "current": 0, "total": 0, "wins": 0}
+        
+        player_streaks[p_name]["total"] += 1
+        if won == 1:
+          player_streaks[p_name]["wins"] += 1
+          player_streaks[p_name]["current"] += 1
+          if player_streaks[p_name]["current"] > player_streaks[p_name]["best"]:
+            player_streaks[p_name]["best"] = player_streaks[p_name]["current"]
+        else:
+          player_streaks[p_name]["current"] = 0
+
+      rows = [
+          (p_name, data["best"], data["total"], data["wins"])
+          for p_name, data in player_streaks.items()
+          if data["best"] > 0
+      ]
+      rows.sort(key=lambda x: (x[1], x[3]), reverse=True)
+
     else:
       s_int = int(season_filter)
       season_title = f"فصل {s_int}"
@@ -868,12 +890,34 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
         rows = c.fetchall()
       else:
         c.execute("""
-            SELECT player_name, 10 as best_streak, total_games, wins 
-            FROM season_archives 
-            WHERE season = ? 
-            ORDER BY wins DESC
+            SELECT p.player_name, p.won, m.created_at
+            FROM match_participants p
+            JOIN match_history m ON p.match_id = m.match_id
+            WHERE m.season = ?
+            ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC
         """, (s_int,))
-        rows = c.fetchall()
+        season_records = c.fetchall()
+        
+        season_player_streaks = {}
+        for p_name, won, _ in season_records:
+          if p_name not in season_player_streaks:
+            season_player_streaks[p_name] = {"best": 0, "current": 0, "total": 0, "wins": 0}
+          
+          season_player_streaks[p_name]["total"] += 1
+          if won == 1:
+            season_player_streaks[p_name]["wins"] += 1
+            season_player_streaks[p_name]["current"] += 1
+            if season_player_streaks[p_name]["current"] > season_player_streaks[p_name]["best"]:
+              season_player_streaks[p_name]["best"] = season_player_streaks[p_name]["current"]
+          else:
+            season_player_streaks[p_name]["current"] = 0
+
+        rows = [
+            (p_name, data["best"], data["total"], data["wins"])
+            for p_name, data in season_player_streaks.items()
+            if data["best"] > 0
+        ]
+        rows.sort(key=lambda x: (x[1], x[3]), reverse=True)
 
   if not rows:
     text = f"هنوز داده‌ای در رده‌بندی استریک‌های {season_title} ثبت نشده است."
