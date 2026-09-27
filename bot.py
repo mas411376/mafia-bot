@@ -441,6 +441,8 @@ async def post_init(application):
       BotCommand("advanced_table", "رده‌بندی پیشرفته (ارزش برد) ⭐"),
       BotCommand("stats", "آمار و پروفایل بازیکنان 👤"),
       BotCommand("bests", "برترین بست پلیرهای لیگ 🌟"),
+      BotCommand("teammates", "رده‌بندی بهترین هم‌تیمی‌ها 👥"),
+      BotCommand("streaks", "رده‌بندی بهترین استریک‌ها 🔥"),
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
       BotCommand("chart", "نمودار پیشرفت بازیکنان 📈"),
@@ -667,6 +669,8 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
       [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
       [InlineKeyboardButton("🌟 برترین بست پلیرها", callback_data="ask_bests_season")],
+      [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
+      [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
       [InlineKeyboardButton("📈 نمودار پیشرفت بازیکنان", callback_data="open_chart_picker")],
@@ -683,6 +687,246 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   elif update.message:
     try:
       await update.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+    except Exception:
+      pass
+
+
+async def ask_teammates_season_choice(update: Update):
+  seasons = get_available_seasons()
+  keyboard = [[
+      InlineKeyboardButton(
+          "🌐 بهترین هم‌تیمی‌های کل تاریخچه (All-Time)", callback_data="teammates_page:all:1"
+      )
+  ]]
+  row = []
+  for s_num in seasons:
+    row.append(
+        InlineKeyboardButton(
+            f"👥 فصل {s_num}", callback_data=f"teammates_page:{s_num}:1"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+  text = "👥 **رده‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def render_teammates_leaderboard_filtered(update: Update, season_filter: str, page: int):
+  log_feature_click(update.effective_user.id, f"بهترین هم‌تیمی‌ها ({season_filter})")
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    if season_filter == "all":
+      season_title = "کل تاریخچه (All-Time)"
+      c.execute("""
+            SELECT p1.player_name, p2.player_name, COUNT(*), SUM(p1.won)
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC
+        """)
+      rows = c.fetchall()
+    else:
+      s_int = int(season_filter)
+      season_title = f"فصل {s_int}"
+      c.execute("""
+            SELECT p1.player_name, p2.player_name, COUNT(*), SUM(p1.won)
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1 AND m.season = ?
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC
+        """, (s_int,))
+      rows = c.fetchall()
+
+  if not rows:
+    text = f"هنوز داده‌ای در رده‌بندی هم‌تیمی‌های {season_title} ثبت نشده است."
+    keyboard = [
+        [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_teammates_season")],
+        [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
+    ]
+    if update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+      except Exception:
+        pass
+    return
+
+  total_items = len(rows)
+  total_pages = max(1, math.ceil(total_items / PAGE_SIZE))
+  page = max(1, min(page, total_pages))
+
+  start_idx = (page - 1) * PAGE_SIZE
+  end_idx = min(start_idx + PAGE_SIZE, total_items)
+  page_rows = rows[start_idx:end_idx]
+
+  text = (
+      f"👥 **رده‌بندی بهترین جفت‌های هم‌تیمی ({season_title})**\n"
+      f"صفحه {page} از {total_pages}\n"
+      f"➖➖➖➖➖➖➖➖➖➖\n\n"
+  )
+
+  for i, r in enumerate(page_rows, start=start_idx + 1):
+    medal = "🥇" if i == 1 else ("🥈" if i == 2 else ("🥉" if i == 3 else f"`#{i:02d}`"))
+    text += (
+        f"{medal} **{r[0]}** 🤝 **{r[1]}**\n"
+        f"   ▫️ بردهای مشترک: `{r[2]}` پیروزی\n"
+        f"────────────────────\n"
+    )
+
+  nav_row = []
+  if page > 1:
+    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
+  if page < total_pages:
+    nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"teammates_page:{season_filter}:{page + 1}"))
+
+  keyboard = []
+  if nav_row:
+    keyboard.append(nav_row)
+  keyboard.append([InlineKeyboardButton("🔄 تغییر فصل / بازه", callback_data="ask_teammates_season")])
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+
+  reply_markup = InlineKeyboardMarkup(keyboard)
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+    except Exception:
+      pass
+
+
+async def ask_streaks_season_choice(update: Update):
+  seasons = get_available_seasons()
+  keyboard = [[
+      InlineKeyboardButton(
+          "🌐 استریک‌های کل تاریخچه (All-Time)", callback_data="streaks_page:all:1"
+      )
+  ]]
+  row = []
+  for s_num in seasons:
+    row.append(
+        InlineKeyboardButton(
+            f"🔥 فصل {s_num}", callback_data=f"streaks_page:{s_num}:1"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+  text = "🔥 **رده‌بندی بهترین استریک‌ها (بیشترین بردهای پیاپی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def render_streaks_leaderboard_filtered(update: Update, season_filter: str, page: int):
+  log_feature_click(update.effective_user.id, f"بهترین استریک‌ها ({season_filter})")
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    if season_filter == "all":
+      season_title = "کل تاریخچه (All-Time)"
+      c.execute("""
+            SELECT name, best_streak, total_games, wins 
+            FROM players 
+            WHERE best_streak > 0 
+            ORDER BY best_streak DESC, wins DESC
+        """)
+      rows = c.fetchall()
+    else:
+      s_int = int(season_filter)
+      season_title = f"فصل {s_int}"
+      cur_season = get_current_season()
+      if s_int == cur_season:
+        c.execute("""
+            SELECT name, best_streak, total_games, wins 
+            FROM players 
+            WHERE best_streak > 0 
+            ORDER BY best_streak DESC, wins DESC
+        """)
+        rows = c.fetchall()
+      else:
+        c.execute("""
+            SELECT player_name, 10 as best_streak, total_games, wins 
+            FROM season_archives 
+            WHERE season = ? 
+            ORDER BY wins DESC
+        """, (s_int,))
+        rows = c.fetchall()
+
+  if not rows:
+    text = f"هنوز داده‌ای در رده‌بندی استریک‌های {season_title} ثبت نشده است."
+    keyboard = [
+        [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_streaks_season")],
+        [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
+    ]
+    if update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+      except Exception:
+        pass
+    return
+
+  total_items = len(rows)
+  total_pages = max(1, math.ceil(total_items / PAGE_SIZE))
+  page = max(1, min(page, total_pages))
+
+  start_idx = (page - 1) * PAGE_SIZE
+  end_idx = min(start_idx + PAGE_SIZE, total_items)
+  page_rows = rows[start_idx:end_idx]
+
+  text = (
+      f"🔥 **رده‌بندی بهترین استریک‌های پیروزی ({season_title})**\n"
+      f"صفحه {page} از {total_pages}\n"
+      f"➖➖➖➖➖➖➖➖➖➖\n\n"
+  )
+
+  for i, r in enumerate(page_rows, start=start_idx + 1):
+    medal = "🥇" if i == 1 else ("🥈" if i == 2 else ("🥉" if i == 3 else f"`#{i:02d}`"))
+    text += (
+        f"{medal} **{r[0]}**\n"
+        f"   ▫️ رکورد استریک پیاپی: `🔥 {r[1]}` برد متوالی\n"
+        f"   ▫️ بازی: `{r[2]}` (برد: `{r[3]}`)\n"
+        f"────────────────────\n"
+    )
+
+  nav_row = []
+  if page > 1:
+    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"streaks_page:{season_filter}:{page - 1}"))
+  if page < total_pages:
+    nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"streaks_page:{season_filter}:{page + 1}"))
+
+  keyboard = []
+  if nav_row:
+    keyboard.append(nav_row)
+  keyboard.append([InlineKeyboardButton("🔄 تغییر فصل / بازه", callback_data="ask_streaks_season")])
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+
+  reply_markup = InlineKeyboardMarkup(keyboard)
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -2598,7 +2842,7 @@ async def render_bests_page_filtered(
 
   keyboard = []
   if nav_row:
-    keyboard.append(nav_nav_row := nav_row) # simple fallback
+    keyboard.append(nav_row)
   keyboard.append([
       InlineKeyboardButton(
           "🔄 تغییر فصل / بازه تالار", callback_data="ask_bests_season"
@@ -3684,6 +3928,36 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await render_advanced_table_page(update, s_filt, p_num)
     return
 
+  if data == "ask_teammates_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_teammates_season_choice(update)
+    return
+
+  if data.startswith("teammates_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_teammates_leaderboard_filtered(update, s_filt, p_num)
+    return
+
+  if data == "ask_streaks_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_streaks_season_choice(update)
+    return
+
+  if data.startswith("streaks_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_streaks_leaderboard_filtered(update, s_filt, p_num)
+    return
+
   if data == "show_shots_lb":
     if not await enforce_channel_lock(update, context, check_lock=True):
       return
@@ -3988,7 +4262,6 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await prompt_multiselect_citizens(query, flow)
       return
 
-    # --- سیستم چند انتخابی (Multi-select) شهروندان ---
     elif data.startswith("m_cit_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_citizens" not in flow:
@@ -4013,7 +4286,6 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await prompt_multiselect_mafias(query, flow)
       return
 
-    # --- سیستم چند انتخابی (Multi-select) مافیاها ---
     elif data.startswith("m_maf_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_mafias" not in flow:
@@ -4042,7 +4314,6 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await prompt_night1_shot(query, flow)
       return
 
-    # --- سیستم چند انتخابی (Multi-select) مستقل‌ها ---
     elif data.startswith("m_ind_toggle:"):
       p_name = data.split(":", 1)[1]
       if "temp_independents" not in flow:
@@ -4576,6 +4847,8 @@ def main():
   app.add_handler(CommandHandler("table", table))
   app.add_handler(CommandHandler("advanced_table", ask_advanced_season_choice))
   app.add_handler(CommandHandler("bests", best_players_leaderboard))
+  app.add_handler(CommandHandler("teammates", ask_teammates_season_choice))
+  app.add_handler(CommandHandler("streaks", ask_streaks_season_choice))
   app.add_handler(CommandHandler("shots_top", ask_shots_season_choice))
   app.add_handler(CommandHandler("stats", stats))
   app.add_handler(CommandHandler("vs", vs))
