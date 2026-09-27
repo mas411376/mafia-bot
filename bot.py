@@ -265,6 +265,48 @@ def recalculate_all_players():
     c.execute("SELECT name FROM players")
     players = [r[0] for r in c.fetchall()]
 
+    # ابتدا امتیاز اولیه پیشرفته تمام بازیکنان را در این فصل روی 1000 تنظیم می‌کنیم
+    player_adv_scores = {p_name: 1000.0 for p_name in players}
+
+    # استخراج تمام مسابقات فصل به ترتیب زمانی برای محاسبه پویا
+    c.execute("""
+        SELECT m.match_id
+        FROM match_history m
+        WHERE m.season = ?
+        ORDER BY m.match_id ASC
+    """, (cur_season,))
+    season_matches = [r[0] for r in c.fetchall()]
+
+    for m_id in season_matches:
+      c.execute("SELECT player_name, won, is_mvp, is_svp FROM match_participants WHERE match_id = ?", (m_id,))
+      parts = c.fetchall()
+      
+      winners = [p[0] for p in parts if p[1] == 1]
+      losers = [p[0] for p in parts if p[1] == 0]
+
+      if not winners or not losers:
+        continue
+
+      # محاسبه میانگین مهارت تیم برنده و تیم بازنده پیش از این بازی
+      avg_winner_skill = sum(player_adv_scores.get(w, 1000.0) for w in winners) / len(winners)
+      avg_loser_skill = sum(player_adv_scores.get(l, 1000.0) for l in losers) / len(losers)
+
+      # اختلاف قدرت برای پویایی جدول (اگر تیم ضعیف ببرد پاداش بیشتر می‌گیرد)
+      skill_diff = avg_loser_skill - avg_winner_skill
+      dynamic_factor = max(-4.0, min(4.0, skill_diff / 50.0))
+
+      for p_name, won, mvp, svp in parts:
+        if p_name not in player_adv_scores:
+          player_adv_scores[p_name] = 1000.0
+
+        if won == 1:
+          base_delta = 10.0 + dynamic_factor  # برد تیم ضعیف پاداش بیشتر، برد تیم قوی پاداش کمتر
+        else:
+          base_delta = -8.0 + dynamic_factor  # باخت تیم قوی جریمه بیشتر، باخت تیم ضعیف جریمه کمتر
+
+        bonus_mvp_svp = (4.0 if mvp else (2.0 if svp else 0.0))
+        player_adv_scores[p_name] += (base_delta + bonus_mvp_svp)
+
     for p_name in players:
       c.execute(
           """
@@ -286,19 +328,7 @@ def recalculate_all_players():
       n1_shots = sum(1 for m in matches if m[4] == 1)
       n1_outs = sum(1 for m in matches if m[5] == 1)
 
-      adv_score = 1000.0
-      for m in matches:
-        won = m[1]
-        mvp = m[2]
-        svp = m[3]
-        m_id = m[6]
-        
-        c.execute("SELECT player_name, side, won FROM match_participants WHERE match_id = ? AND player_name != ?", (m_id, p_name))
-        others = c.fetchall()
-        
-        base_delta = 10.0 if won else -6.0
-        bonus_mvp_svp = (4.0 if mvp else (2.0 if svp else 0.0))
-        adv_score += (base_delta + bonus_mvp_svp)
+      adv_score = player_adv_scores.get(p_name, 1000.0)
 
       c.execute(
           """
@@ -479,8 +509,8 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ شکست در مسابقه: `+۲` امتیاز\n"
       "▫️ بست پلیر ساید برنده (MVP): `+۴` امتیاز پاداش\n"
       "▫️ بست پلیر ساید بازنده (SVP): `+۲` امتیاز پاداش\n\n"
-      "🎯 **نحوه انتخاب بست پلیرها:**\n"
-      "در صورت بودن مدیر یا گرداننده خارج بازی، یک‌نفر از هر ساید به عنوان بست انتخاب می‌شود. در صورت نداشتن مدیر و گرداننده خارج بازی، تصمیم به عهده گرداننده داخل بازی هستش.\n\n"
+      "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
+      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
       "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
       "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر"
       " مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد."
@@ -1351,7 +1381,8 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton(
-                "🔙 بازگشت به منوی اصلی", callback_data="back_to_start"
+                "🔙 بازگشت به منوی اصلی",
+                callback_data="back_to_start",
             )
         ],
     ]
