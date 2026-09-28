@@ -520,7 +520,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text,
           reply_markup=InlineKeyboardMarkup(keyboard),
           parse_mode="Markdown",
@@ -567,7 +567,7 @@ async def show_links_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text,
           reply_markup=InlineKeyboardMarkup(keyboard),
           parse_mode="Markdown",
@@ -596,7 +596,7 @@ async def show_rules_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
       await update.callback_query.answer()
     except Exception:
       pass
@@ -706,11 +706,9 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   ]
   reply_markup = InlineKeyboardMarkup(keyboard)
   
-  # ارسال به عنوان پیام جدید مستقل (همانطور که درخواست کردید)
   if update.callback_query:
     try:
       await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
-      await update.callback_query.answer()
     except Exception:
       pass
   elif update.message:
@@ -745,7 +743,7 @@ async def ask_teammates_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -790,7 +788,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -832,7 +830,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -862,7 +860,7 @@ async def ask_streaks_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -956,7 +954,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -999,7 +997,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1033,7 +1031,7 @@ async def ask_advanced_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1073,7 +1071,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -1117,7 +1115,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1149,7 +1147,7 @@ async def ask_shots_season_choice(update: Update, context: ContextTypes.DEFAULT_
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
   elif update.message:
@@ -1203,7 +1201,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1257,7 +1255,7 @@ async def send_takamol_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
               parse_mode="Markdown",
           )
       else:
-        await update.callback_query.message.edit_text(
+        await update.callback_query.message.reply_text(
             caption_text, reply_markup=reply_markup, parse_mode="Markdown"
         )
     except Exception:
@@ -1393,7 +1391,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=reply_markup, parse_mode="Markdown"
       )
     except Exception:
@@ -1470,7 +1468,7 @@ async def show_analytics_report(update: Update):
       ],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1503,7 +1501,7 @@ async def prompt_finish_season(update: Update):
       ],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1573,7 +1571,7 @@ async def execute_finish_season(
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1661,7 +1659,7 @@ async def render_public_history_page(update: Update, page: int):
     keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_start")]]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(
+        await update.callback_query.message.reply_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -1723,7 +1721,7 @@ async def render_public_history_page(update: Update, page: int):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1754,7 +1752,7 @@ async def show_public_match_details(
     match = c.fetchone()
     if not match:
       try:
-        await update.callback_query.message.edit_text("مسابقه مورد نظر پیدا نشد.")
+        await update.callback_query.message.reply_text("مسابقه مورد نظر پیدا نشد.")
       except Exception:
         pass
       return
@@ -1823,7 +1821,7 @@ async def show_public_match_details(
       [InlineKeyboardButton("🏠 منوی اصلی", callback_data="back_to_start")],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1871,7 +1869,7 @@ async def show_merge_picker_old(update: Update, context: ContextTypes.DEFAULT_TY
   )
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1923,7 +1921,7 @@ async def show_merge_picker_new(
       f" سوابق به او منتقل شود و در لیگ بماند:"
   )
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1940,7 +1938,7 @@ async def execute_final_merge(update: Update, old_uid: int, new_uid: int):
 
     if not old_row or not new_row:
       try:
-        await update.callback_query.message.edit_text("❌ یکی از بازیکنان یافت نشد.")
+        await update.callback_query.message.reply_text("❌ یکی از بازیکنان یافت نشد.")
       except Exception:
         pass
       return
@@ -1966,7 +1964,7 @@ async def execute_final_merge(update: Update, old_uid: int, new_uid: int):
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1993,7 +1991,7 @@ async def show_matches_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -2017,7 +2015,7 @@ async def show_matches_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2035,7 +2033,7 @@ async def show_match_details(update: Update, match_id: int):
     match = c.fetchone()
     if not match:
       try:
-        await update.callback_query.message.edit_text("مسابقه مورد نظر پیدا نشد.")
+        await update.callback_query.message.reply_text("مسابقه مورد نظر پیدا نشد.")
       except Exception:
         pass
       return
@@ -2098,7 +2096,7 @@ async def show_match_details(update: Update, match_id: int):
       ],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -2124,7 +2122,7 @@ async def delete_match_by_id(update: Update, match_id: int):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2219,7 +2217,7 @@ async def show_remove_player_buttons(
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -2246,7 +2244,7 @@ async def show_remove_player_buttons(
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2261,7 +2259,7 @@ async def apply_remove_player_by_id(update, user_id):
     if not row:
       msg = "❌ بازیکن پیدا نشد."
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
       return
@@ -2279,7 +2277,7 @@ async def apply_remove_player_by_id(update, user_id):
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -2430,7 +2428,7 @@ async def render_players_list_page(
     keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(
+        await update.callback_query.message.reply_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2488,7 +2486,7 @@ async def render_players_list_page(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=reply_markup, parse_mode="HTML"
       )
     except Exception:
@@ -2531,7 +2529,7 @@ async def ask_table_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2668,7 +2666,7 @@ async def render_table_page_filtered(
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(
+        await update.callback_query.message.reply_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2743,7 +2741,7 @@ async def render_table_page_filtered(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2789,7 +2787,7 @@ async def ask_bests_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2852,7 +2850,7 @@ async def render_bests_page_filtered(
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.edit_text(
+        await update.callback_query.message.reply_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2928,7 +2926,7 @@ async def render_bests_page_filtered(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2977,7 +2975,7 @@ async def ask_vs_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2999,7 +2997,7 @@ async def show_vs_picker_first(
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -3038,7 +3036,7 @@ async def show_vs_picker_first(
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3090,7 +3088,7 @@ async def show_vs_picker_second(
   )
 
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3109,7 +3107,7 @@ async def render_vs_comparison_filtered(
 
     if not p1 or not p2:
       try:
-        await update.callback_query.message.edit_text("بازیکنان پیدا نشدند.")
+        await update.callback_query.message.reply_text("بازیکنان پیدا نشدند.")
       except Exception:
         pass
       return
@@ -3251,7 +3249,7 @@ async def render_vs_comparison_filtered(
       [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3277,7 +3275,7 @@ async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -3306,7 +3304,7 @@ async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3320,7 +3318,7 @@ async def ask_stat_season_choice(update: Update, user_id: int):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3357,7 +3355,7 @@ async def ask_stat_season_choice(update: Update, user_id: int):
       f" **کل تاریخچه** هستید یا یک **فصل خاص**؟"
   )
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3377,7 +3375,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -3408,7 +3406,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3422,7 +3420,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3459,7 +3457,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
       f" بازی‌ها** رسم شود یا یک **فصل معین**؟"
   )
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3476,7 +3474,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3655,7 +3653,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       ],
   ]
   try:
-    await update.callback_query.message.edit_text(
+    await update.callback_query.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3906,7 +3904,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.edit_text(msg)
+        await update.callback_query.message.reply_text(msg)
       except Exception:
         pass
     return
@@ -3948,7 +3946,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.edit_text(
+      await update.callback_query.message.reply_text(
           prompt, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -4204,7 +4202,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if data == "admin_btn_add":
     context.user_data["waiting_for_manual_add"] = True
     try:
-      await query.message.edit_text(
+      await query.message.reply_text(
           "➕ لطفاً **نام بازیکن قدیمی** را ارسال کنید تا دستی به لیگ اضافه شود:"
       )
     except Exception:
