@@ -597,6 +597,7 @@ async def show_rules_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.callback_query:
     try:
       await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.answer()
     except Exception:
       pass
   elif update.message:
@@ -676,7 +677,7 @@ async def show_rule_detail(update: Update, sec_num: str):
   ]
   reply_markup = InlineKeyboardMarkup(keyboard)
   try:
-    await query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+    await query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
   except Exception:
     pass
 
@@ -1044,7 +1045,6 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
     c = conn.cursor()
     if season_filter == "all":
       season_title = "کل تاریخچه (All-Time)"
-      # اعمال شرط total_games > 0 برای حذف بازیکنان بدون بازی
       c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC")
       rows = c.fetchall()
     else:
