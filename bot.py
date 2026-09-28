@@ -594,9 +594,14 @@ async def show_rules_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_start")]
   ]
   reply_markup = InlineKeyboardMarkup(keyboard)
+  
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      # بررسی اینکه آیا درخواست از دکمه بازگشت به لیست سرفصل‌ها آمده یا از منوی اصلی
+      if update.callback_query.data == "open_rules_menu":
+        await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      else:
+        await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
       await update.callback_query.answer()
     except Exception:
       pass
@@ -3968,7 +3973,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await show_links_menu(update, context)
     return
 
-  if data == "open_rules_menu":
+  if data in ["open_rules_menu", "rule_sec:back"]:
     if not await enforce_channel_lock(update, context, check_lock=False):
       return
     await show_rules_menu(update, context)
