@@ -509,12 +509,19 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   text = (
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
-      "▫️ پیروزی در مسابقه: `+۱۰` امتیاز[cite: 3]\n"
-      "▫️ شکست در مسابقه: `۰` امتیاز[cite: 3]\n"
-      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش[cite: 3]\n"
-      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه[cite: 3]\n"
-      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه[cite: 3]\n"
-      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه[cite: 3]\n\n"
+      "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
+      "▫️ شکست در مسابقه: `۰` امتیاز\n"
+      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
+      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
+      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
+      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
+      "👑 **القاب اختصاصی نفرات اول هر جدول در هر فصل:**\n"
+      "▫️ نفر اول جدول رده‌بندی لیگ: 🏛 **امپراطور لیگ**\n"
+      "▫️ نفر اول رده‌بندی پیشرفته (ارزش برد): 🧠 **مغز متفکر**\n"
+      "▫️ نفر اول تالار بست‌پلیرها: ⚡ **ترس واقعی**\n"
+      "▫️ نفر اول جدول تبر طلایی: 🐻 **خاله خرسه**\n"
+      "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
+      "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
       "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
       "📌 **قوانین و شرایط خاص یارفروشی و خودزنی:**\n"
@@ -523,10 +530,10 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ در نتیجه، یارفروشی اصلاً توصیه نمی‌شود، اما بازیکن می‌تواند با انجام این کار امتیاز برد را دریافت کند و حتی اگر روی نوار استریک برد باشد، با حفظ آن نوار امتیاز بیشتری کسب کند.\n\n"
       "🔥 **پاداش ویژه کمبو (StreaK Bonus):**\n"
       "▫️ کسب بردهای پیاپی (۳ برد و بیشتر): پاداش ویژه `+۲` امتیاز اضافی به ازای هر برد متوالی از برد سوم به بعد!\n\n"
-      "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌‌محور):**\n"
-      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت[cite: 3].\n\n"
+      "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
+      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
       "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
-      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد[cite: 3]."
+      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")]]
   if update.message:
@@ -680,7 +687,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **تأخیر و غیبت:** بیش از ۱۵ دقیقه تأخیر منجر به حذف یا جایگزینی خواهد شد و فرد خاطی در صورت تکرار، یک هفته از بازی‌های گروه محروم می‌شود.\n\n"
           "🔹 **پایان بازی:** حضور در جلسه تا انتهای بازی الزامی است مگر با هماهنگی قبلی.\n\n"
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
-          "   ▫️️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
+          "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
           "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
           "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
@@ -841,9 +848,10 @@ async def render_axes_page_filtered(update: Update, season_filter: str, page: in
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
+    title_badge = " ⟨ 🐻 **خاله خرسه** ⟩" if rank == 1 else ""
     axe_bar = "🪓" * min(r[1], 8)
     text += (
-        f"{medal} **{r[0]}**\n"
+        f"{medal} **{r[0]}**{title_badge}\n"
         f"   🪵 نشان‌ها: {axe_bar}\n"
         f"   ▫️ دفعات تبر بازی: `{r[1]}` بار (در {r[2]} مسابقه)\n"
         f"────────────────────\n"
@@ -972,9 +980,10 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
+    title_badge = " ⟨ 🐍 **پیتون اعظم** ⟩" if rank == 1 else ""
     unfair_bar = "🐍" * min(r[1], 8)
     text += (
-        f"{medal} **{r[0]}**\n"
+        f"{medal} **{r[0]}**{title_badge}\n"
         f"   🪵 نشان‌ها: {unfair_bar}\n"
         f"   ▫️ دفعات آنفیر بازی: `{r[1]}` بار (در {r[2]} مسابقه)\n"
         f"────────────────────\n"
@@ -1103,9 +1112,10 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
+    title_badge = " ⟨ 🐺 **کفتار تنها** ⟩" if rank == 1 else ""
     artin_bar = "👑" * min(r[1], 8)
     text += (
-        f"{medal} **{r[0]}**\n"
+        f"{medal} **{r[0]}**{title_badge}\n"
         f"   🪵 نشان‌ها: {artin_bar}\n"
         f"   ▫️ دفعات آرتین بازی: `{r[1]}` بار (در {r[2]} مسابقه)\n"
         f"────────────────────\n"
@@ -1388,8 +1398,9 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
 
   for i, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if i == 1 else ("🥈" if i == 2 else ("🥉" if i == 3 else f"`#{i:02d}`"))
+    title_badge = " ⟨ ⚔️ **ماشین کشتار** ⟩" if i == 1 else ""
     text += (
-        f"{medal} **{r[0]}**\n"
+        f"{medal} **{r[0]}**{title_badge}\n"
         f"   ▫️ رکورد استریک پیاپی: `🔥 {r[1]}` برد متوالی\n"
         f"   ▫️ بازی: `{r[2]}` (برد: `{r[3]}`)\n"
         f"────────────────────\n"
@@ -1439,7 +1450,7 @@ async def ask_advanced_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "⭐ **رده‌بندی پیشرفته (ارزش برد و عملکرد تیمی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+      "⭐ **رده‌‌بندی پیشرفته (ارزش برد و عملکرد تیمی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
   )
 
   if update.callback_query:
@@ -1505,9 +1516,10 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
 
   for i, p in enumerate(page_players, start=start_idx + 1):
     medal = "🥇" if i == 1 else ("🥈" if i == 2 else ("🥉" if i == 3 else f"`#{i:02d}`"))
+    title_badge = " ⟨ 🧠 **مغز متفکر** ⟩" if i == 1 else ""
     win_rate = round((p[3] / p[2] * 100), 1) if p[2] > 0 else 0
     text += (
-        f"{medal} **{p[0]}**\n"
+        f"{medal} **{p[0]}**{title_badge}\n"
         f"   ▫️ امتیاز پیشرفته (Skill): `{p[1]}`\n"
         f"   ▫️ بازی: `{p[2]}` (برد: `{p[3]}` / باخت: `{p[4]}`) | WR: `{win_rate}%`\n"
         f"────────────────────\n"
@@ -1604,7 +1616,8 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
     text = f"🎯 **برترین سوءقصدشده‌های شب اول ({season_title})**:\n\n"
     for idx, (p_name, shots) in enumerate(rows, start=1):
       medal = "🥇" if idx == 1 else ("🥈" if idx == 2 else ("🥉" if idx == 3 else f"`#{idx:02d}`"))
-      text += f"{medal} **{p_name}** ──> `{shots}` بار هدف شات شب اول\n"
+      title_badge = " ⟨ 🎯 **کابوس مافیا** ⟩" if idx == 1 else ""
+      text += f"{medal} **{p_name}**{title_badge} ──> `{shots}` بار هدف شات شب اول\n"
 
   keyboard = [
       [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="show_shots_lb")],
@@ -1696,7 +1709,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user_id = update.effective_user.id
   if user_id not in [ADMIN_ID, ADMIN_ID_2]:
     if update.message:
-      await update.message.reply_text("⛔️️ این بخش فقط برای ادمین لیگ در دسترس است.")
+      await update.message.reply_text("⛔️ این بخش فقط برای ادمین لیگ در دسترس است.")
     elif update.callback_query:
       try:
         await update.callback_query.answer(
@@ -1767,7 +1780,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
   else:
     text = (
-        f"⚙️️ **پنل مدیریت ادمین دوم (فصل فعال: {cur_season}):**\n\n"
+        f"⚙️ **پنل مدیریت ادمین دوم (فصل فعال: {cur_season}):**\n\n"
         "شما به قابلیت‌های ثبت و مدیریت مسابقات دسترسی دارید:"
     )
     keyboard = [
@@ -1982,7 +1995,7 @@ async def execute_finish_season(
       f" گردید!**\n\n"
       f"🚀 **فصل {next_season} رسماً آغاز شد!**\n"
       f"▫️ جدول بازیکنان برای فصل جدید صفر شد.\n"
-      f"▫️️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
+      f"▫️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
@@ -2227,7 +2240,7 @@ async def show_public_match_details(
       f" {', '.join(axes) if axes else 'ندارد'}\n"
       f"🐍 **پلیر آنفیر (Unfair):**\n▫️"
       f" {', '.join(unfairs) if unfairs else 'ندارد'}\n"
-      f"👑 **پلیر آرتین (Artin):**\n▫️"
+      f"👑 **پلیر آرتین (Artin):**\n▫️️"
       f" {', '.join(artins) if artins else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
@@ -2662,7 +2675,7 @@ async def show_remove_player_buttons(
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
 
-  text = "🗑 **روی نام بازیکنی که می‌‌خواهید از لیگ حذف شود کلیک کنید:**"
+  text = "🗑 **روی نام بازیکنی که می‌خواهید از لیگ حذف شود کلیک کنید:**"
   if update.message:
     await update.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -3139,8 +3152,6 @@ async def render_table_page_filtered(
     )
     crown = " 👑" if i == 1 else ""
     streak_badge = f" 🔥`{p['streak']}`" if p["streak"] > 1 else ""
-    
-    # اختصاص لقب «امپراطور لیگ» به نفر اول رده‌بندی لیگ
     title_badge = " ⟨ 🏛 **امپراطور لیگ** ⟩" if i == 1 else ""
 
     text += (
@@ -3322,8 +3333,7 @@ async def render_bests_page_filtered(
         else "🥈" if rank == 2 else "🥉" if rank == 3 else f"`#{rank:02d}`"
     )
     crown = " 👑" if rank == 1 else ""
-    # اختصاص لقب «ترس واقعی» به نفر اول بست‌پلییرها
-    title_badge = " ⟨ 🌟 **ترس واقعی** ⟩" if rank == 1 else ""
+    title_badge = " ⟨ ⚡ **ترس واقعی** ⟩" if rank == 1 else ""
 
     mvp_bar = "🌟" * min(r[1], 8)
     stars_line = f"{mvp_bar}"
@@ -3464,7 +3474,6 @@ async def render_axes_page_filtered(update: Update, season_filter: str, page: in
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
-    # اختصاص لقب «خاله خرسه» به نفر اول تبرها
     title_badge = " ⟨ 🐻 **خاله خرسه** ⟩" if rank == 1 else ""
     axe_bar = "🪓" * min(r[1], 8)
     text += (
@@ -3572,7 +3581,6 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
-    # اختصاص لقب «پیتون اعظم» به نفر اول آنفیرها
     title_badge = " ⟨ 🐍 **پیتون اعظم** ⟩" if rank == 1 else ""
     unfair_bar = "🐍" * min(r[1], 8)
     text += (
@@ -3680,7 +3688,6 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
 
   for rank, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"`#{rank:02d}`"))
-    # اختصاص لقب «کفتار تنها» به نفر اول آرتین‌ها
     title_badge = " ⟨ 🐺 **کفتار تنها** ⟩" if rank == 1 else ""
     artin_bar = "👑" * min(r[1], 8)
     text += (
@@ -3987,7 +3994,7 @@ async def render_vs_comparison_filtered(
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
-      f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
+      f"▫️ بازی‌های هم‌‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
       f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
@@ -4396,10 +4403,10 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"🔥 استریک فعلی: `{cur_streak}` برد | رکورد پیاپی: `{best_streak}`\n\n"
       f"🎭 **تخصص سایدها در این بازه:**\n"
       f"▫️ شهروند: {cit_games} بازی (برد: {cit_rate}%)\n"
-      f"▫️️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
+      f"▫️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
       f"▫️ مستقل: {ind_games} بازی (برد: {ind_rate}%)\n\n"
       f"🤝 بهترین هم‌تیمی: **{tm_text}**\n"
-      f"⚔️️ بدترین رقیب: **{nem_text}**"
+      f"⚔️ بدترین رقیب: **{nem_text}**"
   )
 
   keyboard = [
