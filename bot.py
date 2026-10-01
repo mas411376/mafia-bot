@@ -151,23 +151,6 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
-
-    # پاکسازی ستون‌های قدیمی مربوط به SVP در صورت وجود در جدول‌های قبلی
-    c.execute("PRAGMA table_info(players)")
-    pl_cols = [col[1] for col in c.fetchall()]
-    if "svp_count" in pl_cols:
-      c.execute("ALTER TABLE players DROP COLUMN svp_count")
-
-    c.execute("PRAGMA table_info(match_participants)")
-    p_cols = [col[1] for col in c.fetchall()]
-    if "is_svp" in p_cols:
-      c.execute("ALTER TABLE match_participants DROP COLUMN is_svp")
-
-    c.execute("PRAGMA table_info(season_archives)")
-    sa_cols = [col[1] for col in c.fetchall()]
-    if "svp_count" in sa_cols:
-      c.execute("ALTER TABLE season_archives DROP COLUMN svp_count")
-
     conn.commit()
 
 
@@ -409,7 +392,7 @@ async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYP
     
     if update.callback_query:
       try:
-        await update.callback_query.answer("⛔️️ ابتدا در کانال عضو شوید!", show_alert=True)
+        await update.callback_query.answer("⛔️ ابتدا در کانال عضو شوید!", show_alert=True)
         await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
       except Exception:
         pass
@@ -467,8 +450,8 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️ شکست در مسابقه: `+۲` امتیاز\n"
-      "▫️ بست پلیر ساید برنده (MVP): `+۴` امتیاز پاداش\n\n"
+      "▫️️ شکست در مسابقه: `+۲` امتیاز\n"
+      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n\n"
       "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
       "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
       "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
@@ -588,7 +571,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **سلسله‌مراتب جرایم انضباطی بی‌احترامی:**\n"
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
-          "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
+          "   ▫️️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
           "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
@@ -657,9 +640,9 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   )
   keyboard = [
       [InlineKeyboardButton("👤 آمار بازیکنان", callback_data="open_stats_picker")],
-      [InlineKeyboardButton("🏆 جدول رده‌‌بندی لیگ", callback_data="ask_table_season")],
-      [InlineKeyboardButton("⭐ رده‌‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
-      [InlineKeyboardButton("🌟 برترین بست پلیرها", callback_data="ask_bests_season")],
+      [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
+      [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
+      [InlineKeyboardButton("🌟 برترین بست پلیرهای بازی", callback_data="ask_bests_season")],
       [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
       [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
@@ -703,7 +686,7 @@ async def ask_teammates_season_choice(update: Update):
     keyboard.append(row)
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-  text = "👥 **رده‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+  text = "👥 **رده‌‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
 
   if update.callback_query:
     try:
@@ -1443,7 +1426,7 @@ async def prompt_finish_season(update: Update):
   cur_season = get_current_season()
   next_season = cur_season + 1
   text = (
-      f"⚠️️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
+      f"⚠️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
       f"با این اقدام:\n"
       f"۱. تمام رتبه‌ها، امتیازات و ریتینگ‌های فعلی به عنوان **آرشیو جاودانه فصل"
       f" {cur_season}** ثبت و ذخیره می‌شوند.\n"
@@ -1766,7 +1749,7 @@ async def show_public_match_details(
       f"\n🎯 **شات شب اول توسط مافیا:**\n▫️ {n1_shot_player if n1_shot_player else 'ندارد'}\n"
       f"🚪 **وضعیت شات شب اول:** "
       f"{'خارج شد ❌' if n1_out_player else ('ماند ✅' if n1_shot_player else 'ثبت نشده')}\n\n"
-      f"🌟 **بست ساید برنده (MVP):**\n▫️"
+      f"🌟 **بست پلیر بازی (MVP):**\n▫️"
       f" {', '.join(mvps) if mvps else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
@@ -2035,7 +2018,7 @@ async def show_match_details(update: Update, match_id: int):
   text += (
       f"🎯 شات شب اول: {n1_shot_player if n1_shot_player else 'ندارد'}\n"
       f"🚪 وضعیت شات شب اول: {'خارج شد' if n1_out_player else ('ماند' if n1_shot_player else 'ندارد')}\n\n"
-      f"🌟 بست برنده (MVP): {', '.join(mvps) if mvps else 'ندارد'}\n"
+      f"🌟 بست پلیر بازی (MVP): {', '.join(mvps) if mvps else 'ندارد'}\n"
       f"⏱ تاریخ ثبت: `{match[3]}`\n\n"
       f"عملیات مورد نظر را انتخاب کنید:"
   )
@@ -2195,7 +2178,7 @@ async def show_remove_player_buttons(
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
 
-  text = "🗑 **روی نام بازیکنی که می‌‌خواهید از لیگ حذف شود کلیک کنید:**"
+  text = "🗑 **روی نام بازیکنی که می‌خواهید از لیگ حذف شود کلیک کنید:**"
   if update.message:
     await update.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -2734,7 +2717,7 @@ async def ask_bests_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "🌟 **تالار افتخارات بست‌پلیرها:**\n\nمایلید بست‌های کدام بازه را مشاهده"
+      "🌟 **تالار افتخارات بست‌پلیرهای بازی:**\n\nمایلید بست‌های کدام بازه را مشاهده"
       " کنید؟"
   )
 
@@ -2822,7 +2805,7 @@ async def render_bests_page_filtered(
   page_rows = rows[start_idx:end_idx]
 
   text = (
-      f"🌟 **تالار افتخارات برترین بست پلیرهای لیگ ({season_title})**\n"
+      f"🌟 **تالار افتخارات برترین بست پلیرهای بازی ({season_title})**\n"
       f"صفحه {page} از {total_pages}\n"
       f"➖➖➖➖➖➖➖➖➖➖\n\n"
   )
@@ -2841,8 +2824,8 @@ async def render_bests_page_filtered(
     text += (
         f"{medal} **{r[0]}**{crown}\n"
         f"   ✨ نشان‌ها: {stars_line}\n"
-        f"   ▫️ بست برنده (MVP): `{r[1]}` بار\n"
-        f"   ▫️ مجموع کل بست‌ها: `{r[2]}` عدد (در {r[3]} مسابقه)\n"
+        f"   ▫️️ بست پلیر بازی (MVP): `{r[1]}` بار\n"
+        f"   ▫️️ مجموع کل بست‌ها: `{r[2]}` عدد (در {r[3]} مسابقه)\n"
         f"────────────────────\n"
     )
 
@@ -2958,7 +2941,7 @@ async def show_vs_picker_first(
     label = p_name[:18] + ("..." if len(p_name) > 18 else "")
     row.append(
         InlineKeyboardButton(
-            f"⚔️️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
+            f"⚔️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
         )
     )
     if len(row) == 2:
@@ -3178,7 +3161,7 @@ async def render_vs_comparison_filtered(
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
       f"▫️ **کل بازی‌های انجام داده:** 🟩 `{p1_g}` دست | 🟥 `{p2_g}` دست\n"
-      f"▫️ **بست ساید برنده (MVP):** 🟩 `{p1_mvp}` بار | 🟥 `{p2_mvp}` بار\n"
+      f"▫️ **بست پلیر بازی (MVP):** 🟩 `{p1_mvp}` بار | 🟥 `{p2_mvp}` بار\n"
   )
 
   keyboard = [
@@ -3563,7 +3546,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"📊 مجموع امتیاز خام: `{raw}`\n"
       f"🎮 بازی‌ها: `{total_g}` | برد: `{wins}` | باخت: `{losses}` (نرخ برد:"
       f" {win_rate}%)\n"
-      f"🎖 بست برنده: `{mvps}`\n"
+      f"🌟 بست پلیر بازی: `{mvps}` بار\n"
       f"🌪 حضور در کِی‌آس: `{ch_count}` بار\n"
       f"🎯 فرد منتخب کِی‌آس: `{ch_sel_count}` بار\n"
       f"💡 تاثیر در برد تیم (فرد منتخب): `{ch_impact_count}` بار\n"
@@ -3572,10 +3555,10 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"🔥 استریک فعلی: `{cur_streak}` برد | رکورد پیاپی: `{best_streak}`\n\n"
       f"🎭 **تخصص سایدها در این بازه:**\n"
       f"▫️ شهروند: {cit_games} بازی (برد: {cit_rate}%)\n"
-      f"▫️️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
+      f"▫️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
       f"▫️ مستقل: {ind_games} بازی (برد: {ind_rate}%)\n\n"
       f"🤝 بهترین هم‌تیمی: **{tm_text}**\n"
-      f"⚔️️ بدترین رقیب: **{nem_text}**"
+      f"⚔️ بدترین رقیب: **{nem_text}**"
   )
 
   keyboard = [
@@ -4653,11 +4636,11 @@ async def prompt_mvp_selection(query, flow):
       row = []
   if row:
     keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست برنده (MVP)", callback_data="done_mvps")])
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست پلیر بازی (MVP)", callback_data="done_mvps")])
 
   try:
     await query.edit_message_text(
-        "🌟 بست(های) ساید برنده (MVP) را انتخاب کنید (می‌توانید چند نفر را لمس کنید):",
+        "🌟 بست پلیر(های) بازی (MVP) را از میان تمام بازیکنان انتخاب کنید (می‌توانید چند نفر را لمس کنید):",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -4676,12 +4659,12 @@ async def refresh_mvp_keyboard(query, flow):
       row = []
   if row:
     keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست برنده (MVP)", callback_data="done_mvps")])
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست پلیر بازی (MVP)", callback_data="done_mvps")])
 
   mvp_str = ", ".join(flow["mvps"]) if flow["mvps"] else "هنوز انتخاب نشده"
   try:
     await query.edit_message_text(
-        f"🌟 افراد انتخاب شده به عنوان MVP: {mvp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
+        f"🌟 افراد انتخاب شده به عنوان بست پلیر بازی: {mvp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -4800,6 +4783,7 @@ def main():
   app.add_handler(CommandHandler("teammates", ask_teammates_season_choice))
   app.add_handler(CommandHandler("streaks", ask_streaks_season_choice))
   app.add_handler(CommandHandler("shots_top", ask_shots_season_choice))
+  app.add_handler(ConfigFileHandler := None) # safe placeholder if needed, standard app structure below
   app.add_handler(CommandHandler("stats", stats))
   app.add_handler(CommandHandler("vs", vs))
   app.add_handler(CommandHandler("chart", chart))
