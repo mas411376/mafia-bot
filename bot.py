@@ -161,7 +161,6 @@ def init_db():
             )
         """)
 
-    # بررسی و اضافه کردن امن ستون‌ها به جدول‌های موجود جهت حفظ اطلاعات قبلی
     c.execute("PRAGMA table_info(players)")
     pl_cols = [col[1] for col in c.fetchall()]
     if "axe_count" not in pl_cols:
@@ -291,8 +290,8 @@ def recalculate_all_players():
 
         bonus_mvp = (4.0 if mvp else 0.0)
         penalty_axe = (-3.0 if axe else 0.0)
-        penalty_unfair = (-3.0 if unfair else 0.0)
-        penalty_artin = (-3.0 if artin else 0.0)
+        penalty_unfair = (-6.0 if unfair else 0.0)
+        penalty_artin = (-8.0 if artin else 0.0)
         player_adv_scores[p_name] += (base_delta + bonus_mvp + penalty_axe + penalty_unfair + penalty_artin)
 
     for p_name in players:
@@ -353,12 +352,19 @@ def recalculate_all_players():
         axe = m[3]
         unfair = m[4]
         artin = m[5]
-        raw += (10 if won else 2) + (4 if mvp else 0) + (-2 if axe else 0) + (-2 if unfair else 0) + (-2 if artin else 0)
+        
+        # شکست امتیاز ندارد (0)، پیروزی 10 امتیاز
+        game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
+        
         if won:
           cur_streak += 1
+          if cur_streak >= 3:
+            game_pts += 2
           best_streak = max(best_streak, cur_streak)
         else:
           cur_streak = 0
+
+        raw += game_pts
 
       c_games = sum(1 for m in matches if m[0] == "شهروند")
       c_wins = sum(1 for m in matches if m[0] == "شهروند" and m[1] == 1)
@@ -408,6 +414,10 @@ def recalculate_all_players():
           ),
       )
     conn.commit()
+
+
+# اجرای بازمحاسبه امتیازات از ابتدا بلافاصله پس از راه‌اندازی یا به‌روزرسانی ربات
+recalculate_all_players()
 
 
 async def check_channel_membership(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
@@ -503,16 +513,19 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️ شکست در مسابقه: `+۲` امتیاز\n"
-      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
-      "▫️ پلیر تبر بازی (برگزیده تبر): `-۲` امتیاز جریمه\n"
-      "▫️ پلیر آنفیر (نامرد بازی): `-۲` امتیاز جریمه\n"
-      "▫️ پلیر آرتین (آرتین بازی): `-۲` امتیاز جریمه\n\n"
+      "▫️ شکست در مسابقه: `۰` امتیاز\n"
+      "▫️️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
+      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
+      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
+      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
+      "⚖️️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
+      "▫️️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
+      "🔥 **پاداش ویژه کمبو (StreaK Bonus):**\n"
+      "▫️ کسب بردهای پیاپی (۳ برد و بیشتر): پاداش ویژه `+۲` امتیاز اضافی به ازای هر برد متوالی از برد سوم به بعد!\n\n"
       "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
-      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
+      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت[cite: 3].\n\n"
       "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
-      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر"
-      " مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد."
+      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد[cite: 3]."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")]]
   if update.message:
@@ -619,12 +632,12 @@ async def show_rule_detail(update: Update, sec_num: str):
           "۱. **مدیریت، اقتدار گرداننده و ارتباطات**\n\n"
           "🔹 **مرجعیت گرداننده (گاد):** تصمیمات گرداننده در جریان بازی در هر شرایطی درست و قطعی تلقی می‌شود و هرگونه دخالت در کار او ممنوع است.\n\n"
           "🔹 **نحوه اعتراض و تذکر:** اعتراض یا بیان نکات صرفاً از طریق پیام خصوصی (پی‌وی) به گاد/ادمین‌ها یا بخش «صحبت با خدا» در سایت انجام می‌شود. هرگونه اعتراض داخل بازی موجب اخراج خواهد شد.\n\n"
-          "🔹 **ارتباط در پی‌وی:** هرگونه پیام خصوصی میان بازیکنان در حین بازی (چه هم‌‌تیمی و چه رقیب) تقلب محسوب شده و منجر به محرومیت و در صورت تکرار، اخراج دائمی می‌شود."
+          "🔹 **ارتباط در پی‌وی:** هرگونه پیام خصوصی میان بازیکنان در حین بازی (چه هم‌تیمی و چه رقیب) تقلب محسوب شده و منجر به محرومیت و در صورت تکرار، اخراج دائمی می‌شود."
       ),
       "2": (
           "۲. **اخلاق، احترام و مسائل شخصی**\n\n"
           "🔹 **ادب و احترام:** استفاده از الفاظ رکیک، توهین‌آمیز و شوخی‌های نامناسب (حتی خطاب به دوستان صمیمی) اکیداً ممنوع است و تشخیص آن بر عهده گاد خواهد بود.\n\n"
-          "🔹 **سلسله‌مراتب جرایم انضباطی بی‌احترامی:**\n"
+          "🔹 **سلسله‌مراتب جرایم انضباطی بی‌‌احترامی:**\n"
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
           "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
@@ -639,11 +652,11 @@ async def show_rule_detail(update: Update, sec_num: str):
       ),
       "4": (
           "۴. **افشای نقش و سلامت بازی**\n\n"
-          "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌دلیل از بازی ممنوع است:\n"
+          "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌‌دلیل از بازی ممنوع است:\n"
           "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
-          "   ▫️️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
+          "   ▫️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
           "🔹 **کشف نقش غیرمجاز:** هر تلاشی برای کشف نقش‌ها در خارج از روند بازی باعث حذف فوری خواهد شد.\n\n"
           "🔹 **نقش شهروندی:** هرگونه نزدیک شدن به نقش شهروندی چه مستقیم چه غیر مستقیم، چه به خود فرد و چه به کس دیگری (به‌جز سناریوی مجاز که قبل بازی توسط گرداننده گفته می‌شود) ممنوع و منجر به خروج انضباطی خواهد شد."
       ),
@@ -658,7 +671,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
-          "   ▫️️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
+          "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
           "🔹 **اکت در دفاعیه:** هرگونه اکت دادن در فاز دفاعیه ممنوع بوده و موجب سلب حق رأی می‌شود (مگر در سناریوهایی با قانون اکت آزاد یا میتیک که کیک مستقیم دارد)."
       ),
       "6": (
@@ -668,7 +681,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
           "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
           "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
-          "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
+          "   ▫️️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
       )
   }
@@ -703,7 +716,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
       [InlineKeyboardButton("👑 جدول آرتین طلایی (آرتین بازی)", callback_data="ask_artin_season")],
       [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
-      [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
+      [InlineKeyboardButton("🔥 رده‌‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
       [InlineKeyboardButton("📈 نمودار پیشرفت بازیکنان", callback_data="open_chart_picker")],
@@ -1600,7 +1613,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1682,7 +1695,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user_id = update.effective_user.id
   if user_id not in [ADMIN_ID, ADMIN_ID_2]:
     if update.message:
-      await update.message.reply_text("⛔️️ این بخش فقط برای ادمین لیگ در دسترس است.")
+      await update.message.reply_text("⛔️ این بخش فقط برای ادمین لیگ در دسترس است.")
     elif update.callback_query:
       try:
         await update.callback_query.answer(
@@ -1846,7 +1859,7 @@ async def show_analytics_report(update: Update):
     for idx, (f_name, count) in enumerate(all_time_stats, start=1):
       pct = round((count / all_time_total * 100), 1) if all_time_total > 0 else 0
       bar_len = int(round(pct / 10))
-      bar = "🟩" * bar_len + "▫️" * (10 - bar_len)
+      bar = "🟩" * bar_len + "▫️️" * (10 - bar_len)
       medal = (
           "🥇"
           if idx == 1
@@ -1878,7 +1891,7 @@ async def prompt_finish_season(update: Update):
   cur_season = get_current_season()
   next_season = cur_season + 1
   text = (
-      f"⚠️ **آیا مطمئن هستید که می‌‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
+      f"⚠️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
       f"با این اقدام:\n"
       f"۱. تمام رتبه‌ها، امتیازات و ریتینگ‌های فعلی به عنوان **آرشیو جاودانه فصل"
       f" {cur_season}** ثبت و ذخیره می‌شوند.\n"
@@ -2025,7 +2038,7 @@ async def process_join_user(
 
   except sqlite3.IntegrityError:
     msg = (
-        "ℹ️️ شما قبلاً در لیگ عضو شده‌اید. برای تغییر نام از دستور `/rename`"
+        "ℹ️ شما قبلاً در لیگ عضو شده‌اید. برای تغییر نام از دستور `/rename`"
         " استفاده کنید."
     )
     if alert_func:
@@ -2198,7 +2211,7 @@ async def show_public_match_details(
 
   text += (
       f"\n🏙 **ساید شهروند:**\n▫️ {', '.join(cits) if cits else 'ثبت نشده'}\n\n"
-      f"🔪 **ساید مافیا:**\n▫️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
+      f"🔪 **ساید مافیا:**\n▫️️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
   )
   if inds:
     text += f"\n🃏 **ساید مستقل:**\n▫️ {', '.join(inds)}\n"
@@ -2213,7 +2226,7 @@ async def show_public_match_details(
       f" {', '.join(axes) if axes else 'ندارد'}\n"
       f"🐍 **پلیر آنفیر (Unfair):**\n▫️"
       f" {', '.join(unfairs) if unfairs else 'ندارد'}\n"
-      f"👑 **پلیر آرتین (Artin):**\n▫️️"
+      f"👑 **پلیر آرتین (Artin):**\n▫️"
       f" {', '.join(artins) if artins else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
@@ -2989,17 +3002,20 @@ async def render_table_page_filtered(
         raw = 0
         cur_streak = 0
         for m in matches:
-          raw += (
-              (10 if m[0] == 1 else 2)
+          game_pts = (
+              (10 if m[0] == 1 else 0)
               + (4 if m[1] == 1 else 0)
-              + (-2 if m[2] == 1 else 0)
-              + (-2 if m[3] == 1 else 0)
-              + (-2 if m[4] == 1 else 0)
+              + (-3 if m[2] == 1 else 0)
+              + (-6 if m[3] == 1 else 0)
+              + (-8 if m[4] == 1 else 0)
           )
           if m[0] == 1:
             cur_streak += 1
+            if cur_streak >= 3:
+              game_pts += 2
           else:
             cur_streak = 0
+          raw += game_pts
 
         rate = calculate_rating(raw, total_g)
         win_rate = round((wins / total_g * 100), 1) if total_g > 0 else 0
@@ -3403,7 +3419,7 @@ async def ask_vs_season_choice(update: Update):
   for s_num in seasons:
     row.append(
         InlineKeyboardButton(
-            f"⚔️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
+            f"⚔️️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
         )
     )
     if len(row) == 2:
@@ -3628,7 +3644,7 @@ async def render_vs_comparison_filtered(
     p1_w = sum(1 for m in p1_matches if m[0] == 1)
     p1_mvp = sum(1 for m in p1_matches if m[1] == 1)
     p1_raw = sum(
-        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0)
+        (10 if m[0] == 1 else 0) + (4 if m[1] == 1 else 0)
         for m in p1_matches
     )
     r1 = calculate_rating(p1_raw, p1_g)
@@ -3639,7 +3655,7 @@ async def render_vs_comparison_filtered(
     p2_w = sum(1 for m in p2_matches if m[0] == 1)
     p2_mvp = sum(1 for m in p2_matches if m[1] == 1)
     p2_raw = sum(
-        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0)
+        (10 if m[0] == 1 else 0) + (4 if m[1] == 1 else 0)
         for m in p2_matches
     )
     r2 = calculate_rating(p2_raw, p2_g)
@@ -3656,7 +3672,7 @@ async def render_vs_comparison_filtered(
   r2_crown = "👑 " if r2 > r1 else ""
 
   text = (
-      f"⚔️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
+      f"⚔️️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
       f"🟩 **{name1}** VS 🟥 **{name2}**\n"
       f"🗓 **بازه مقایسه:** `{season_label}`\n\n"
       f"📊 **شاخص برتری قدرت:**\n"
@@ -4002,12 +4018,16 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       axe = m[3]
       unfair = m[4]
       artin = m[5]
-      raw += (10 if won else 2) + (4 if mvp else 0) + (-2 if axe else 0) + (-2 if unfair else 0) + (-2 if artin else 0)
+      
+      game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
       if won:
         cur_streak += 1
+        if cur_streak >= 3:
+          game_pts += 2
         best_streak = max(best_streak, cur_streak)
       else:
         cur_streak = 0
+      raw += game_pts
 
     cit_games = sum(1 for m in matches if m[0] == "شهروند")
     cit_wins = sum(1 for m in matches if m[0] == "شهروند" and m[1] == 1)
@@ -4162,6 +4182,7 @@ async def render_and_send_chart_filtered(
   ratings = []
   scores = []
   running_score = 0
+  temp_streak = 0
 
   for r in rows:
     ratings.append(r[0])
@@ -4170,8 +4191,16 @@ async def render_and_send_chart_filtered(
     axe = r[3]
     unfair = r[4]
     artin = r[5]
-    pts = (10 if won else 2) + (4 if mvp else 0) + (-2 if axe else 0) + (-2 if unfair else 0) + (-2 if artin else 0)
-    running_score += pts
+    
+    game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
+    if won:
+      temp_streak += 1
+      if temp_streak >= 3:
+        game_pts += 2
+    else:
+      temp_streak = 0
+
+    running_score += game_pts
     scores.append(running_score)
 
   matches_count = list(range(1, len(ratings) + 1))
@@ -5029,7 +5058,7 @@ async def refresh_multiselect_citizens(query, flow):
   
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
 
-  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
+  selected_str = ", ".join(selected) if selected else "هیچ‌‌کس انتخاب نشده"
   try:
     await query.edit_message_text(
         f"🏙 شهروندان تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
@@ -5389,7 +5418,7 @@ async def prompt_artin_selection(query, flow):
 
   try:
     await query.edit_message_text(
-        "👑 پلیر(های) آرتین بازی را انتخاب کنید (اختیاری - دارای امتیاز منفی):",
+        "👑 پلیر(های) آرتین (یارفروش) بازی را انتخاب کنید (اختیاری - دارای امتیاز منفی سنگین):",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
