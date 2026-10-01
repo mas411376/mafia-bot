@@ -475,7 +475,7 @@ async def post_init(application):
       BotCommand("axes", "جدول تبر طلایی 🪓"),
       BotCommand("unfair", "جدول نامرد طلایی (آنفیر) 🐍"),
       BotCommand("artin", "جدول آرتین طلایی (آرتین بازی) 👑"),
-      BotCommand("teammates", "رده‌‌بندی بهترین هم‌تیمی‌ها 👥"),
+      BotCommand("teammates", "رده‌بندی بهترین هم‌تیمی‌ها 👥"),
       BotCommand("streaks", "رده‌بندی بهترین استریک‌ها 🔥"),
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
@@ -512,7 +512,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
       "▫️ شکست در مسابقه: `۰` امتیاز\n"
       "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
-      "▫️️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
+      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
       "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
       "👑 **القاب اختصاصی نفرات اول هر جدول در هر فصل:**\n"
@@ -523,7 +523,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
       "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
-      "▫️ نفر اول رده‌‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
+      "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
       "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
       "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
@@ -652,7 +652,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
           "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
-          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
+          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
       "3": (
@@ -678,7 +678,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "      - بار اول: دریافت یک اخطار\n"
           "      - بار دوم: سلب حق رأی\n"
           "      - بار سوم: خروج انضباطی\n"
-          "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد)؛ در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
+          "   ▫️️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد)؛ در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
@@ -692,7 +692,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
           "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
           "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
-          "   ▫️️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
+          "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
       )
   }
@@ -994,9 +994,9 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"unfair_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅️️ صفحه قبل", callback_data=f"unfair_page:{season_filter}:{page - 1}"))
   if page < total_pages:
-    nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"unfair_page:{season_filter}:{page + 1}"))
+    nav_row.append(InlineKeyboardButton("صفحه بعد ➡️️", callback_data=f"unfair_page:{season_filter}:{page + 1}"))
 
   keyboard = []
   if nav_row:
@@ -1165,7 +1165,7 @@ async def ask_teammates_season_choice(update: Update):
     keyboard.append(row)
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-  text = "👥 **رده‌‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+  text = "👥 **رده‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
 
   if update.callback_query:
     try:
@@ -1244,7 +1244,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
   if page < total_pages:
     nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"teammates_page:{season_filter}:{page + 1}"))
 
@@ -1822,7 +1822,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   elif update.callback_query:
     try:
       await update.callback_query.message.reply_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -1877,7 +1877,7 @@ async def show_analytics_report(update: Update):
     for idx, (f_name, count) in enumerate(all_time_stats, start=1):
       pct = round((count / all_time_total * 100), 1) if all_time_total > 0 else 0
       bar_len = int(round(pct / 10))
-      bar = "🟩" * bar_len + "▫️️" * (10 - bar_len)
+      bar = "🟩" * bar_len + "▫️" * (10 - bar_len)
       medal = (
           "🥇"
           if idx == 1
@@ -1909,7 +1909,7 @@ async def prompt_finish_season(update: Update):
   cur_season = get_current_season()
   next_season = cur_season + 1
   text = (
-      f"⚠️️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
+      f"⚠️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
       f"با این اقدام:\n"
       f"۱. تمام رتبه‌ها، امتیازات و ریتینگ‌های فعلی به عنوان **آرشیو جاودانه فصل"
       f" {cur_season}** ثبت و ذخیره می‌شوند.\n"
@@ -2244,7 +2244,7 @@ async def show_public_match_details(
       f" {', '.join(axes) if axes else 'ندارد'}\n"
       f"🐍 **پلیر آنفیر (Unfair):**\n▫️"
       f" {', '.join(unfairs) if unfairs else 'ندارد'}\n"
-      f"👑 **پلیر آرتین (Artin):**\n▫️"
+      f"👑 **پلیر آرتین (Artin):**\n▫️️"
       f" {', '.join(artins) if artins else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
@@ -2595,7 +2595,7 @@ async def delete_match_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def add_player_manual(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.effective_user.id != ADMIN_ID:
-    await update.message.reply_text("⛔️ این دستور فقط مخصوص ادمین لیگ است.")
+    await update.message.reply_text("⛔️️ این دستور فقط مخصوص ادمین لیگ است.")
     return
 
   if not context.args:
@@ -3345,8 +3345,8 @@ async def render_bests_page_filtered(
     text += (
         f"{medal} **{r[0]}**{crown}{title_badge}\n"
         f"   ✨ نشان‌ها: {stars_line}\n"
-        f"   ▫️️ بست پلیر بازی (MVP): `{r[1]}` بار\n"
-        f"   ▫️️ مجموع کل بست‌ها: `{r[2]}` عدد (در {r[3]} مسابقه)\n"
+        f"   ▫️ بست پلیر بازی (MVP): `{r[1]}` بار\n"
+        f"   ▫️ مجموع کل بست‌ها: `{r[2]}` عدد (در {r[3]} مسابقه)\n"
         f"────────────────────\n"
     )
 
@@ -4087,43 +4087,165 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     # بررسی و استخراج عناوین و القاب کسب‌شده در این بازه
     earned_titles = []
 
+    # محاسبه امپراطور لیگ
+    if season_filter == "all":
+      c.execute("SELECT DISTINCT player_name FROM match_participants")
+      all_p_names = [r[0] for r in c.fetchall()]
+      ranking_data = []
+      for p_n in all_p_names:
+        c.execute("SELECT won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE player_name = ?", (p_n,))
+        p_matches = c.fetchall()
+        p_g = len(p_matches)
+        p_raw = sum((10 if m[0] == 1 else 0) + (4 if m[1] == 1 else 0) + (-3 if m[2] == 1 else 0) + (-6 if m[3] == 1 else 0) + (-8 if m[4] == 1 else 0) for m in p_matches)
+        p_rate = calculate_rating(p_raw, p_g)
+        p_wins = sum(1 for m in p_matches if m[0] == 1)
+        ranking_data.append((p_n, p_rate, p_raw, p_wins))
+      
+      if ranking_data:
+        ranking_data.sort(key=lambda x: (x[1], x[2], x[3]), reverse=True)
+        if ranking_data[0][0] == name:
+          earned_titles.append("🏛 **امپراطور لیگ** (رتبه اول ریتینگ)")
+
+      c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+      top_adv = c.fetchone()
+      if top_adv and top_adv[0] == name:
+        earned_titles.append("🧠 **مغز متفکر** (رتبه اول مهارت/پیشرفته)")
+
+    else:
+      s_int = int(season_filter)
+      cur_season = get_current_season()
+      if s_int == cur_season:
+        c.execute("SELECT name, raw_score, total_games, wins FROM players WHERE total_games > 0")
+        p_rows = c.fetchall()
+        r_list = []
+        for r in p_rows:
+          rt = calculate_rating(r[1], r[2])
+          r_list.append((r[0], rt, r[1], r[3]))
+        if r_list:
+          r_list.sort(key=lambda x: (x[1], x[2], x[3]), reverse=True)
+          if r_list[0][0] == name:
+            earned_titles.append("🏛 **امپراطور لیگ** (رتبه اول ریتینگ)")
+
+        c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+        top_adv = c.fetchone()
+        if top_adv and top_adv[0] == name:
+          earned_titles.append("🧠 **مغز متفکر** (رتبه اول پیشرفته)")
+      else:
+        c.execute("SELECT player_name FROM season_archives WHERE season = ? ORDER BY final_rank ASC LIMIT 1", (s_int,))
+        top_arch = c.fetchone()
+        if top_arch and top_arch[0] == name:
+          earned_titles.append("🏛 **امپراطور لیگ** (رتبه اول ریتینگ)")
+
+        c.execute("SELECT player_name FROM season_archives WHERE season = ? AND total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1", (s_int,))
+        top_adv_arch = c.fetchone()
+        if top_adv_arch and top_adv_arch[0] == name:
+          earned_titles.append("🧠 **مغز متفکر** (رتبه اول پیشرفته)")
+
     # ۱. ترس واقعی (بست‌پلیر برتر)
     if season_filter == "all":
-      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_mvp) DESC LIMIT 1")
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_mvp) DESC, COUNT(*) ASC LIMIT 1")
     else:
-      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_mvp) DESC LIMIT 1", (int(season_filter),))
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_mvp) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
     top_mvp = c.fetchone()
     if top_mvp and top_mvp[0] == name and mvps > 0:
       earned_titles.append("⚡ **ترس واقعی** (بست‌پلیر برتر)")
 
     # ۲. خاله خرسه (بیشترین تبر)
     if season_filter == "all":
-      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_axe) DESC LIMIT 1")
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_axe) DESC, COUNT(*) ASC LIMIT 1")
     else:
-      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_axe) DESC LIMIT 1", (int(season_filter),))
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_axe) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
     top_axe = c.fetchone()
     if top_axe and top_axe[0] == name and axes > 0:
       earned_titles.append("🐻 **خاله خرسه** (بیشترین تبر)")
 
     # ۳. پیتون اعظم (بیشترین آنفیر)
     if season_filter == "all":
-      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_unfair) DESC LIMIT 1")
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_unfair) DESC, COUNT(*) ASC LIMIT 1")
     else:
-      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_unfair) DESC LIMIT 1", (int(season_filter),))
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_unfair) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
     top_unfair = c.fetchone()
     if top_unfair and top_unfair[0] == name and unfairs > 0:
       earned_titles.append("🐍 **پیتون اعظم** (بیشترین آنفیر)")
 
     # ۴. کفتار تنها (بیشترین آرتین)
     if season_filter == "all":
-      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_artin) DESC LIMIT 1")
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_artin) DESC, COUNT(*) ASC LIMIT 1")
     else:
-      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_artin) DESC LIMIT 1", (int(season_filter),))
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_artin) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
     top_artin = c.fetchone()
     if top_artin and top_artin[0] == name and artins > 0:
       earned_titles.append("🐺 **کفتار تنها** (بیشترین آرتین)")
 
-    # ۵. کابوس مافیا (برترین شات‌شده شب اول)
+    # ۵. اتحاد آهنین (بهترین هم‌تیمی‌ها)
+    if season_filter == "all":
+      c.execute("""
+            SELECT p1.player_name, p2.player_name 
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC LIMIT 1
+      """)
+    else:
+      c.execute("""
+            SELECT p1.player_name, p2.player_name 
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1 AND m.season = ?
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC LIMIT 1
+      """, (int(season_filter),))
+    top_pair = c.fetchone()
+    if top_pair and name in top_pair:
+      earned_titles.append("🤝 **اتحاد آهنین** (بهترین جفت هم‌تیمی)")
+
+    # ۶. ماشین کشتار (بهترین استریک)
+    if season_filter == "all":
+      c.execute("SELECT p.player_name, p.won, m.created_at FROM match_participants p JOIN match_history m ON p.match_id = m.match_id ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC")
+      all_recs = c.fetchall()
+      p_streaks = {}
+      for p_n, w_val, _ in all_recs:
+        if p_n not in p_streaks:
+          p_streaks[p_n] = {"best": 0, "curr": 0, "wins": 0}
+        p_streaks[p_n]["wins"] += (1 if w_val == 1 else 0)
+        if w_val == 1:
+          p_streaks[p_n]["curr"] += 1
+          if p_streaks[p_n]["curr"] > p_streaks[p_n]["best"]:
+            p_streaks[p_n]["best"] = p_streaks[p_n]["curr"]
+        else:
+          p_streaks[p_n]["curr"] = 0
+      sorted_str = sorted(p_streaks.items(), key=lambda x: (x[1]["best"], x[1]["wins"]), reverse=True)
+      if sorted_str and sorted_str[0][0] == name and sorted_str[0][1]["best"] > 0:
+        earned_titles.append("⚔️ **ماشین کشتار** (بیشترین استریک برد پیاپی)")
+    else:
+      s_int = int(season_filter)
+      cur_season = get_current_season()
+      if s_int == cur_season:
+        c.execute("SELECT name FROM players WHERE best_streak > 0 ORDER BY best_streak DESC, wins DESC LIMIT 1")
+        top_strk = c.fetchone()
+        if top_strk and top_strk[0] == name and best_streak > 0:
+          earned_titles.append("⚔️ **ماشین کشتار** (بیشترین استریک برد پیاپی)")
+      else:
+        c.execute("SELECT p.player_name, p.won, m.created_at FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC", (s_int,))
+        s_recs = c.fetchall()
+        s_streaks = {}
+        for p_n, w_val, _ in s_recs:
+          if p_n not in s_streaks:
+            s_streaks[p_n] = {"best": 0, "curr": 0, "wins": 0}
+          s_streaks[p_n]["wins"] += (1 if w_val == 1 else 0)
+          if w_val == 1:
+            s_streaks[p_n]["curr"] += 1
+            if s_streaks[p_n]["curr"] > s_streaks[p_n]["best"]:
+              s_streaks[p_n]["best"] = s_streaks[p_n]["curr"]
+          else:
+            s_streaks[p_n]["curr"] = 0
+        sorted_s = sorted(s_streaks.items(), key=lambda x: (x[1]["best"], x[1]["wins"]), reverse=True)
+        if sorted_s and sorted_s[0][0] == name and sorted_s[0][1]["best"] > 0:
+          earned_titles.append("⚔️ **ماشین کشتار** (بیشترین استریک برد پیاپی)")
+
+    # ۷. کابوس مافیا (برترین شات‌شده شب اول)
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(night1_shot) DESC LIMIT 1")
     else:
