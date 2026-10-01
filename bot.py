@@ -521,7 +521,10 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول تالار بست‌پلیرها: ⚡ **ترس واقعی**\n"
       "▫️ نفر اول جدول تبر طلایی: 🐻 **خاله خرسه**\n"
       "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
-      "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n\n"
+      "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
+      "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
+      "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
+      "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
       "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
       "📌 **قوانین و شرایط خاص یارفروشی و خودزنی:**\n"
@@ -676,7 +679,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "      - بار دوم: سلب حق رأی\n"
           "      - بار سوم: خروج انضباطی\n"
           "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد)؛ در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
-          "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
+          "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
           "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
@@ -1232,15 +1235,16 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
 
   for i, r in enumerate(page_rows, start=start_idx + 1):
     medal = "🥇" if i == 1 else ("🥈" if i == 2 else ("🥉" if i == 3 else f"`#{i:02d}`"))
+    title_badge = " ⟨ 🤝 **اتحاد آهنین** ⟩" if i == 1 else ""
     text += (
-        f"{medal} **{r[0]}** 🤝 **{r[1]}**\n"
+        f"{medal} **{r[0]}** 🤝 **{r[1]}**{title_badge}\n"
         f"   ▫️ بردهای مشترک: `{r[2]}` پیروزی\n"
         f"────────────────────\n"
     )
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅️️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
   if page < total_pages:
     nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"teammates_page:{season_filter}:{page + 1}"))
 
@@ -1450,7 +1454,7 @@ async def ask_advanced_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "⭐ **رده‌‌بندی پیشرفته (ارزش برد و عملکرد تیمی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+      "⭐ **رده‌بندی پیشرفته (ارزش برد و عملکرد تیمی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
   )
 
   if update.callback_query:
@@ -1995,7 +1999,7 @@ async def execute_finish_season(
       f" گردید!**\n\n"
       f"🚀 **فصل {next_season} رسماً آغاز شد!**\n"
       f"▫️ جدول بازیکنان برای فصل جدید صفر شد.\n"
-      f"▫️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
+      f"▫️️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
@@ -2240,7 +2244,7 @@ async def show_public_match_details(
       f" {', '.join(axes) if axes else 'ندارد'}\n"
       f"🐍 **پلیر آنفیر (Unfair):**\n▫️"
       f" {', '.join(unfairs) if unfairs else 'ندارد'}\n"
-      f"👑 **پلیر آرتین (Artin):**\n▫️️"
+      f"👑 **پلیر آرتین (Artin):**\n▫️"
       f" {', '.join(artins) if artins else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
@@ -3159,7 +3163,7 @@ async def render_table_page_filtered(
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
         f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
+        f"   ▫️️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
         f"────────────────────\n"
     )
 
@@ -3855,7 +3859,7 @@ async def show_vs_picker_second(
       )
   ])
   text = (
-      f"⚔️ مبارز اول: **{first_name}**\n\nحریف و مبارز **دوم** را انتخاب کنید:"
+      f"⚔️️ مبارز اول: **{first_name}**\n\nحریف و مبارز **دوم** را انتخاب کنید:"
   )
 
   try:
@@ -3990,11 +3994,11 @@ async def render_vs_comparison_filtered(
       f"▫️ 🟩 {name1}: `{r1}` ریتینگ {r1_crown}\n"
       f"▫️ 🟥 {name2}: `{r2}` ریتینگ {r2_crown}\n\n"
       f"🥊 **تاریخچه رویارویی مستقیم (ساید مخالف):**\n"
-      f"▫️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
+      f"▫️️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
-      f"▫️ بازی‌های هم‌‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
+      f"▫️️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
       f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
