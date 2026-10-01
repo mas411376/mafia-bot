@@ -353,9 +353,7 @@ def recalculate_all_players():
         unfair = m[4]
         artin = m[5]
         
-        # شکست امتیاز ندارد (0)، پیروزی 10 امتیاز
         game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-        
         if won:
           cur_streak += 1
           if cur_streak >= 3:
@@ -416,7 +414,6 @@ def recalculate_all_players():
     conn.commit()
 
 
-# اجرای بازمحاسبه امتیازات از ابتدا بلافاصله پس از راه‌اندازی یا به‌روزرسانی ربات
 recalculate_all_players()
 
 
@@ -478,7 +475,7 @@ async def post_init(application):
       BotCommand("axes", "جدول تبر طلایی 🪓"),
       BotCommand("unfair", "جدول نامرد طلایی (آنفیر) 🐍"),
       BotCommand("artin", "جدول آرتین طلایی (آرتین بازی) 👑"),
-      BotCommand("teammates", "رده‌بندی بهترین هم‌تیمی‌ها 👥"),
+      BotCommand("teammates", "رده‌‌بندی بهترین هم‌تیمی‌ها 👥"),
       BotCommand("streaks", "رده‌بندی بهترین استریک‌ها 🔥"),
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
@@ -512,14 +509,18 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   text = (
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
-      "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️ شکست در مسابقه: `۰` امتیاز\n"
-      "▫️️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
-      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
-      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
-      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
-      "⚖️️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
-      "▫️️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
+      "▫️ پیروزی در مسابقه: `+۱۰` امتیاز[cite: 3]\n"
+      "▫️ شکست در مسابقه: `۰` امتیاز[cite: 3]\n"
+      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش[cite: 3]\n"
+      "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه[cite: 3]\n"
+      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه[cite: 3]\n"
+      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه[cite: 3]\n\n"
+      "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
+      "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
+      "📌 **قوانین و شرایط خاص یارفروشی و خودزنی:**\n"
+      "▫️ اگر تصمیم یارفروشی یا خودزنی، **تصمیم کل تیم** باشد، جریمه برای همه اعضای تیم لحاظ می‌شود؛ در این حالت تیم با توجه به امتیاز برد و جریمه کسر شده، پاداش بسیار کمی از آن برد نصیبش خواهد شد.\n"
+      "▫️ اما اگر یارفروشی یا خودزنی **تصمیم فردی** باشد، جریمه صرفاً شامل حال همان فرد خواهد شد.\n"
+      "▫️ در نتیجه، یارفروشی اصلاً توصیه نمی‌شود، اما بازیکن می‌تواند با انجام این کار امتیاز برد را دریافت کند و حتی اگر روی نوار استریک برد باشد، با حفظ آن نوار امتیاز بیشتری کسب کند.\n\n"
       "🔥 **پاداش ویژه کمبو (StreaK Bonus):**\n"
       "▫️ کسب بردهای پیاپی (۳ برد و بیشتر): پاداش ویژه `+۲` امتیاز اضافی به ازای هر برد متوالی از برد سوم به بعد!\n\n"
       "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
@@ -637,7 +638,7 @@ async def show_rule_detail(update: Update, sec_num: str):
       "2": (
           "۲. **اخلاق، احترام و مسائل شخصی**\n\n"
           "🔹 **ادب و احترام:** استفاده از الفاظ رکیک، توهین‌آمیز و شوخی‌های نامناسب (حتی خطاب به دوستان صمیمی) اکیداً ممنوع است و تشخیص آن بر عهده گاد خواهد بود.\n\n"
-          "🔹 **سلسله‌مراتب جرایم انضباطی بی‌‌احترامی:**\n"
+          "🔹 **سلسله‌مراتب جرایم انضباطی بی‌احترامی:**\n"
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
           "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
@@ -652,7 +653,7 @@ async def show_rule_detail(update: Update, sec_num: str):
       ),
       "4": (
           "۴. **افشای نقش و سلامت بازی**\n\n"
-          "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌‌دلیل از بازی ممنوع است:\n"
+          "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌دلیل از بازی ممنوع است:\n"
           "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
@@ -671,7 +672,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
-          "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
+          "   ▫️️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
           "🔹 **اکت در دفاعیه:** هرگونه اکت دادن در فاز دفاعیه ممنوع بوده و موجب سلب حق رأی می‌شود (مگر در سناریوهایی با قانون اکت آزاد یا میتیک که کیک مستقیم دارد)."
       ),
       "6": (
@@ -681,7 +682,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
           "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
           "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
-          "   ▫️️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
+          "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
       )
   }
@@ -716,7 +717,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
       [InlineKeyboardButton("👑 جدول آرتین طلایی (آرتین بازی)", callback_data="ask_artin_season")],
       [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
-      [InlineKeyboardButton("🔥 رده‌‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
+      [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
       [InlineKeyboardButton("📈 نمودار پیشرفت بازیکنان", callback_data="open_chart_picker")],
@@ -1613,7 +1614,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1859,7 +1860,7 @@ async def show_analytics_report(update: Update):
     for idx, (f_name, count) in enumerate(all_time_stats, start=1):
       pct = round((count / all_time_total * 100), 1) if all_time_total > 0 else 0
       bar_len = int(round(pct / 10))
-      bar = "🟩" * bar_len + "▫️️" * (10 - bar_len)
+      bar = "🟩" * bar_len + "▫️" * (10 - bar_len)
       medal = (
           "🥇"
           if idx == 1
@@ -2211,10 +2212,10 @@ async def show_public_match_details(
 
   text += (
       f"\n🏙 **ساید شهروند:**\n▫️ {', '.join(cits) if cits else 'ثبت نشده'}\n\n"
-      f"🔪 **ساید مافیا:**\n▫️️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
+      f"🔪 **ساید مافیا:**\n▫️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
   )
   if inds:
-    text += f"\n🃏 **ساید مستقل:**\n▫️ {', '.join(inds)}\n"
+    text += f"\n🃏 **ساید مستقل:**\n▫️️ {', '.join(inds)}\n"
 
   text += (
       f"\n🎯 **شات شب اول توسط مافیا:**\n▫️ {n1_shot_player if n1_shot_player else 'ندارد'}\n"
@@ -2661,7 +2662,7 @@ async def show_remove_player_buttons(
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
 
-  text = "🗑 **روی نام بازیکنی که می‌‌خواهید از لیگ حذف شود کلیک کنید:**"
+  text = "🗑 **روی نام بازیکنی که می‌خواهید از لیگ حذف شود کلیک کنید:**"
   if update.message:
     await update.message.reply_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
@@ -3419,7 +3420,7 @@ async def ask_vs_season_choice(update: Update):
   for s_num in seasons:
     row.append(
         InlineKeyboardButton(
-            f"⚔️️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
+            f"⚔️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
         )
     )
     if len(row) == 2:
@@ -3672,7 +3673,7 @@ async def render_vs_comparison_filtered(
   r2_crown = "👑 " if r2 > r1 else ""
 
   text = (
-      f"⚔️️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
+      f"⚔️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
       f"🟩 **{name1}** VS 🟥 **{name2}**\n"
       f"🗓 **بازه مقایسه:** `{season_label}`\n\n"
       f"📊 **شاخص برتری قدرت:**\n"
@@ -4093,7 +4094,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"🔥 استریک فعلی: `{cur_streak}` برد | رکورد پیاپی: `{best_streak}`\n\n"
       f"🎭 **تخصص سایدها در این بازه:**\n"
       f"▫️ شهروند: {cit_games} بازی (برد: {cit_rate}%)\n"
-      f"▫️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
+      f"▫️️ مافیا: {maf_games} بازی (برد: {maf_rate}%)\n"
       f"▫️ مستقل: {ind_games} بازی (برد: {ind_rate}%)\n\n"
       f"🤝 بهترین هم‌تیمی: **{tm_text}**\n"
       f"⚔️ بدترین رقیب: **{nem_text}**"
@@ -5058,7 +5059,7 @@ async def refresh_multiselect_citizens(query, flow):
   
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
 
-  selected_str = ", ".join(selected) if selected else "هیچ‌‌کس انتخاب نشده"
+  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
   try:
     await query.edit_message_text(
         f"🏙 شهروندان تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
