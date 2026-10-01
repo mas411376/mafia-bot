@@ -158,19 +158,25 @@ def init_db():
             )
         """)
 
-    # بررسی و اضافه کردن ستون‌های جدید در صورت وجود دیتابیس قبلی
+    # بررسی و اضافه کردن امن ستون‌ها به جدول‌های موجود جهت حفظ اطلاعات قبلی
     c.execute("PRAGMA table_info(players)")
     pl_cols = [col[1] for col in c.fetchall()]
+    if "axe_count" not in pl_cols:
+      c.execute("ALTER TABLE players ADD COLUMN axe_count INTEGER DEFAULT 0")
     if "unfair_count" not in pl_cols:
       c.execute("ALTER TABLE players ADD COLUMN unfair_count INTEGER DEFAULT 0")
 
     c.execute("PRAGMA table_info(match_participants)")
     p_cols = [col[1] for col in c.fetchall()]
+    if "is_axe" not in p_cols:
+      c.execute("ALTER TABLE match_participants ADD COLUMN is_axe INTEGER DEFAULT 0")
     if "is_unfair" not in p_cols:
       c.execute("ALTER TABLE match_participants ADD COLUMN is_unfair INTEGER DEFAULT 0")
 
     c.execute("PRAGMA table_info(season_archives)")
     sa_cols = [col[1] for col in c.fetchall()]
+    if "axe_count" not in sa_cols:
+      c.execute("ALTER TABLE season_archives ADD COLUMN axe_count INTEGER DEFAULT 0")
     if "unfair_count" not in sa_cols:
       c.execute("ALTER TABLE season_archives ADD COLUMN unfair_count INTEGER DEFAULT 0")
 
@@ -423,7 +429,7 @@ async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYP
     
     if update.callback_query:
       try:
-        await update.callback_query.answer("⛔️️ ابتدا در کانال عضو شوید!", show_alert=True)
+        await update.callback_query.answer("⛔️ ابتدا در کانال عضو شوید!", show_alert=True)
         await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
       except Exception:
         pass
@@ -483,7 +489,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️️ شکست در مسابقه: `+۲` امتیاز\n"
+      "▫️ شکست در مسابقه: `+۲` امتیاز\n"
       "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
       "▫️ پلیر تبر بازی (برگزیده تبر): `-۲` امتیاز جریمه\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۲` امتیاز جریمه\n\n"
@@ -622,7 +628,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
-          "   ▫️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
+          "   ▫️️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
           "🔹 **کشف نقش غیرمجاز:** هر تلاشی برای کشف نقش‌ها در خارج از روند بازی باعث حذف فوری خواهد شد.\n\n"
           "🔹 **نقش شهروندی:** هرگونه نزدیک شدن به نقش شهروندی چه مستقیم چه غیر مستقیم، چه به خود فرد و چه به کس دیگری (به‌جز سناریوی مجاز که قبل بازی توسط گرداننده گفته می‌شود) ممنوع و منجر به خروج انضباطی خواهد شد."
       ),
@@ -675,12 +681,12 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   )
   keyboard = [
       [InlineKeyboardButton("👤 آمار بازیکنان", callback_data="open_stats_picker")],
-      [InlineKeyboardButton("🏆 جدول رده‌‌بندی لیگ", callback_data="ask_table_season")],
-      [InlineKeyboardButton("⭐ رده‌‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
+      [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
+      [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
       [InlineKeyboardButton("🌟 برترین بست پلیرهای بازی", callback_data="ask_bests_season")],
       [InlineKeyboardButton("🪓 جدول تبر طلایی (پلیر تبر)", callback_data="ask_axes_season")],
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
-      [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
+      [InlineKeyboardButton("👥 رده‌‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
       [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
@@ -1102,7 +1108,7 @@ async def ask_streaks_season_choice(update: Update):
     keyboard.append(row)
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-  text = "🔥 **رده‌بندی بهترین استریک‌ها (بیشترین بردهای پیاپی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+  text = "🔥 **رده‌‌بندی بهترین استریک‌ها (بیشترین بردهای پیاپی):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
 
   if update.callback_query:
     try:
@@ -1447,7 +1453,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1725,7 +1731,7 @@ async def prompt_finish_season(update: Update):
   cur_season = get_current_season()
   next_season = cur_season + 1
   text = (
-      f"⚠️ **آیا مطمئن هستید که می‌‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
+      f"⚠️ **آیا مطمئن هستید که می‌خواهید پرونده فصل {cur_season} را ببندید؟**\n\n"
       f"با این اقدام:\n"
       f"۱. تمام رتبه‌ها، امتیازات و ریتینگ‌های فعلی به عنوان **آرشیو جاودانه فصل"
       f" {cur_season}** ثبت و ذخیره می‌شوند.\n"
@@ -1813,7 +1819,7 @@ async def execute_finish_season(
       f"🏆 **پرونده فصل {cur_season} با موفقیت بسته شد و به آرشیو منتقل"
       f" گردید!**\n\n"
       f"🚀 **فصل {next_season} رسماً آغاز شد!**\n"
-      f"▫️️ جدول بازیکنان برای فصل جدید صفر شد.\n"
+      f"▫️ جدول بازیکنان برای فصل جدید صفر شد.\n"
       f"▫️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
@@ -1871,7 +1877,7 @@ async def process_join_user(
 
   except sqlite3.IntegrityError:
     msg = (
-        "ℹ️ شما قبلاً در لیگ عضو شده‌‌اید. برای تغییر نام از دستور `/rename`"
+        "ℹ️ شما قبلاً در لیگ عضو شده‌اید. برای تغییر نام از دستور `/rename`"
         " استفاده کنید."
     )
     if alert_func:
@@ -2775,7 +2781,7 @@ async def ask_table_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌‌بندی"
+      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌بندی"
       " انتخاب فرمایید:"
   )
 
@@ -2961,10 +2967,10 @@ async def render_table_page_filtered(
 
     text += (
         f"{medal} **{p['name']}**{crown}{streak_badge}\n"
-        f"   ▫️️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
+        f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
         f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}`\n"
+        f"   ▫️️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}`\n"
         f"────────────────────\n"
     )
 
@@ -3230,7 +3236,7 @@ async def ask_vs_season_choice(update: Update):
   for s_num in seasons:
     row.append(
         InlineKeyboardButton(
-            f"⚔️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
+            f"⚔️️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
         )
     )
     if len(row) == 2:
