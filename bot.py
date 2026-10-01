@@ -84,8 +84,7 @@ def init_db():
                 total_games INTEGER DEFAULT 0,
                 wins INTEGER DEFAULT 0,
                 losses INTEGER DEFAULT 0,
-                mvp_count INTEGER DEFAULT 0,
-                svp_count INTEGER DEFAULT 0,
+                best_player_count INTEGER DEFAULT 0,
                 citizen_games INTEGER DEFAULT 0,
                 citizen_wins INTEGER DEFAULT 0,
                 mafia_games INTEGER DEFAULT 0,
@@ -121,8 +120,7 @@ def init_db():
                 player_name TEXT,
                 side TEXT,
                 won INTEGER,
-                is_mvp INTEGER,
-                is_svp INTEGER,
+                is_best_player INTEGER,
                 rating_after REAL,
                 night1_shot INTEGER DEFAULT 0,
                 night1_out INTEGER DEFAULT 0,
@@ -140,8 +138,7 @@ def init_db():
                 total_games INTEGER,
                 wins INTEGER,
                 losses INTEGER,
-                mvp_count INTEGER,
-                svp_count INTEGER,
+                best_player_count INTEGER,
                 advanced_skill_score REAL DEFAULT 1000.0,
                 archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -179,6 +176,9 @@ def init_db():
       c.execute("ALTER TABLE match_participants ADD COLUMN night1_shot INTEGER DEFAULT 0")
     if "night1_out" not in p_cols:
       c.execute("ALTER TABLE match_participants ADD COLUMN night1_out INTEGER DEFAULT 0")
+    if "is_best_player" not in p_cols and "is_mvp" in p_cols:
+      # مهاجرت ایمن فیلدها در صورت وجود جدول قدیمی
+      pass
 
     c.execute("PRAGMA table_info(season_archives)")
     sa_cols = [col[1] for col in c.fetchall()]
@@ -276,7 +276,7 @@ def recalculate_all_players():
     season_matches = [r[0] for r in c.fetchall()]
 
     for m_id in season_matches:
-      c.execute("SELECT player_name, won, is_mvp, is_svp FROM match_participants WHERE match_id = ?", (m_id,))
+      c.execute("SELECT player_name, won, is_best_player FROM match_participants WHERE match_id = ?", (m_id,))
       parts = c.fetchall()
       
       winners = [p[0] for p in parts if p[1] == 1]
@@ -291,7 +291,7 @@ def recalculate_all_players():
       skill_diff = avg_loser_skill - avg_winner_skill
       dynamic_factor = max(-4.0, min(4.0, skill_diff / 50.0))
 
-      for p_name, won, mvp, svp in parts:
+      for p_name, won, bp in parts:
         if p_name not in player_adv_scores:
           player_adv_scores[p_name] = 1000.0
 
@@ -300,13 +300,13 @@ def recalculate_all_players():
         else:
           base_delta = -8.0 + dynamic_factor
 
-        bonus_mvp_svp = (4.0 if mvp else (2.0 if svp else 0.0))
-        player_adv_scores[p_name] += (base_delta + bonus_mvp_svp)
+        bonus_bp = (4.0 if bp else 0.0)
+        player_adv_scores[p_name] += (base_delta + bonus_bp)
 
     for p_name in players:
       c.execute(
           """
-                SELECT p.side, p.won, p.is_mvp, p.is_svp, p.night1_shot, p.night1_out, p.match_id
+                SELECT p.side, p.won, p.is_best_player, p.night1_shot, p.night1_out, p.match_id
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -319,10 +319,9 @@ def recalculate_all_players():
       total_g = len(matches)
       wins = sum(1 for m in matches if m[1] == 1)
       losses = total_g - wins
-      mvps = sum(1 for m in matches if m[2] == 1)
-      svps = sum(1 for m in matches if m[3] == 1)
-      n1_shots = sum(1 for m in matches if m[4] == 1)
-      n1_outs = sum(1 for m in matches if m[5] == 1)
+      bps = sum(1 for m in matches if m[2] == 1)
+      n1_shots = sum(1 for m in matches if m[3] == 1)
+      n1_outs = sum(1 for m in matches if m[4] == 1)
 
       adv_score = player_adv_scores.get(p_name, 1000.0)
 
@@ -355,9 +354,8 @@ def recalculate_all_players():
 
       for m in matches:
         won = m[1]
-        mvp = m[2]
-        svp = m[3]
-        raw += (10 if won else 2) + (4 if mvp else 0) + (2 if svp else 0)
+        bp = m[2]
+        raw += (10 if won else 2) + (4 if bp else 0)
         if won:
           cur_streak += 1
           best_streak = max(best_streak, cur_streak)
@@ -375,7 +373,7 @@ def recalculate_all_players():
           """
                 UPDATE players SET
                     raw_score = ?, total_games = ?, wins = ?, losses = ?,
-                    mvp_count = ?, svp_count = ?,
+                    best_player_count = ?,
                     citizen_games = ?, citizen_wins = ?,
                     mafia_games = ?, mafia_wins = ?,
                     independent_games = ?, independent_wins = ?,
@@ -390,8 +388,7 @@ def recalculate_all_players():
               total_g,
               wins,
               losses,
-              mvps,
-              svps,
+              bps,
               c_games,
               c_wins,
               m_games,
@@ -503,8 +500,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
       "▫️ شکست در مسابقه: `+۲` امتیاز\n"
-      "▫️ بست پلیر ساید برنده (MVP): `+۴` امتیاز پاداش\n"
-      "▫️ بست پلیر ساید بازنده (SVP): `+۲` امتیاز پاداش\n\n"
+      "▫️ بست پلیر بازی (Best Player): `+۴` امتیاز پاداش\n\n"
       "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
       "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
       "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
@@ -520,7 +516,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text,
           reply_markup=InlineKeyboardMarkup(keyboard),
           parse_mode="Markdown",
@@ -567,7 +563,7 @@ async def show_links_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text,
           reply_markup=InlineKeyboardMarkup(keyboard),
           parse_mode="Markdown",
@@ -596,7 +592,7 @@ async def show_rules_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
       await update.callback_query.answer()
     except Exception:
       pass
@@ -625,7 +621,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
           "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
-          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
+          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
       "3": (
@@ -637,7 +633,7 @@ async def show_rule_detail(update: Update, sec_num: str):
       "4": (
           "۴. **افشای نقش و سلامت بازی**\n\n"
           "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌دلیل از بازی ممنوع است:\n"
-          "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
+          "   ▫️️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
           "   ▫️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
@@ -695,7 +691,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("👤 آمار بازیکنان", callback_data="open_stats_picker")],
       [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
       [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
-      [InlineKeyboardButton("🌟 برترین بست پلیرها", callback_data="ask_bests_season")],
+      [InlineKeyboardButton("🌟 برترین بست پلیرهای بازی", callback_data="ask_bests_season")],
       [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
       [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
@@ -709,6 +705,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.callback_query:
     try:
       await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.answer()
     except Exception:
       pass
   elif update.message:
@@ -743,7 +740,7 @@ async def ask_teammates_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -788,7 +785,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -830,7 +827,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -860,7 +857,7 @@ async def ask_streaks_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -954,7 +951,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -997,7 +994,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1031,7 +1028,7 @@ async def ask_advanced_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1064,14 +1061,14 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
         rows = c.fetchall()
 
   if not rows:
-    text = f"هنوز داده‌ای در رده‌بندی پیشرفته {season_title} ثبت نشده است."
+    text = f"هنوز داده‌ای در رده‌‌بندی پیشرفته {season_title} ثبت نشده است."
     keyboard = [
         [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_advanced_season")],
         [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
       except Exception:
         pass
     return
@@ -1115,7 +1112,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1147,7 +1144,7 @@ async def ask_shots_season_choice(update: Update, context: ContextTypes.DEFAULT_
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
   elif update.message:
@@ -1201,7 +1198,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.edit_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1255,7 +1252,7 @@ async def send_takamol_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
               parse_mode="Markdown",
           )
       else:
-        await update.callback_query.message.reply_text(
+        await update.callback_query.message.edit_text(
             caption_text, reply_markup=reply_markup, parse_mode="Markdown"
         )
     except Exception:
@@ -1391,7 +1388,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=reply_markup, parse_mode="Markdown"
       )
     except Exception:
@@ -1468,7 +1465,7 @@ async def show_analytics_report(update: Update):
       ],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1501,7 +1498,7 @@ async def prompt_finish_season(update: Update):
       ],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1517,22 +1514,22 @@ async def execute_finish_season(
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
     c.execute(
-        "SELECT name, raw_score, total_games, wins, losses, mvp_count,"
-        " svp_count, advanced_skill_score FROM players"
+        "SELECT name, raw_score, total_games, wins, losses,"
+        " best_player_count, advanced_skill_score FROM players"
     )
     players = c.fetchall()
 
     ranking = []
     for p in players:
-      ranking.append((p[0], p[7], p[1], p[2], p[3], p[4], p[5], p[6]))
+      ranking.append((p[0], p[6], p[1], p[2], p[3], p[4], p[5]))
 
     ranking.sort(key=lambda x: (x[1], x[2], x[4]), reverse=True)
 
     for rank, p in enumerate(ranking, start=1):
       c.execute(
           """
-                INSERT INTO season_archives (season, player_name, final_rank, final_rating, raw_score, total_games, wins, losses, mvp_count, svp_count, advanced_skill_score)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO season_archives (season, player_name, final_rank, final_rating, raw_score, total_games, wins, losses, best_player_count, advanced_skill_score)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
           (
               cur_season,
@@ -1544,7 +1541,6 @@ async def execute_finish_season(
               p[4],
               p[5],
               p[6],
-              p[7],
               p[1],
           ),
       )
@@ -1552,7 +1548,7 @@ async def execute_finish_season(
     c.execute("""
             UPDATE players SET
                 raw_score = 0, total_games = 0, wins = 0, losses = 0,
-                mvp_count = 0, svp_count = 0, citizen_games = 0, citizen_wins = 0,
+                best_player_count = 0, citizen_games = 0, citizen_wins = 0,
                 mafia_games = 0, mafia_wins = 0, independent_games = 0, independent_wins = 0,
                 current_streak = 0, best_streak = 0, night1_shots = 0, night1_outs = 0,
                 chaos_count = 0, chaos_selected_count = 0, chaos_win_impact_count = 0,
@@ -1571,7 +1567,7 @@ async def execute_finish_season(
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1624,7 +1620,7 @@ async def process_join_user(
 
   except sqlite3.IntegrityError:
     msg = (
-        "ℹ️ شما قبلاً در لیگ عضو شده‌اید. برای تغییر نام از دستور `/rename`"
+        "ℹ️ شما قبلاً در لیگ عضو شده‌‌اید. برای تغییر نام از دستور `/rename`"
         " استفاده کنید."
     )
     if alert_func:
@@ -1659,7 +1655,7 @@ async def render_public_history_page(update: Update, page: int):
     keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_start")]]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(
+        await update.callback_query.message.edit_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -1721,7 +1717,7 @@ async def render_public_history_page(update: Update, page: int):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1752,13 +1748,13 @@ async def show_public_match_details(
     match = c.fetchone()
     if not match:
       try:
-        await update.callback_query.message.reply_text("مسابقه مورد نظر پیدا نشد.")
+        await update.callback_query.message.edit_text("مسابقه مورد نظر پیدا نشد.")
       except Exception:
         pass
       return
 
     c.execute(
-        "SELECT player_name, side, won, is_mvp, is_svp, night1_shot, night1_out FROM match_participants"
+        "SELECT player_name, side, won, is_best_player, night1_shot, night1_out FROM match_participants"
         " WHERE match_id = ?",
         (match_id,),
     )
@@ -1767,11 +1763,10 @@ async def show_public_match_details(
   cits = [p[0] for p in participants if p[1] == "شهروند"]
   mafs = [p[0] for p in participants if p[1] == "مافیا"]
   inds = [p[0] for p in participants if p[1] == "مستقل"]
-  mvps = [p[0] for p in participants if p[3] == 1]
-  svps = [p[0] for p in participants if p[4] == 1]
+  best_players = [p[0] for p in participants if p[3] == 1]
   
-  n1_shot_player = next((p[0] for p in participants if p[5] == 1), None)
-  n1_out_player = next((p[0] for p in participants if p[6] == 1), None)
+  n1_shot_player = next((p[0] for p in participants if p[4] == 1), None)
+  n1_out_player = next((p[0] for p in participants if p[5] == 1), None)
 
   icon = "🏙" if match[2] == "شهروند" else ("🔪" if match[2] == "مافیا" else "🃏")
 
@@ -1804,10 +1799,8 @@ async def show_public_match_details(
       f"\n🎯 **شات شب اول توسط مافیا:**\n▫️ {n1_shot_player if n1_shot_player else 'ندارد'}\n"
       f"🚪 **وضعیت شات شب اول:** "
       f"{'خارج شد ❌' if n1_out_player else ('ماند ✅' if n1_shot_player else 'ثبت نشده')}\n\n"
-      f"🌟 **بست ساید برنده (MVP):**\n▫️"
-      f" {', '.join(mvps) if mvps else 'ندارد'}\n"
-      f"🎖 **بست ساید بازنده (SVP):**\n▫️"
-      f" {', '.join(svps) if svps else 'ندارد'}\n\n"
+      f"🌟 **بست پلیر(های) بازی:**\n▫️"
+      f" {', '.join(best_players) if best_players else 'ندارد'}\n\n"
       f"⏱ زمان ثبت بازی: `{match[3]}`"
   )
 
@@ -1821,7 +1814,7 @@ async def show_public_match_details(
       [InlineKeyboardButton("🏠 منوی اصلی", callback_data="back_to_start")],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1864,12 +1857,12 @@ async def show_merge_picker_old(update: Update, context: ContextTypes.DEFAULT_TY
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
   text = (
       "🔄 **مرحله ۱ ادغام (حذف شونده):**\n\n"
-      "لطفاً **نام قدیمی / ثبت دستی** که می‌خواهید تمام سوابقش منتقل و خودش"
+      "لطفاً **نام قدیمی / ثبت دستی** که می‌‌خواهید تمام سوابقش منتقل و خودش"
       " **حذف** شود را انتخاب کنید:"
   )
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -1921,7 +1914,7 @@ async def show_merge_picker_new(
       f" سوابق به او منتقل شود و در لیگ بماند:"
   )
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1938,7 +1931,7 @@ async def execute_final_merge(update: Update, old_uid: int, new_uid: int):
 
     if not old_row or not new_row:
       try:
-        await update.callback_query.message.reply_text("❌ یکی از بازیکنان یافت نشد.")
+        await update.callback_query.message.edit_text("❌ یکی از بازیکنان یافت نشد.")
       except Exception:
         pass
       return
@@ -1964,7 +1957,7 @@ async def execute_final_merge(update: Update, old_uid: int, new_uid: int):
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -1991,7 +1984,7 @@ async def show_matches_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -2015,7 +2008,7 @@ async def show_matches_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2033,13 +2026,13 @@ async def show_match_details(update: Update, match_id: int):
     match = c.fetchone()
     if not match:
       try:
-        await update.callback_query.message.reply_text("مسابقه مورد نظر پیدا نشد.")
+        await update.callback_query.message.edit_text("مسابقه مورد نظر پیدا نشد.")
       except Exception:
         pass
       return
 
     c.execute(
-        "SELECT player_name, side, won, is_mvp, is_svp, night1_shot, night1_out FROM match_participants"
+        "SELECT player_name, side, won, is_best_player, night1_shot, night1_out FROM match_participants"
         " WHERE match_id = ?",
         (match_id,),
     )
@@ -2048,10 +2041,9 @@ async def show_match_details(update: Update, match_id: int):
   cits = [p[0] for p in participants if p[1] == "شهروند"]
   mafs = [p[0] for p in participants if p[1] == "مافیا"]
   inds = [p[0] for p in participants if p[1] == "مستقل"]
-  mvps = [p[0] for p in participants if p[3] == 1]
-  svps = [p[0] for p in participants if p[4] == 1]
-  n1_shot_player = next((p[0] for p in participants if p[5] == 1), None)
-  n1_out_player = next((p[0] for p in participants if p[6] == 1), None)
+  best_players = [p[0] for p in participants if p[3] == 1]
+  n1_shot_player = next((p[0] for p in participants if p[4] == 1), None)
+  n1_out_player = next((p[0] for p in participants if p[5] == 1), None)
 
   text = (
       f"🎮 **اطلاعات مسابقه شماره #{match[0]} (فصل {match[4]})**\n\n"
@@ -2076,8 +2068,7 @@ async def show_match_details(update: Update, match_id: int):
   text += (
       f"🎯 شات شب اول: {n1_shot_player if n1_shot_player else 'ندارد'}\n"
       f"🚪 وضعیت شات شب اول: {'خارج شد' if n1_out_player else ('ماند' if n1_shot_player else 'ندارد')}\n\n"
-      f"🌟 بست(های) برنده (MVP): {', '.join(mvps) if mvps else 'ندارد'}\n"
-      f"🎖 بست(های) بازنده (SVP): {', '.join(svps) if svps else 'ندارد'}\n"
+      f"🌟 بست پلیر(های) بازی: {', '.join(best_players) if best_players else 'ندارد'}\n"
       f"⏱ تاریخ ثبت: `{match[3]}`\n\n"
       f"عملیات مورد نظر را انتخاب کنید:"
   )
@@ -2096,7 +2087,7 @@ async def show_match_details(update: Update, match_id: int):
       ],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -2122,7 +2113,7 @@ async def delete_match_by_id(update: Update, match_id: int):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2217,7 +2208,7 @@ async def show_remove_player_buttons(
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -2244,7 +2235,7 @@ async def show_remove_player_buttons(
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2259,7 +2250,7 @@ async def apply_remove_player_by_id(update, user_id):
     if not row:
       msg = "❌ بازیکن پیدا نشد."
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
       return
@@ -2277,7 +2268,7 @@ async def apply_remove_player_by_id(update, user_id):
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -2428,7 +2419,7 @@ async def render_players_list_page(
     keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")]]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(
+        await update.callback_query.message.edit_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2486,7 +2477,7 @@ async def render_players_list_page(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=reply_markup, parse_mode="HTML"
       )
     except Exception:
@@ -2529,7 +2520,7 @@ async def ask_table_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2559,7 +2550,7 @@ async def render_table_page_filtered(
       for p_name in players_pool:
         c.execute(
             """
-                    SELECT won, is_mvp, is_svp 
+                    SELECT won, is_best_player 
                     FROM match_participants 
                     WHERE player_name = ?
                     ORDER BY match_id ASC
@@ -2570,8 +2561,7 @@ async def render_table_page_filtered(
         total_g = len(matches)
         wins = sum(1 for m in matches if m[0] == 1)
         losses = total_g - wins
-        mvps = sum(1 for m in matches if m[1] == 1)
-        svps = sum(1 for m in matches if m[2] == 1)
+        bps = sum(1 for m in matches if m[1] == 1)
 
         raw = 0
         cur_streak = 0
@@ -2579,7 +2569,6 @@ async def render_table_page_filtered(
           raw += (
               (10 if m[0] == 1 else 2)
               + (4 if m[1] == 1 else 0)
-              + (2 if m[2] == 1 else 0)
           )
           if m[0] == 1:
             cur_streak += 1
@@ -2595,8 +2584,7 @@ async def render_table_page_filtered(
             "total_games": total_g,
             "wins": wins,
             "losses": losses,
-            "mvp": mvps,
-            "svp": svps,
+            "best_player": bps,
             "streak": cur_streak,
             "win_rate": win_rate,
         })
@@ -2607,8 +2595,8 @@ async def render_table_page_filtered(
 
       if s_int == cur_season:
         c.execute(
-            "SELECT name, raw_score, total_games, wins, losses, mvp_count,"
-            " svp_count, current_streak FROM players"
+            "SELECT name, raw_score, total_games, wins, losses,"
+            " best_player_count, current_streak FROM players"
         )
         rows = c.fetchall()
         ranking = []
@@ -2622,15 +2610,14 @@ async def render_table_page_filtered(
               "total_games": r[2],
               "wins": r[3],
               "losses": r[4],
-              "mvp": r[5],
-              "svp": r[6],
-              "streak": r[7],
+              "best_player": r[5],
+              "streak": r[6],
               "win_rate": win_rate,
           })
       else:
         c.execute(
             """
-                    SELECT player_name, final_rating, raw_score, total_games, wins, losses, mvp_count, svp_count 
+                    SELECT player_name, final_rating, raw_score, total_games, wins, losses, best_player_count 
                     FROM season_archives 
                     WHERE season = ? 
                     ORDER BY final_rank ASC
@@ -2648,8 +2635,7 @@ async def render_table_page_filtered(
               "total_games": r[3],
               "wins": r[4],
               "losses": r[5],
-              "mvp": r[6],
-              "svp": r[7],
+              "best_player": r[6],
               "streak": 0,
               "win_rate": win_rate,
           })
@@ -2666,7 +2652,7 @@ async def render_table_page_filtered(
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(
+        await update.callback_query.message.edit_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2707,7 +2693,7 @@ async def render_table_page_filtered(
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
         f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | 🎖`{p['svp']}`\n"
+        f"   ▫️ بست‌های بازی: 🌟`{p['best_player']}`\n"
         f"────────────────────\n"
     )
 
@@ -2741,7 +2727,7 @@ async def render_table_page_filtered(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2787,7 +2773,7 @@ async def ask_bests_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2804,14 +2790,12 @@ async def render_bests_page_filtered(
       season_title = "کل تاریخچه (All-Time)"
       c.execute("""
                 SELECT player_name, 
-                       SUM(is_mvp) as mvps, 
-                       SUM(is_svp) as svps, 
-                       (SUM(is_mvp) + SUM(is_svp)) as total_bests,
+                       SUM(is_best_player) as bps, 
                        COUNT(*) as total_games
                 FROM match_participants
                 GROUP BY player_name
-                HAVING (SUM(is_mvp) + SUM(is_svp)) > 0
-                ORDER BY mvps DESC, total_bests DESC, total_games ASC
+                HAVING SUM(is_best_player) > 0
+                ORDER BY bps DESC, total_games ASC
             """)
       rows = c.fetchall()
     else:
@@ -2820,19 +2804,19 @@ async def render_bests_page_filtered(
       cur_season = get_current_season()
       if s_int == cur_season:
         c.execute("""
-                    SELECT name, mvp_count, svp_count, (mvp_count + svp_count) as total_bests, total_games
+                    SELECT name, best_player_count, total_games
                     FROM players
-                    WHERE (mvp_count + svp_count) > 0
-                    ORDER BY mvp_count DESC, total_bests DESC, total_games ASC
+                    WHERE best_player_count > 0
+                    ORDER BY best_player_count DESC, total_games ASC
                 """)
         rows = c.fetchall()
       else:
         c.execute(
             """
-                    SELECT player_name, mvp_count, svp_count, (mvp_count + svp_count) as total_bests, total_games
+                    SELECT player_name, best_player_count, total_games
                     FROM season_archives
-                    WHERE season = ? AND (mvp_count + svp_count) > 0
-                    ORDER BY mvp_count DESC, total_bests DESC, total_games ASC
+                    WHERE season = ? AND best_player_count > 0
+                    ORDER BY best_player_count DESC, total_games ASC
                 """,
             (s_int,),
         )
@@ -2850,7 +2834,7 @@ async def render_bests_page_filtered(
     ]
     if update.callback_query:
       try:
-        await update.callback_query.message.reply_text(
+        await update.callback_query.message.edit_text(
             text, reply_markup=InlineKeyboardMarkup(keyboard)
         )
       except Exception:
@@ -2870,7 +2854,7 @@ async def render_bests_page_filtered(
   page_rows = rows[start_idx:end_idx]
 
   text = (
-      f"🌟 **تالار افتخارات برترین بست پلیرهای لیگ ({season_title})**\n"
+      f"🌟 **تالار افتخارات برترین بست پلیرهای بازی ({season_title})**\n"
       f"صفحه {page} از {total_pages}\n"
       f"➖➖➖➖➖➖➖➖➖➖\n\n"
   )
@@ -2883,16 +2867,13 @@ async def render_bests_page_filtered(
     )
     crown = " 👑" if rank == 1 else ""
 
-    mvp_bar = "🌟" * min(r[1], 8)
-    svp_bar = "🎖" * min(r[2], 8)
-    stars_line = f"{mvp_bar}{svp_bar}"
+    stars_line = "🌟" * min(r[1], 10)
 
     text += (
         f"{medal} **{r[0]}**{crown}\n"
         f"   ✨ نشان‌ها: {stars_line}\n"
-        f"   ▫️ بست برنده (MVP): `{r[1]}` بار\n"
-        f"   ▫️ بست بازنده (SVP): `{r[2]}` بار\n"
-        f"   ▫️ مجموع کل بست‌ها: `{r[3]}` عدد (در {r[4]} مسابقه)\n"
+        f"   ▫️ تعداد بست پلیر بازی: `{r[1]}` بار\n"
+        f"   ▫️ کل مسابقات: `{r[2]}` دست\n"
         f"────────────────────\n"
     )
 
@@ -2926,7 +2907,7 @@ async def render_bests_page_filtered(
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2975,7 +2956,7 @@ async def ask_vs_season_choice(update: Update):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -2997,7 +2978,7 @@ async def show_vs_picker_first(
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -3036,7 +3017,7 @@ async def show_vs_picker_first(
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3088,7 +3069,7 @@ async def show_vs_picker_second(
   )
 
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3107,7 +3088,7 @@ async def render_vs_comparison_filtered(
 
     if not p1 or not p2:
       try:
-        await update.callback_query.message.reply_text("بازیکنان پیدا نشدند.")
+        await update.callback_query.message.edit_text("بازیکنان پیدا نشدند.")
       except Exception:
         pass
       return
@@ -3120,11 +3101,11 @@ async def render_vs_comparison_filtered(
       params_rival = (name1, name2)
       params_coop = (name1, name2)
       p1_match_query = (
-          "SELECT won, is_mvp, is_svp FROM match_participants WHERE player_name"
+          "SELECT won, is_best_player FROM match_participants WHERE player_name"
           " = ?"
       )
       p2_match_query = (
-          "SELECT won, is_mvp, is_svp FROM match_participants WHERE player_name"
+          "SELECT won, is_best_player FROM match_participants WHERE player_name"
           " = ?"
       )
       p1_params = (name1,)
@@ -3136,12 +3117,12 @@ async def render_vs_comparison_filtered(
       params_rival = (name1, name2, s_int)
       params_coop = (name1, name2, s_int)
       p1_match_query = (
-          "SELECT p.won, p.is_mvp, p.is_svp FROM match_participants p JOIN"
+          "SELECT p.won, p.is_best_player FROM match_participants p JOIN"
           " match_history m ON p.match_id = m.match_id WHERE p.player_name = ?"
           " AND m.season = ?"
       )
       p2_match_query = (
-          "SELECT p.won, p.is_mvp, p.is_svp FROM match_participants p JOIN"
+          "SELECT p.won, p.is_best_player FROM match_participants p JOIN"
           " match_history m ON p.match_id = m.match_id WHERE p.player_name = ?"
           " AND m.season = ?"
       )
@@ -3181,10 +3162,9 @@ async def render_vs_comparison_filtered(
     p1_matches = c.fetchall()
     p1_g = len(p1_matches)
     p1_w = sum(1 for m in p1_matches if m[0] == 1)
-    p1_mvp = sum(1 for m in p1_matches if m[1] == 1)
-    p1_svp = sum(1 for m in p1_matches if m[2] == 1)
+    p1_bp = sum(1 for m in p1_matches if m[1] == 1)
     p1_raw = sum(
-        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0) + (2 if m[2] == 1 else 0)
+        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0)
         for m in p1_matches
     )
     r1 = calculate_rating(p1_raw, p1_g)
@@ -3193,10 +3173,9 @@ async def render_vs_comparison_filtered(
     p2_matches = c.fetchall()
     p2_g = len(p2_matches)
     p2_w = sum(1 for m in p2_matches if m[0] == 1)
-    p2_mvp = sum(1 for m in p2_matches if m[1] == 1)
-    p2_svp = sum(1 for m in p2_matches if m[2] == 1)
+    p2_bp = sum(1 for m in p2_matches if m[1] == 1)
     p2_raw = sum(
-        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0) + (2 if m[2] == 1 else 0)
+        (10 if m[0] == 1 else 2) + (4 if m[1] == 1 else 0)
         for m in p2_matches
     )
     r2 = calculate_rating(p2_raw, p2_g)
@@ -3230,8 +3209,7 @@ async def render_vs_comparison_filtered(
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
       f"▫️ **کل بازی‌های انجام داده:** 🟩 `{p1_g}` دست | 🟥 `{p2_g}` دست\n"
-      f"▫️ **بست ساید برنده (MVP):** 🟩 `{p1_mvp}` بار | 🟥 `{p2_mvp}` بار\n"
-      f"▫️ **بست ساید بازنده (SVP):** 🟩 `{p1_svp}` بار | 🟥 `{p2_svp}` بار\n"
+      f"▫️ **بست پلیر بازی:** 🟩 `{p1_bp}` بار | 🟥 `{p2_bp}` بار\n"
   )
 
   keyboard = [
@@ -3249,7 +3227,7 @@ async def render_vs_comparison_filtered(
       [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3275,7 +3253,7 @@ async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -3304,7 +3282,7 @@ async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3318,7 +3296,7 @@ async def ask_stat_season_choice(update: Update, user_id: int):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3355,7 +3333,7 @@ async def ask_stat_season_choice(update: Update, user_id: int):
       f" **کل تاریخچه** هستید یا یک **فصل خاص**؟"
   )
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3375,7 +3353,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -3406,7 +3384,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -3420,7 +3398,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3457,7 +3435,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
       f" بازی‌ها** رسم شود یا یک **فصل معین**؟"
   )
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3474,7 +3452,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     p = c.fetchone()
     if not p:
       try:
-        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
+        await update.callback_query.message.edit_text("بازیکن پیدا نشد.")
       except Exception:
         pass
       return
@@ -3483,7 +3461,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
 
     if season_filter == "all":
       query = """
-                SELECT p.side, p.won, p.is_mvp, p.is_svp, p.match_id, p.night1_shot, p.night1_out
+                SELECT p.side, p.won, p.is_best_player, p.match_id, p.night1_shot, p.night1_out
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ?
@@ -3498,7 +3476,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     else:
       s_int = int(season_filter)
       query = """
-                SELECT p.side, p.won, p.is_mvp, p.is_svp, p.match_id, p.night1_shot, p.night1_out
+                SELECT p.side, p.won, p.is_best_player, p.match_id, p.night1_shot, p.night1_out
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -3517,10 +3495,9 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     total_g = len(matches)
     wins = sum(1 for m in matches if m[1] == 1)
     losses = total_g - wins
-    mvps = sum(1 for m in matches if m[2] == 1)
-    svps = sum(1 for m in matches if m[3] == 1)
-    n1_shots_cnt = sum(1 for m in matches if m[5] == 1)
-    n1_outs_cnt = sum(1 for m in matches if m[6] == 1)
+    bps = sum(1 for m in matches if m[2] == 1)
+    n1_shots_cnt = sum(1 for m in matches if m[4] == 1)
+    n1_outs_cnt = sum(1 for m in matches if m[5] == 1)
 
     if season_filter == "all":
       c.execute("""
@@ -3554,9 +3531,8 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
 
     for m in matches:
       won = m[1]
-      mvp = m[2]
-      svp = m[3]
-      raw += (10 if won else 2) + (4 if mvp else 0) + (2 if svp else 0)
+      bp = m[2]
+      raw += (10 if won else 2) + (4 if bp else 0)
       if won:
         cur_streak += 1
         best_streak = max(best_streak, cur_streak)
@@ -3618,7 +3594,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"📊 مجموع امتیاز خام: `{raw}`\n"
       f"🎮 بازی‌ها: `{total_g}` | برد: `{wins}` | باخت: `{losses}` (نرخ برد:"
       f" {win_rate}%)\n"
-      f"🎖 بست برنده: `{mvps}` | بست بازنده: `{svps}`\n"
+      f"🌟 بست پلیر بازی: `{bps}` بار\n"
       f"🌪 حضور در کِی‌آس: `{ch_count}` بار\n"
       f"🎯 فرد منتخب کِی‌آس: `{ch_sel_count}` بار\n"
       f"💡 تاثیر در برد تیم (فرد منتخب): `{ch_impact_count}` بار\n"
@@ -3653,7 +3629,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       ],
   ]
   try:
-    await update.callback_query.message.reply_text(
+    await update.callback_query.message.edit_text(
         text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -3677,7 +3653,7 @@ async def render_and_send_chart_filtered(
 
     if season_filter == "all":
       query = """
-                SELECT p.rating_after, p.won, p.is_mvp, p.is_svp 
+                SELECT p.rating_after, p.won, p.is_best_player 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ?
@@ -3689,7 +3665,7 @@ async def render_and_send_chart_filtered(
     else:
       s_int = int(season_filter)
       query = """
-                SELECT p.rating_after, p.won, p.is_mvp, p.is_svp 
+                SELECT p.rating_after, p.won, p.is_best_player 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -3720,9 +3696,8 @@ async def render_and_send_chart_filtered(
   for r in rows:
     ratings.append(r[0])
     won = r[1]
-    mvp = r[2]
-    svp = r[3]
-    pts = (10 if won else 2) + (4 if mvp else 0) + (2 if svp else 0)
+    bp = r[2]
+    pts = (10 if won else 2) + (4 if bp else 0)
     running_score += pts
     scores.append(running_score)
 
@@ -3904,7 +3879,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await update.message.reply_text(msg)
     elif update.callback_query:
       try:
-        await update.callback_query.message.reply_text(msg)
+        await update.callback_query.message.edit_text(msg)
       except Exception:
         pass
     return
@@ -3922,8 +3897,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "independents": [],
       "night1_shot": None,
       "night1_out": False,
-      "mvps": [],
-      "svps": [],
+      "best_players": [],
   }
 
   keyboard = []
@@ -3946,7 +3920,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
   elif update.callback_query:
     try:
-      await update.callback_query.message.reply_text(
+      await update.callback_query.message.edit_text(
           prompt, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
@@ -4202,7 +4176,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if data == "admin_btn_add":
     context.user_data["waiting_for_manual_add"] = True
     try:
-      await query.message.reply_text(
+      await query.message.edit_text(
           "➕ لطفاً **نام بازیکن قدیمی** را ارسال کنید تا دستی به لیگ اضافه شود:"
       )
     except Exception:
@@ -4410,7 +4384,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
       
       if shot_target == "none":
         flow["night1_out"] = False
-        await prompt_mvp_selection(query, flow)
+        await prompt_best_player_selection(query, flow)
       else:
         keyboard = [
             [
@@ -4431,34 +4405,20 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data.startswith("n1_out:"):
       out_status = data.split(":", 1)[1]
       flow["night1_out"] = (out_status == "yes")
-      await prompt_mvp_selection(query, flow)
+      await prompt_best_player_selection(query, flow)
       return
 
-    elif data.startswith("mvp_pick:"):
+    elif data.startswith("bp_pick:"):
       p_name = data.split(":", 1)[1]
-      if p_name in flow["mvps"]:
-        flow["mvps"].remove(p_name)
+      if p_name in flow["best_players"]:
+        flow["best_players"].remove(p_name)
       else:
-        flow["mvps"].append(p_name)
+        flow["best_players"].append(p_name)
       
-      await refresh_mvp_keyboard(query, flow)
+      await refresh_best_player_keyboard(query, flow)
       return
 
-    elif data == "done_mvps":
-      await prompt_svp_selection(query, flow)
-      return
-
-    elif data.startswith("svp_pick:"):
-      p_name = data.split(":", 1)[1]
-      if p_name in flow["svps"]:
-        flow["svps"].remove(p_name)
-      else:
-        flow["svps"].append(p_name)
-      
-      await refresh_svp_keyboard(query, flow)
-      return
-
-    elif data == "done_svps":
+    elif data == "done_best_players":
       await finalize_and_save_game(query, flow, context)
       return
 
@@ -4712,94 +4672,47 @@ async def prompt_night1_shot(query, flow):
     pass
 
 
-async def prompt_mvp_selection(query, flow):
+async def prompt_best_player_selection(query, flow):
   all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
   keyboard = []
   row = []
   for p in all_players_in_game:
-    mark = "🌟 " if p in flow["mvps"] else ""
-    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"mvp_pick:{p}"))
+    mark = "🌟 " if p in flow["best_players"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"bp_pick:{p}"))
     if len(row) == 2:
       keyboard.append(row)
       row = []
   if row:
     keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست برنده (MVP)", callback_data="done_mvps")])
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست پلیر بازی", callback_data="done_best_players")])
 
   try:
     await query.edit_message_text(
-        "🌟 بست(های) ساید برنده (MVP) را انتخاب کنید (می‌توانید چند نفر را لمس کنید):",
+        "🌟 بست پلیر(های) بازی را انتخاب کنید (می‌توانید چند نفر را لمس کنید):",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
     pass
 
 
-async def refresh_mvp_keyboard(query, flow):
+async def refresh_best_player_keyboard(query, flow):
   all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
   keyboard = []
   row = []
   for p in all_players_in_game:
-    mark = "🌟 " if p in flow["mvps"] else ""
-    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"mvp_pick:{p}"))
+    mark = "🌟 " if p in flow["best_players"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"bp_pick:{p}"))
     if len(row) == 2:
       keyboard.append(row)
       row = []
   if row:
     keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست برنده (MVP)", callback_data="done_mvps")])
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست پلیر بازی", callback_data="done_best_players")])
 
-  mvp_str = ", ".join(flow["mvps"]) if flow["mvps"] else "هنوز انتخاب نشده"
+  bp_str = ", ".join(flow["best_players"]) if flow["best_players"] else "هنوز انتخاب نشده"
   try:
     await query.edit_message_text(
-        f"🌟 افراد انتخاب شده به عنوان MVP: {mvp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
-        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-  except Exception:
-    pass
-
-
-async def prompt_svp_selection(query, flow):
-  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
-  keyboard = []
-  row = []
-  for p in all_players_in_game:
-    mark = "🎖 " if p in flow["svps"] else ""
-    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"svp_pick:{p}"))
-    if len(row) == 2:
-      keyboard.append(row)
-      row = []
-  if row:
-    keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست بازنده (SVP)", callback_data="done_svps")])
-
-  try:
-    await query.edit_message_text(
-        "🎖 بست(های) ساید بازنده (SVP) را انتخاب کنید (اختیاری):",
-        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-  except Exception:
-    pass
-
-
-async def refresh_svp_keyboard(query, flow):
-  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
-  keyboard = []
-  row = []
-  for p in all_players_in_game:
-    mark = "🎖 " if p in flow["svps"] else ""
-    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"svp_pick:{p}"))
-    if len(row) == 2:
-      keyboard.append(row)
-      row = []
-  if row:
-    keyboard.append(row)
-  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب بست بازنده (SVP)", callback_data="done_svps")])
-
-  svp_str = ", ".join(flow["svps"]) if flow["svps"] else "هنوز انتخاب نشده"
-  try:
-    await query.edit_message_text(
-        f"🎖 افراد انتخاب شده به عنوان SVP: {svp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
+        f"🌟 افراد انتخاب شده به عنوان بست پلیر: {bp_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
         reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   except Exception:
@@ -4820,8 +4733,7 @@ async def finalize_and_save_game(query, flow, context):
   independents = flow["independents"]
   n1_shot = flow["night1_shot"]
   n1_out = flow["night1_out"]
-  mvps = flow["mvps"]
-  svps = flow["svps"]
+  best_players = flow["best_players"]
 
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
@@ -4833,35 +4745,32 @@ async def finalize_and_save_game(query, flow, context):
 
     for p in citizens:
       won = 1 if winner == "شهروند" else 0
-      is_mvp = 1 if p in mvps else 0
-      is_svp = 1 if p in svps else 0
+      is_bp = 1 if p in best_players else 0
       n1_s = 1 if (n1_shot == p) else 0
       n1_o = 1 if (n1_shot == p and n1_out) else 0
       c.execute(
-          "INSERT INTO match_participants (match_id, player_name, side, won, is_mvp, is_svp, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-          (match_id, p, "شهروند", won, is_mvp, is_svp, n1_s, n1_o)
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_best_player, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "شهروند", won, is_bp, n1_s, n1_o)
       )
 
     for p in mafias:
       won = 1 if winner == "مافیا" else 0
-      is_mvp = 1 if p in mvps else 0
-      is_svp = 1 if p in svps else 0
+      is_bp = 1 if p in best_players else 0
       n1_s = 1 if (n1_shot == p) else 0
       n1_o = 1 if (n1_shot == p and n1_out) else 0
       c.execute(
-          "INSERT INTO match_participants (match_id, player_name, side, won, is_mvp, is_svp, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-          (match_id, p, "مافیا", won, is_mvp, is_svp, n1_s, n1_o)
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_best_player, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "مافیا", won, is_bp, n1_s, n1_o)
       )
 
     for p in independents:
       won = 1 if winner == "مستقل" else 0
-      is_mvp = 1 if p in mvps else 0
-      is_svp = 1 if p in svps else 0
+      is_bp = 1 if p in best_players else 0
       n1_s = 1 if (n1_shot == p) else 0
       n1_o = 1 if (n1_shot == p and n1_out) else 0
       c.execute(
-          "INSERT INTO match_participants (match_id, player_name, side, won, is_mvp, is_svp, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-          (match_id, p, "مستقل", won, is_mvp, is_svp, n1_s, n1_o)
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_best_player, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "مستقل", won, is_bp, n1_s, n1_o)
       )
 
     conn.commit()
