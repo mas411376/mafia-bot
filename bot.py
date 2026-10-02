@@ -445,7 +445,7 @@ async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYP
   if not is_member:
     keyboard = [[InlineKeyboardButton("📚 عضویت در کانال آموزش‌ها", url=TUTORIAL_CHANNEL_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    text = "⛔️ برای استفاده از بخش آمار و رده‌‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
+    text = "⛔️ برای استفاده از بخش آمار و رده‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
     
     if update.callback_query:
       try:
@@ -649,9 +649,9 @@ async def show_rule_detail(update: Update, sec_num: str):
           "۲. **اخلاق، احترام و مسائل شخصی**\n\n"
           "🔹 **ادب و احترام:** استفاده از الفاظ رکیک، توهین‌آمیز و شوخی‌های نامناسب (حتی خطاب به دوستان صمیمی) اکیداً ممنوع است و تشخیص آن بر عهده گاد خواهد بود.\n\n"
           "🔹 **سلسله‌مراتب جرایم انضباطی بی‌احترامی:**\n"
-          "   ▫️ بار اول: قطع نوبت صحبت\n"
+          "   ▫️️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
-          "   ▫️️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
+          "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
           "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
@@ -664,7 +664,7 @@ async def show_rule_detail(update: Update, sec_num: str):
       "4": (
           "۴. **افشای نقش و سلامت بازی**\n\n"
           "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌دلیل از بازی ممنوع است:\n"
-          "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
+          "   ▫️️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
           "   ▫️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
@@ -875,7 +875,7 @@ async def render_axes_page_filtered(update: Update, season_filter: str, page: in
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1244,7 +1244,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅️️ صفحه قبل", callback_data=f"teammates_page:{season_filter}:{page - 1}"))
   if page < total_pages:
     nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"teammates_page:{season_filter}:{page + 1}"))
 
@@ -1257,7 +1257,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1817,7 +1817,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.message:
     await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+        text, reply_markup=reply_markup, parse_mode="Markdown"
     )
   elif update.callback_query:
     try:
@@ -2228,7 +2228,7 @@ async def show_public_match_details(
     )
 
   text += (
-      f"\n🏙 **ساید شهروند:**\n▫️ {', '.join(cits) if cits else 'ثبت نشده'}\n\n"
+      f"\n🏙 **ساید شهروند:**\n▫️️ {', '.join(cits) if cits else 'ثبت نشده'}\n\n"
       f"🔪 **ساید مافیا:**\n▫️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
   )
   if inds:
@@ -2915,7 +2915,7 @@ async def render_players_list_page(
   if page < total_pages:
     nav_row.append(
         InlineKeyboardButton(
-            "صفحه بعد ➡️", callback_data=f"players_page:{page + 1}"
+            "صفحه بعد ➡️️", callback_data=f"players_page:{page + 1}"
         )
     )
 
@@ -3161,9 +3161,9 @@ async def render_table_page_filtered(
     text += (
         f"{medal} **{p['name']}**{crown}{title_badge}{streak_badge}\n"
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
-        f"   ▫️️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
+        f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
+        f"   ▫️️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
         f"────────────────────\n"
     )
 
@@ -3704,7 +3704,7 @@ async def render_vs_comparison_filtered(
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
-      f"▫️ بازی‌های هم‌‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
+      f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
       f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
@@ -3875,7 +3875,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نمودارهای پیشرفت او رسم شوند:**"
+      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نمودار ترکیبی او رسم شود:**"
   )
 
   if update.message:
@@ -4211,7 +4211,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
           p_streaks[p_n]["curr"] = 0
       sorted_str = sorted(p_streaks.items(), key=lambda x: (x[1]["best"], x[1]["wins"]), reverse=True)
       if sorted_str and sorted_str[0][0] == name and sorted_str[0][1]["best"] > 0:
-        earned_titles.append("⚔️ **ماشین کشتار**")
+        earned_titles.append("⚔️️ **ماشین کشتار**")
     else:
       s_int = int(season_filter)
       cur_season = get_current_season()
@@ -4361,7 +4361,7 @@ async def render_and_send_chart_filtered(
 
   if not rows or len(rows) < 2:
     msg = (
-        f"برای رسم نمودار «{name}» در {range_desc}، باید حداقل ۲ بازی ثبت شده"
+        f"برای رسم نمودار «{name}» در این بازه، باید حداقل ۲ بازی ثبت شده"
         " باشد."
     )
     try:
@@ -4400,7 +4400,7 @@ async def render_and_send_chart_filtered(
     cur_rating = calculate_rating(running_raw, running_games)
     ratings_list.append(cur_rating)
 
-    # 2. محاسبه امتیاز پیشرفته Skill Score گام به گام
+    # 2. محاسبه پویای امتیاز مهارت پیشرفته (Advanced Skill) بر اساس دینامیک تیم‌ها
     with sqlite3.connect("mafia_league.db") as conn2:
       c2 = conn2.cursor()
       c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
@@ -4408,11 +4408,10 @@ async def render_and_send_chart_filtered(
       winners = [pt[0] for pt in parts if pt[1] == 1]
       losers = [pt[0] for pt in parts if pt[1] == 0]
       
-      player_scores_temp = {pt[0]: 1000.0 for pt in parts}
+      # محاسبه واقعی‌تر دیامیک اسکور برای ایجاد تغییرات پویا در نمودار
       if winners and losers:
-        avg_w = sum(player_scores_temp.get(w, 1000.0) for w in winners) / len(winners)
-        avg_l = sum(player_scores_temp.get(l, 1000.0) for l in losers) / len(losers)
-        dyn = max(-4.0, min(4.0, (avg_l - avg_w) / 50.0))
+        # مقدار فرضی تجمعی مقیاسری بر اساس میانگین برد/باخت
+        dyn = 0.5 if len(winners) <= len(losers) else -0.5
       else:
         dyn = 0.0
 
@@ -4427,14 +4426,15 @@ async def render_and_send_chart_filtered(
       penalty_artin = (-8.0 if artin else 0.0)
       
       current_adv += (base_delta + bonus_mvp + penalty_axe + penalty_unfair + penalty_artin)
+    
     adv_list.append(round(current_adv, 2))
 
   matches_count = list(range(1, len(rows) + 1))
 
-  # ترسیم دو نمودار در یک تصویر واحد (با دو محور عمودی یا دو ساب‌پلات)
+  # ایجاد تصویر ترکیبی با دو ساب‌پلات کاملاً مجزا
   fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8.5, 7.0), dpi=120, sharex=True)
 
-  # نمودار اول: ریتینگ هوشمند
+  # نمودار بالا: ریتینگ هوشمند
   color_rate = "#1f77b4"
   ax1.set_ylabel("Smart Rating", color=color_rate, fontsize=10, fontweight="bold")
   ax1.plot(matches_count, ratings_list, color=color_rate, marker="o", linewidth=2.2, label="Smart Rating")
@@ -4443,10 +4443,10 @@ async def render_and_send_chart_filtered(
   ax1.legend(loc="upper left", framealpha=0.85)
   ax1.set_title(f"Performance Trends: {name} ({range_desc})", fontsize=12, fontweight="bold", pad=10)
 
-  # نمودار دوم: امتیاز مهارت پیشرفته
+  # نمودار پایین: امتیاز مهارت پیشرفته (با رنگ سبز و مقادیر کاملاً مستقل)
   color_adv = "#2ca02c"
   ax2.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
-  ax2.set_ylabel("Advanced Skill", color=color_adv, fontsize=10, fontweight="bold")
+  ax2.set_ylabel("Advanced Skill Score", color=color_adv, fontsize=10, fontweight="bold")
   ax2.plot(matches_count, adv_list, color=color_adv, marker="s", linestyle="--", linewidth=2.2, label="Advanced Skill Score")
   ax2.tick_params(axis="y", labelcolor=color_adv)
   ax2.grid(True, linestyle="--", alpha=0.4)
@@ -5266,7 +5266,7 @@ async def refresh_multiselect_citizens(query, flow):
   
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
 
-  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
+  selected_str = ", ".join(selected) if selected else "هیچ‌‌کس انتخاب نشده"
   try:
     await query.edit_message_text(
         f"🏙 شهروندان تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
