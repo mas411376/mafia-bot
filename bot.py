@@ -475,13 +475,13 @@ async def post_init(application):
       BotCommand("axes", "جدول تبر طلایی 🪓"),
       BotCommand("unfair", "جدول نامرد طلایی (آنفیر) 🐍"),
       BotCommand("artin", "جدول آرتین طلایی (آرتین بازی) 👑"),
-      BotCommand("teammates", "رده‌‌بندی بهترین هم‌تیمی‌ها 👥"),
+      BotCommand("teammates", "رده‌بندی بهترین هم‌تیمی‌ها 👥"),
       BotCommand("streaks", "رده‌بندی بهترین استریک‌ها 🔥"),
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
       BotCommand("chart", "نمودار پیشرفت بازیکنان 📈"),
       BotCommand("scoring", "راهنمای امتیازدهی لیگ 📜"),
-      BotCommand("admin", "پنل مدیریت ادمین ⚙️️"),
+      BotCommand("admin", "پنل مدیریت ادمین ⚙️"),
       BotCommand("matches", "حذف و مدیریت بازی‌ها (ادمین) 🛠"),
       BotCommand("submit_game", "ثبت مسابقه با دکمه (ادمین)"),
       BotCommand("add_player", "افزودن دستی بازیکن (ادمین) ➕"),
@@ -643,7 +643,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "۱. **مدیریت، اقتدار گرداننده و ارتباطات**\n\n"
           "🔹 **مرجعیت گرداننده (گاد):** تصمیمات گرداننده در جریان بازی در هر شرایطی درست و قطعی تلقی می‌شود و هرگونه دخالت در کار او ممنوع است.\n\n"
           "🔹 **نحوه اعتراض و تذکر:** اعتراض یا بیان نکات صرفاً از طریق پیام خصوصی (پی‌وی) به گاد/ادمین‌ها یا بخش «صحبت با خدا» در سایت انجام می‌شود. هرگونه اعتراض داخل بازی موجب اخراج خواهد شد.\n\n"
-          "🔹 **ارتباط در پی‌‌وی:** هرگونه پیام خصوصی میان بازیکنان در حین بازی (چه هم‌تیمی و چه رقیب) تقلب محسوب شده و منجر به محرومیت و در صورت تکرار، اخراج دائمی می‌شود."
+          "🔹 **ارتباط در پی‌وی:** هرگونه پیام خصوصی میان بازیکنان در حین بازی (چه هم‌تیمی و چه رقیب) تقلب محسوب شده و منجر به محرومیت و در صورت تکرار، اخراج دائمی می‌شود."
       ),
       "2": (
           "۲. **اخلاق، احترام و مسائل شخصی**\n\n"
@@ -652,7 +652,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
           "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
-          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
+          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
       "3": (
@@ -692,7 +692,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
           "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
           "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
-          "   ▫️️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
+          "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
       )
   }
@@ -720,8 +720,8 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   )
   keyboard = [
       [InlineKeyboardButton("👤 آمار بازیکنان", callback_data="open_stats_picker")],
-      [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
-      [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
+      [InlineKeyboardButton("🏆 جدول رده‌‌بندی لیگ", callback_data="ask_table_season")],
+      [InlineKeyboardButton("⭐ رده‌‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
       [InlineKeyboardButton("🌟 برترین بست پلیرهای بازی", callback_data="ask_bests_season")],
       [InlineKeyboardButton("🪓 جدول تبر طلایی (پلیر تبر)", callback_data="ask_axes_season")],
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
@@ -1257,7 +1257,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1467,7 +1467,7 @@ async def ask_advanced_season_choice(update: Update):
 
 
 async def render_advanced_table_page(update: Update, season_filter: str, page: int):
-  log_feature_click(update.effective_user.id, f"رده‌‌بندی پیشرفته ({season_filter})")
+  log_feature_click(update.effective_user.id, f"رده‌بندی پیشرفته ({season_filter})")
 
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
@@ -1492,7 +1492,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
         rows = c.fetchall()
 
   if not rows:
-    text = f"هنوز داده‌ای در رده‌بندی پیشرفته {season_title} ثبت نشده است."
+    text = f"هنوز داده‌ای در رده‌‌بندی پیشرفته {season_title} ثبت نشده است."
     keyboard = [
         [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_advanced_season")],
         [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
@@ -1877,7 +1877,7 @@ async def show_analytics_report(update: Update):
     for idx, (f_name, count) in enumerate(all_time_stats, start=1):
       pct = round((count / all_time_total * 100), 1) if all_time_total > 0 else 0
       bar_len = int(round(pct / 10))
-      bar = "🟩" * bar_len + "▫️️" * (10 - bar_len)
+      bar = "🟩" * bar_len + "▫️" * (10 - bar_len)
       medal = (
           "🥇"
           if idx == 1
@@ -2965,7 +2965,7 @@ async def ask_table_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌‌بندی"
+      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌بندی"
       " انتخاب فرمایید:"
   )
 
@@ -3692,7 +3692,7 @@ async def render_vs_comparison_filtered(
   r2_crown = "👑 " if r2 > r1 else ""
 
   text = (
-      f"⚔️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
+      f"⚔️️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
       f"🟩 **{name1}** VS 🟥 **{name2}**\n"
       f"🗓 **بازه مقایسه:** `{season_label}`\n\n"
       f"📊 **شاخص برتری قدرت:**\n"
@@ -3700,7 +3700,7 @@ async def render_vs_comparison_filtered(
       f"▫️ 🟩 {name1}: `{r1}` ریتینگ {r1_crown}\n"
       f"▫️ 🟥 {name2}: `{r2}` ریتینگ {r2_crown}\n\n"
       f"🥊 **تاریخچه رویارویی مستقیم (ساید مخالف):**\n"
-      f"▫️ کل مسابقات روبه‌‌رو: `{total_rival_games}` دست\n"
+      f"▫️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
@@ -4401,23 +4401,34 @@ async def render_and_send_chart_filtered(
       axe = r[3]
       unfair = r[4]
       artin = r[5]
-      m_season = r[6]
       
       with sqlite3.connect("mafia_league.db") as conn2:
         c2 = conn2.cursor()
         c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
         parts = c2.fetchall()
-        winners = [pt[0] for pt in parts if pt[1] == 1]
-        losers = [pt[0] for pt in parts if pt[0] == 0]
         
-        # تخمین دینامیک فاکتور مهارت حریفان
+        winners = [pt[0] for pt in parts if pt[1] == 1]
+        losers = [pt[0] for pt in parts if pt[1] == 0]
+        
+        player_scores_temp = {pt[0]: 1000.0 for pt in parts}
         if winners and losers:
-          base_d = (10.0 if won == 1 else -8.0)
-          b_mvp = (4.0 if mvp else 0.0)
-          p_axe = (-3.0 if axe else 0.0)
-          p_unf = (-6.0 if unfair else 0.0)
-          p_art = (-8.0 if artin else 0.0)
-          current_adv += (base_d + b_mvp + p_axe + p_unf + p_art)
+          avg_w = sum(player_scores_temp.get(w, 1000.0) for w in winners) / len(winners)
+          avg_l = sum(player_scores_temp.get(l, 1000.0) for l in losers) / len(losers)
+          dyn = max(-4.0, min(4.0, (avg_l - avg_w) / 50.0))
+        else:
+          dyn = 0.0
+
+        if won == 1:
+          base_delta = 10.0 + dyn
+        else:
+          base_delta = -8.0 + dyn
+
+        bonus_mvp = (4.0 if mvp else 0.0)
+        penalty_axe = (-3.0 if axe else 0.0)
+        penalty_unfair = (-6.0 if unfair else 0.0)
+        penalty_artin = (-8.0 if artin else 0.0)
+        
+        current_adv += (base_delta + bonus_mvp + penalty_axe + penalty_unfair + penalty_artin)
       values_list.append(round(current_adv, 2))
   else:
     title_label = f"{name} (Smart Rating - {range_desc})"
