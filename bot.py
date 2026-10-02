@@ -475,13 +475,13 @@ async def post_init(application):
       BotCommand("axes", "جدول تبر طلایی 🪓"),
       BotCommand("unfair", "جدول نامرد طلایی (آنفیر) 🐍"),
       BotCommand("artin", "جدول آرتین طلایی (آرتین بازی) 👑"),
-      BotCommand("teammates", "رده‌بندی بهترین هم‌تیمی‌ها 👥"),
+      BotCommand("teammates", "رده‌‌بندی بهترین هم‌تیمی‌ها 👥"),
       BotCommand("streaks", "رده‌بندی بهترین استریک‌ها 🔥"),
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
       BotCommand("chart", "نمودار پیشرفت بازیکنان 📈"),
       BotCommand("scoring", "راهنمای امتیازدهی لیگ 📜"),
-      BotCommand("admin", "پنل مدیریت ادمین ⚙️"),
+      BotCommand("admin", "پنل مدیریت ادمین ⚙️️"),
       BotCommand("matches", "حذف و مدیریت بازی‌ها (ادمین) 🛠"),
       BotCommand("submit_game", "ثبت مسابقه با دکمه (ادمین)"),
       BotCommand("add_player", "افزودن دستی بازیکن (ادمین) ➕"),
@@ -682,7 +682,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
-          "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
+          "   ▫️️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
           "🔹 **اکت در دفاعیه:** هرگونه اکت دادن در فاز دفاعیه ممنوع بوده و موجب سلب حق رأی می‌شود (مگر در سناریوهایی با قانون اکت آزاد یا میتیک که کیک مستقیم دارد)."
       ),
       "6": (
@@ -1467,7 +1467,7 @@ async def ask_advanced_season_choice(update: Update):
 
 
 async def render_advanced_table_page(update: Update, season_filter: str, page: int):
-  log_feature_click(update.effective_user.id, f"رده‌بندی پیشرفته ({season_filter})")
+  log_feature_click(update.effective_user.id, f"رده‌‌بندی پیشرفته ({season_filter})")
 
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
@@ -1822,7 +1822,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   elif update.callback_query:
     try:
       await update.callback_query.message.reply_text(
-          text, reply_markup=reply_markup, parse_mode="Markdown"
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -1877,7 +1877,7 @@ async def show_analytics_report(update: Update):
     for idx, (f_name, count) in enumerate(all_time_stats, start=1):
       pct = round((count / all_time_total * 100), 1) if all_time_total > 0 else 0
       bar_len = int(round(pct / 10))
-      bar = "🟩" * bar_len + "▫️" * (10 - bar_len)
+      bar = "🟩" * bar_len + "▫️️" * (10 - bar_len)
       medal = (
           "🥇"
           if idx == 1
@@ -2965,7 +2965,7 @@ async def ask_table_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌بندی"
+      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌‌بندی"
       " انتخاب فرمایید:"
   )
 
@@ -3700,7 +3700,7 @@ async def render_vs_comparison_filtered(
       f"▫️ 🟩 {name1}: `{r1}` ریتینگ {r1_crown}\n"
       f"▫️ 🟥 {name2}: `{r2}` ریتینگ {r2_crown}\n\n"
       f"🥊 **تاریخچه رویارویی مستقیم (ساید مخالف):**\n"
-      f"▫️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
+      f"▫️ کل مسابقات روبه‌‌رو: `{total_rival_games}` دست\n"
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
@@ -3875,7 +3875,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نمودار پیشرفت او رسم شود:**"
+      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نوع نمودار او انتخاب شود:**"
   )
 
   if update.message:
@@ -3905,24 +3905,41 @@ async def ask_chart_season_choice(update: Update, user_id: int):
     name = p[0]
 
   seasons = get_available_seasons()
-  keyboard = [[
-      InlineKeyboardButton(
-          "🌐 نمودار کل تاریخچه (All-Time)",
-          callback_data=f"view_chart_target:{user_id}:all",
-      )
-  ]]
-  row = []
+  keyboard = [
+      [
+          InlineKeyboardButton(
+              "🔵 نمودار ریتینگ هوشمند (All-Time)",
+              callback_data=f"view_chart_target:{user_id}:all:rating",
+          ),
+          InlineKeyboardButton(
+              "⭐ نمودار پیشرفته/ارزش برد (All-Time)",
+              callback_data=f"view_chart_target:{user_id}:all:adv",
+          )
+      ]
+  ]
+  row_rate = []
+  row_adv = []
   for s_num in seasons:
-    row.append(
+    row_rate.append(
         InlineKeyboardButton(
-            f"📊 فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}"
+            f"📊 ریتینگ فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}:rating"
         )
     )
-    if len(row) == 2:
-      keyboard.append(row)
-      row = []
-  if row:
-    keyboard.append(row)
+    row_adv.append(
+        InlineKeyboardButton(
+            f"⭐ پیشرفته فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}:adv"
+        )
+    )
+    if len(row_rate) == 2:
+      keyboard.append(row_rate)
+      row_rate = []
+    if len(row_adv) == 2:
+      keyboard.append(row_adv)
+      row_adv = []
+  if row_rate:
+    keyboard.append(row_rate)
+  if row_adv:
+    keyboard.append(row_adv)
 
   keyboard.append([
       InlineKeyboardButton(
@@ -3931,8 +3948,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
   ])
 
   text = (
-      f"📈 بازیکن انتخابی: **{name}**\n\nمایلید نمودار رشد روی **کل تاریخچه"
-      f" بازی‌ها** رسم شود یا یک **فصل معین**؟"
+      f"📈 بازیکن انتخابی: **{name}**\n\nمایلید چه نوع نموداری و برای چه بازه‌ای رسم شود؟"
   )
   try:
     await update.callback_query.message.reply_text(
@@ -4084,10 +4100,8 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     )
     nemesis = c.fetchone()
 
-    # بررسی و استخراج عناوین و القاب کسب‌شده در این بازه
     earned_titles = []
 
-    # محاسبه امپراطور لیگ
     if season_filter == "all":
       c.execute("SELECT DISTINCT player_name FROM match_participants")
       all_p_names = [r[0] for r in c.fetchall()]
@@ -4141,7 +4155,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
         if top_adv_arch and top_adv_arch[0] == name:
           earned_titles.append("🧠 **مغز متفکر**")
 
-    # ۱. ترس واقعی
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_mvp) DESC, COUNT(*) ASC LIMIT 1")
     else:
@@ -4150,7 +4163,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     if top_mvp and top_mvp[0] == name and mvps > 0:
       earned_titles.append("⚡ **ترس واقعی**")
 
-    # ۲. خاله خرسه
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_axe) DESC, COUNT(*) ASC LIMIT 1")
     else:
@@ -4159,7 +4171,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     if top_axe and top_axe[0] == name and axes > 0:
       earned_titles.append("🐻 **خاله خرسه**")
 
-    # ۳. پیتون اعظم
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_unfair) DESC, COUNT(*) ASC LIMIT 1")
     else:
@@ -4168,7 +4179,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     if top_unfair and top_unfair[0] == name and unfairs > 0:
       earned_titles.append("🐍 **پیتون اعظم**")
 
-    # ۴. کفتار تنها
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_artin) DESC, COUNT(*) ASC LIMIT 1")
     else:
@@ -4177,7 +4187,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     if top_artin and top_artin[0] == name and artins > 0:
       earned_titles.append("🐺 **کفتار تنها**")
 
-    # ۵. اتحاد آهنین
     if season_filter == "all":
       c.execute("""
             SELECT p1.player_name, p2.player_name 
@@ -4201,7 +4210,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     if top_pair and name in top_pair:
       earned_titles.append("🤝 **اتحاد آهنین**")
 
-    # ۶. ماشین کشتار
     if season_filter == "all":
       c.execute("SELECT p.player_name, p.won, m.created_at FROM match_participants p JOIN match_history m ON p.match_id = m.match_id ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC")
       all_recs = c.fetchall()
@@ -4245,7 +4253,6 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
         if sorted_s and sorted_s[0][0] == name and sorted_s[0][1]["best"] > 0:
           earned_titles.append("⚔️ **ماشین کشتار**")
 
-    # ۷. کابوس مافیا
     if season_filter == "all":
       c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(night1_shot) DESC LIMIT 1")
     else:
@@ -4304,7 +4311,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       [
           InlineKeyboardButton(
               "📈 رسم نمودار همین بازه",
-              callback_data=f"view_chart_target:{user_id}:{season_filter}",
+              callback_data=f"view_chart_target:{user_id}:{season_filter}:rating",
           )
       ],
       [
@@ -4328,7 +4335,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
 
 
 async def render_and_send_chart_filtered(
-    update: Update, user_id: int, season_filter: str
+    update: Update, user_id: int, season_filter: str, chart_type: str = "rating"
 ):
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
@@ -4344,26 +4351,24 @@ async def render_and_send_chart_filtered(
 
     if season_filter == "all":
       query = """
-                SELECT p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin 
+                SELECT p.match_id, p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin, m.season 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ?
                 ORDER BY p.match_id ASC
             """
       params = (name,)
-      title_label = f"{name} (All-Time)"
       range_desc = "کل تاریخچه بازی‌ها"
     else:
       s_int = int(season_filter)
       query = """
-                SELECT p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin 
+                SELECT p.match_id, p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin, m.season 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
                 ORDER BY p.match_id ASC
             """
       params = (name, s_int)
-      title_label = f"{name} (Season {s_int})"
       range_desc = f"فصل {s_int}"
 
     c.execute(query, params)
@@ -4380,48 +4385,85 @@ async def render_and_send_chart_filtered(
       pass
     return
 
-  ratings = []
-  running_raw = 0
-  running_games = 0
-  temp_streak = 0
-
-  for r in rows:
-    won = r[0]
-    mvp = r[1]
-    axe = r[2]
-    unfair = r[3]
-    artin = r[4]
+  values_list = []
+  
+  if chart_type == "adv":
+    title_label = f"{name} (Advanced Skill - {range_desc})"
+    y_label = "Advanced Skill Score"
+    line_color = "#2ca02c"
+    line_label = "Skill Score"
     
-    game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-    if won:
-      temp_streak += 1
-      if temp_streak >= 3:
-        game_pts += 2
-    else:
-      temp_streak = 0
-
-    running_raw += game_pts
-    running_games += 1
+    current_adv = 1000.0
+    for r in rows:
+      m_id = r[0]
+      won = r[1]
+      mvp = r[2]
+      axe = r[3]
+      unfair = r[4]
+      artin = r[5]
+      m_season = r[6]
+      
+      with sqlite3.connect("mafia_league.db") as conn2:
+        c2 = conn2.cursor()
+        c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
+        parts = c2.fetchall()
+        winners = [pt[0] for pt in parts if pt[1] == 1]
+        losers = [pt[0] for pt in parts if pt[0] == 0]
+        
+        # تخمین دینامیک فاکتور مهارت حریفان
+        if winners and losers:
+          base_d = (10.0 if won == 1 else -8.0)
+          b_mvp = (4.0 if mvp else 0.0)
+          p_axe = (-3.0 if axe else 0.0)
+          p_unf = (-6.0 if unfair else 0.0)
+          p_art = (-8.0 if artin else 0.0)
+          current_adv += (base_d + b_mvp + p_axe + p_unf + p_art)
+      values_list.append(round(current_adv, 2))
+  else:
+    title_label = f"{name} (Smart Rating - {range_desc})"
+    y_label = "Rating"
+    line_color = "#1f77b4"
+    line_label = "Rating"
     
-    cur_rating = calculate_rating(running_raw, running_games)
-    ratings.append(cur_rating)
+    running_raw = 0
+    running_games = 0
+    temp_streak = 0
+    for r in rows:
+      won = r[1]
+      mvp = r[2]
+      axe = r[3]
+      unfair = r[4]
+      artin = r[5]
+      
+      game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
+      if won:
+        temp_streak += 1
+        if temp_streak >= 3:
+          game_pts += 2
+      else:
+        temp_streak = 0
 
-  matches_count = list(range(1, len(ratings) + 1))
+      running_raw += game_pts
+      running_games += 1
+      
+      cur_rating = calculate_rating(running_raw, running_games)
+      values_list.append(cur_rating)
+
+  matches_count = list(range(1, len(values_list) + 1))
 
   fig, ax1 = plt.subplots(figsize=(8.5, 4.5), dpi=120)
 
-  color_rate = "#1f77b4"
   ax1.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
-  ax1.set_ylabel("Rating", color=color_rate, fontsize=11, fontweight="bold")
+  ax1.set_ylabel(y_label, color=line_color, fontsize=11, fontweight="bold")
   ax1.plot(
       matches_count,
-      ratings,
-      color=color_rate,
+      values_list,
+      color=line_color,
       marker="o",
       linewidth=2.5,
-      label="Rating",
+      label=line_label,
   )
-  ax1.tick_params(axis="y", labelcolor=color_rate)
+  ax1.tick_params(axis="y", labelcolor=line_color)
   ax1.grid(True, linestyle="--", alpha=0.4)
 
   ax1.legend(loc="upper left", framealpha=0.85)
@@ -4438,15 +4480,16 @@ async def render_and_send_chart_filtered(
   buf.seek(0)
   plt.close()
 
+  desc_line = "🔵 **خط آبی:** روند نوسان ریتینگ هوشمند" if chart_type == "rating" else "🟢 **خط سبز:** روند امتیاز مهارت و ارزش برد پیشرفته"
   caption = (
       f"📈 **نمودار پیشرفت و رشد {name}**\n"
       f"🗓 **بازه:** `{range_desc}`\n\n"
-      f"🔵 **خط آبی:** روند نوسان ریتینگ هوشمند"
+      f"{desc_line}"
   )
   keyboard = [
       [
           InlineKeyboardButton(
-              "🔄 تغییر فصل / بازه", callback_data=f"ask_chart_season:{user_id}"
+              "🔄 تغییر نوع یا فصل نمودار", callback_data=f"ask_chart_season:{user_id}"
           )
       ],
       [
@@ -4873,8 +4916,11 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if data.startswith("view_chart_target:"):
     if not await enforce_channel_lock(update, context, check_lock=True):
       return
-    _, u_id, s_filt = data.split(":")
-    await render_and_send_chart_filtered(update, int(u_id), s_filt)
+    parts = data.split(":")
+    u_id = int(parts[1])
+    s_filt = parts[2]
+    c_type = parts[3] if len(parts) > 3 else "rating"
+    await render_and_send_chart_filtered(update, u_id, s_filt, c_type)
     return
 
   if data == "open_admin_panel":
