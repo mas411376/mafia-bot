@@ -445,7 +445,7 @@ async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYP
   if not is_member:
     keyboard = [[InlineKeyboardButton("📚 عضویت در کانال آموزش‌ها", url=TUTORIAL_CHANNEL_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    text = "⛔️ برای استفاده از بخش آمار و رده‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
+    text = "⛔️ برای استفاده از بخش آمار و رده‌‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
     
     if update.callback_query:
       try:
@@ -510,7 +510,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️ شکست در مسابقه: `۰` امتیاز\n"
+      "▫️️ شکست در مسابقه: `۰` امتیاز\n"
       "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
       "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
@@ -691,7 +691,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **پایان بازی:** حضور در جلسه تا انتهای بازی الزامی است مگر با هماهنگی قبلی.\n\n"
           "🔹 **خداحافظی و لغو تحلیلیه:**\n"
           "   ▫️ بازی‌ها فاز «تحلیلیه» ندارند.\n"
-          "   ▫️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
+          "   ▫️️ بعد از هر بازی، هر فرد ۱۵ الی ۲۰ ثانیه وقت برای خداحافظی در اختیار دارد و پس از آن حق صحبت و تصویر از همه افراد گرفته می‌شود.\n"
           "   ▫️ در صورت تمایل به تحلیلیه، اعضا می‌توانند با ایجاد لینک جداگانه در میت یا زوم، یا به صورت پیام متنی در گروه به تحلیل بپردازند.\n\n"
           "🔹 **نظرسنجی‌ها (قانون جدید):** از این به بعد دیگر نظرسنجی عادی تلگرام در گروه نخواهیم داشت و تمامی نظرسنجی‌ها صرفاً با بات خود نرم‌افزار انجام می‌شود."
       )
@@ -726,7 +726,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🪓 جدول تبر طلایی (پلیر تبر)", callback_data="ask_axes_season")],
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
       [InlineKeyboardButton("👑 جدول آرتین طلایی (آرتین بازی)", callback_data="ask_artin_season")],
-      [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
+      [InlineKeyboardButton("👥 رده‌‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
       [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
@@ -1148,7 +1148,7 @@ async def ask_teammates_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
-          "🌐 بهترین هم‌تیمی‌های کل تاریخچه (All-Time)", callback_data="teammates_page:all:1"
+          "🌐 بهترین هم‌‌تیمی‌های کل تاریخچه (All-Time)", callback_data="teammates_page:all:1"
       )
   ]]
   row = []
@@ -1165,7 +1165,7 @@ async def ask_teammates_season_choice(update: Update):
     keyboard.append(row)
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-  text = "👥 **رده‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+  text = "👥 **رده‌بندی بهترین هم‌‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
 
   if update.callback_query:
     try:
@@ -1238,7 +1238,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
     title_badge = " ⟨ 🤝 **اتحاد آهنین** ⟩" if i == 1 else ""
     text += (
         f"{medal} **{r[0]}** 🤝 **{r[1]}**{title_badge}\n"
-        f"   ▫️ بردهای مشترک: `{r[2]}` پیروزی\n"
+        f"   ▫️️ بردهای مشترک: `{r[2]}` پیروزی\n"
         f"────────────────────\n"
     )
 
@@ -1425,7 +1425,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1531,7 +1531,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅️️ صفحه قبل", callback_data=f"adv_table_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅ صفحه قبل", callback_data=f"adv_table_page:{season_filter}:{page - 1}"))
   if page < total_pages:
     nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"adv_table_page:{season_filter}:{page + 1}"))
 
@@ -1713,7 +1713,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user_id = update.effective_user.id
   if user_id not in [ADMIN_ID, ADMIN_ID_2]:
     if update.message:
-      await update.message.reply_text("⛔️️ این بخش فقط برای ادمین لیگ در دسترس است.")
+      await update.message.reply_text("⛔ این بخش فقط برای ادمین لیگ در دسترس است.")
     elif update.callback_query:
       try:
         await update.callback_query.answer(
@@ -1728,7 +1728,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   if user_id == ADMIN_ID:
     text = (
-        f"⚙️ **پنل مدیریت ادمین (فصل فعال: {cur_season}):**\n\n"
+        f"⚙️️ **پنل مدیریت ادمین (فصل فعال: {cur_season}):**\n\n"
         "برای انجام هر عملیات، روی دکمه مربوطه در زیر کلیک کنید:"
     )
     keyboard = [
@@ -1999,7 +1999,7 @@ async def execute_finish_season(
       f" گردید!**\n\n"
       f"🚀 **فصل {next_season} رسماً آغاز شد!**\n"
       f"▫️ جدول بازیکنان برای فصل جدید صفر شد.\n"
-      f"▫️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
+      f"▫️️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
   try:
@@ -2229,10 +2229,10 @@ async def show_public_match_details(
 
   text += (
       f"\n🏙 **ساید شهروند:**\n▫️ {', '.join(cits) if cits else 'ثبت نشده'}\n\n"
-      f"🔪 **ساید مافیا:**\n▫️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
+      f"🔪 **ساید مافیا:**\n▫️️ {', '.join(mafs) if mafs else 'ثبت نشده'}\n"
   )
   if inds:
-    text += f"\n🃏 **ساید مستقل:**\n▫️️ {', '.join(inds)}\n"
+    text += f"\n🃏 **ساید مستقل:**\n▫ {', '.join(inds)}\n"
 
   text += (
       f"\n🎯 **شات شب اول توسط مافیا:**\n▫️ {n1_shot_player if n1_shot_player else 'ندارد'}\n"
@@ -3707,7 +3707,7 @@ async def render_vs_comparison_filtered(
       f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
       f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
-      f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
+      f"▫️️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
       f"▫️ **کل بازی‌های انجام داده:** 🟩 `{p1_g}` دست | 🟥 `{p2_g}` دست\n"
       f"▫️ **بست پلیر بازی (MVP):** 🟩 `{p1_mvp}` بار | 🟥 `{p2_mvp}` بار\n"
   )
@@ -4280,7 +4280,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"👑 **القاب و عناوین کسب‌شده در این بازه:**\n"
       f"{titles_str}\n"
       f"────────────────────────\n"
-      f"🌟 **بست‌پلیر (MVP):** `{mvps}` بار\n"
+      f"🌟 **بست‌‌پلیر (MVP):** `{mvps}` بار\n"
       f"🪓 **تبر:** `{axes}` بار\n"
       f"🐍 **آنفیر:** `{unfairs}` بار\n"
       f"👑 **آرتین:** `{artins}` بار\n"
@@ -4296,7 +4296,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"▫️ مافیا: `{maf_games}` بازی (برد: `{maf_rate}%`)\n"
       f"▫️ مستقل: `{ind_games}` بازی (برد: `{ind_rate}%`)\n"
       f"────────────────────────\n"
-      f"🤝 **بهترین هم‌تیمی:** {tm_text}\n"
+      f"🤝 **بهترین هم‌‌تیمی:** {tm_text}\n"
       f"⚔️ **بدترین رقیب:** {nem_text}"
   )
 
@@ -4344,7 +4344,7 @@ async def render_and_send_chart_filtered(
 
     if season_filter == "all":
       query = """
-                SELECT p.rating_after, p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin 
+                SELECT p.rating_after 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ?
@@ -4356,7 +4356,7 @@ async def render_and_send_chart_filtered(
     else:
       s_int = int(season_filter)
       query = """
-                SELECT p.rating_after, p.won, p.is_mvp, p.is_axe, p.is_unfair, p.is_artin 
+                SELECT p.rating_after 
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -4380,30 +4380,7 @@ async def render_and_send_chart_filtered(
       pass
     return
 
-  ratings = []
-  scores = []
-  running_score = 0
-  temp_streak = 0
-
-  for r in rows:
-    ratings.append(r[0])
-    won = r[1]
-    mvp = r[2]
-    axe = r[3]
-    unfair = r[4]
-    artin = r[5]
-    
-    game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-    if won:
-      temp_streak += 1
-      if temp_streak >= 3:
-        game_pts += 2
-    else:
-      temp_streak = 0
-
-    running_score += game_pts
-    scores.append(running_score)
-
+  ratings = [r[0] for r in rows]
   matches_count = list(range(1, len(ratings) + 1))
 
   fig, ax1 = plt.subplots(figsize=(8.5, 4.5), dpi=120)
@@ -4411,7 +4388,7 @@ async def render_and_send_chart_filtered(
   color_rate = "#1f77b4"
   ax1.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
   ax1.set_ylabel("Rating", color=color_rate, fontsize=11, fontweight="bold")
-  line1 = ax1.plot(
+  ax1.plot(
       matches_count,
       ratings,
       color=color_rate,
@@ -4422,25 +4399,7 @@ async def render_and_send_chart_filtered(
   ax1.tick_params(axis="y", labelcolor=color_rate)
   ax1.grid(True, linestyle="--", alpha=0.4)
 
-  ax2 = ax1.twinx()
-  color_score = "#2ca02c"
-  ax2.set_ylabel(
-      "Total Score (PTS)", color=color_score, fontsize=11, fontweight="bold"
-  )
-  line2 = ax2.plot(
-      matches_count,
-      scores,
-      color=color_score,
-      marker="s",
-      linestyle="--",
-      linewidth=2.2,
-      label="Total Score",
-  )
-  ax2.tick_params(axis="y", labelcolor=color_score)
-
-  lines = line1 + line2
-  labels = [l.get_label() for l in lines]
-  ax1.legend(lines, labels, loc="upper left", framealpha=0.85)
+  ax1.legend(loc="upper left", framealpha=0.85)
 
   plt.title(
       f"Performance Trend: {title_label}",
@@ -4457,8 +4416,7 @@ async def render_and_send_chart_filtered(
   caption = (
       f"📈 **نمودار پیشرفت و رشد {name}**\n"
       f"🗓 **بازه:** `{range_desc}`\n\n"
-      f"🔵 **خط آبی:** روند نوسان ریتینگ هوشمند\n"
-      f"🟢 **خط سبز:** مجموع امتیازات خام کسب‌شده (PTS)"
+      f"🔵 **خط آبی:** روند نوسان ریتینگ هوشمند"
   )
   keyboard = [
       [
