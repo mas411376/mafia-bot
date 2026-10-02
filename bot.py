@@ -445,7 +445,7 @@ async def enforce_channel_lock(update: Update, context: ContextTypes.DEFAULT_TYP
   if not is_member:
     keyboard = [[InlineKeyboardButton("📚 عضویت در کانال آموزش‌ها", url=TUTORIAL_CHANNEL_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    text = "⛔️ برای استفاده از بخش آمار و رده‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
+    text = "⛔️ برای استفاده از بخش آمار و رده‌‌بندی، ابتدا باید در کانال آموزش‌ها عضو شوید!"
     
     if update.callback_query:
       try:
@@ -523,7 +523,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
       "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
-      "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
+      "▫️ نفر اول رده‌‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
       "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
       "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
@@ -651,8 +651,8 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **سلسله‌مراتب جرایم انضباطی بی‌احترامی:**\n"
           "   ▫️ بار اول: قطع نوبت صحبت\n"
           "   ▫️ بار دوم: سلب حق رأی\n"
-          "   ▫️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
-          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
+          "   ▫️️ بار سوم: اخراج مستقیم از بازی و گروه\n\n"
+          "🔹 **کدورت و عقاید شخصی:** ورود عقاید شخصی به بازی ممنوع است. در صورت داشتن خصومت قبلی با بازیکنی در یک دک، نباید در آن دک ثبت‌نام کنید؛ ایجاد درگیری شخصی به اخراج قطعی از گروه ختم می‌شود.\n\n"
           "🔹 **محدودیت چت گروه:** هرگونه بحث، کل‌کل و گفت‌وگوی خارج از موضوع مافیا در این گروه ممنوع است (۲۴ ساعت سلب دسترسی و در صورت تکرار، اخراج)."
       ),
       "3": (
@@ -682,7 +682,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
-          "   ▫️️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
+          "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
           "🔹 **اکت در دفاعیه:** هرگونه اکت دادن در فاز دفاعیه ممنوع بوده و موجب سلب حق رأی می‌شود (مگر در سناریوهایی با قانون اکت آزاد یا میتیک که کیک مستقیم دارد)."
       ),
       "6": (
@@ -720,8 +720,8 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   )
   keyboard = [
       [InlineKeyboardButton("👤 آمار بازیکنان", callback_data="open_stats_picker")],
-      [InlineKeyboardButton("🏆 جدول رده‌‌بندی لیگ", callback_data="ask_table_season")],
-      [InlineKeyboardButton("⭐ رده‌‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
+      [InlineKeyboardButton("🏆 جدول رده‌بندی لیگ", callback_data="ask_table_season")],
+      [InlineKeyboardButton("⭐ رده‌بندی پیشرفته (ارزش برد)", callback_data="ask_advanced_season")],
       [InlineKeyboardButton("🌟 برترین بست پلیرهای بازی", callback_data="ask_bests_season")],
       [InlineKeyboardButton("🪓 جدول تبر طلایی (پلیر تبر)", callback_data="ask_axes_season")],
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
@@ -1257,7 +1257,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1492,7 +1492,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
         rows = c.fetchall()
 
   if not rows:
-    text = f"هنوز داده‌ای در رده‌‌بندی پیشرفته {season_title} ثبت نشده است."
+    text = f"هنوز داده‌ای در رده‌بندی پیشرفته {season_title} ثبت نشده است."
     keyboard = [
         [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_advanced_season")],
         [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
@@ -1544,7 +1544,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1817,7 +1817,7 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.message:
     await update.message.reply_text(
-        text, reply_markup=reply_markup, parse_mode="Markdown"
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
     )
   elif update.callback_query:
     try:
@@ -3161,7 +3161,7 @@ async def render_table_page_filtered(
     text += (
         f"{medal} **{p['name']}**{crown}{title_badge}{streak_badge}\n"
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
-        f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
+        f"   ▫️️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
         f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
         f"────────────────────\n"
@@ -3692,7 +3692,7 @@ async def render_vs_comparison_filtered(
   r2_crown = "👑 " if r2 > r1 else ""
 
   text = (
-      f"⚔️️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
+      f"⚔️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
       f"🟩 **{name1}** VS 🟥 **{name2}**\n"
       f"🗓 **بازه مقایسه:** `{season_label}`\n\n"
       f"📊 **شاخص برتری قدرت:**\n"
@@ -3704,7 +3704,7 @@ async def render_vs_comparison_filtered(
       f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
-      f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
+      f"▫️ بازی‌های هم‌‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
       f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
       f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
       f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
@@ -3875,7 +3875,7 @@ async def show_chart_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نوع نمودار او انتخاب شود:**"
+      "📈 **روی نام بازیکن مورد نظر کلیک کنید تا نمودارهای پیشرفت او رسم شوند:**"
   )
 
   if update.message:
@@ -3908,38 +3908,23 @@ async def ask_chart_season_choice(update: Update, user_id: int):
   keyboard = [
       [
           InlineKeyboardButton(
-              "🔵 نمودار ریتینگ هوشمند (All-Time)",
-              callback_data=f"view_chart_target:{user_id}:all:rating",
-          ),
-          InlineKeyboardButton(
-              "⭐ نمودار پیشرفته/ارزش برد (All-Time)",
-              callback_data=f"view_chart_target:{user_id}:all:adv",
+              "📊 هر دو نمودار (کل تاریخچه All-Time)",
+              callback_data=f"view_chart_target:{user_id}:all",
           )
       ]
   ]
-  row_rate = []
-  row_adv = []
+  row = []
   for s_num in seasons:
-    row_rate.append(
+    row.append(
         InlineKeyboardButton(
-            f"📊 ریتینگ فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}:rating"
+            f"📊 فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}"
         )
     )
-    row_adv.append(
-        InlineKeyboardButton(
-            f"⭐ پیشرفته فصل {s_num}", callback_data=f"view_chart_target:{user_id}:{s_num}:adv"
-        )
-    )
-    if len(row_rate) == 2:
-      keyboard.append(row_rate)
-      row_rate = []
-    if len(row_adv) == 2:
-      keyboard.append(row_adv)
-      row_adv = []
-  if row_rate:
-    keyboard.append(row_rate)
-  if row_adv:
-    keyboard.append(row_adv)
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
 
   keyboard.append([
       InlineKeyboardButton(
@@ -3948,7 +3933,7 @@ async def ask_chart_season_choice(update: Update, user_id: int):
   ])
 
   text = (
-      f"📈 بازیکن انتخابی: **{name}**\n\nمایلید چه نوع نموداری و برای چه بازه‌ای رسم شود؟"
+      f"📈 بازیکن انتخابی: **{name}**\n\nمایلید نمودارهای ترکیبی پیشرفت برای چه بازه‌ای رسم شوند؟"
   )
   try:
     await update.callback_query.message.reply_text(
@@ -4310,8 +4295,8 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
   keyboard = [
       [
           InlineKeyboardButton(
-              "📈 رسم نمودار همین بازه",
-              callback_data=f"view_chart_target:{user_id}:{season_filter}:rating",
+              "📈 رسم نمودار ترکیبی همین بازه",
+              callback_data=f"view_chart_target:{user_id}:{season_filter}",
           )
       ],
       [
@@ -4335,7 +4320,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
 
 
 async def render_and_send_chart_filtered(
-    update: Update, user_id: int, season_filter: str, chart_type: str = "rating"
+    update: Update, user_id: int, season_filter: str
 ):
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
@@ -4385,122 +4370,105 @@ async def render_and_send_chart_filtered(
       pass
     return
 
-  values_list = []
+  ratings_list = []
+  adv_list = []
   
-  if chart_type == "adv":
-    title_label = f"{name} (Advanced Skill - {range_desc})"
-    y_label = "Advanced Skill Score"
-    line_color = "#2ca02c"
-    line_label = "Skill Score"
-    
-    current_adv = 1000.0
-    for r in rows:
-      m_id = r[0]
-      won = r[1]
-      mvp = r[2]
-      axe = r[3]
-      unfair = r[4]
-      artin = r[5]
-      
-      with sqlite3.connect("mafia_league.db") as conn2:
-        c2 = conn2.cursor()
-        c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
-        parts = c2.fetchall()
-        
-        winners = [pt[0] for pt in parts if pt[1] == 1]
-        losers = [pt[0] for pt in parts if pt[1] == 0]
-        
-        player_scores_temp = {pt[0]: 1000.0 for pt in parts}
-        if winners and losers:
-          avg_w = sum(player_scores_temp.get(w, 1000.0) for w in winners) / len(winners)
-          avg_l = sum(player_scores_temp.get(l, 1000.0) for l in losers) / len(losers)
-          dyn = max(-4.0, min(4.0, (avg_l - avg_w) / 50.0))
-        else:
-          dyn = 0.0
+  running_raw = 0
+  running_games = 0
+  temp_streak = 0
+  current_adv = 1000.0
 
-        if won == 1:
-          base_delta = 10.0 + dyn
-        else:
-          base_delta = -8.0 + dyn
-
-        bonus_mvp = (4.0 if mvp else 0.0)
-        penalty_axe = (-3.0 if axe else 0.0)
-        penalty_unfair = (-6.0 if unfair else 0.0)
-        penalty_artin = (-8.0 if artin else 0.0)
-        
-        current_adv += (base_delta + bonus_mvp + penalty_axe + penalty_unfair + penalty_artin)
-      values_list.append(round(current_adv, 2))
-  else:
-    title_label = f"{name} (Smart Rating - {range_desc})"
-    y_label = "Rating"
-    line_color = "#1f77b4"
-    line_label = "Rating"
+  for r in rows:
+    m_id = r[0]
+    won = r[1]
+    mvp = r[2]
+    axe = r[3]
+    unfair = r[4]
+    artin = r[5]
     
-    running_raw = 0
-    running_games = 0
-    temp_streak = 0
-    for r in rows:
-      won = r[1]
-      mvp = r[2]
-      axe = r[3]
-      unfair = r[4]
-      artin = r[5]
+    # 1. محاسبه ریتینگ هوشمند گام به گام
+    game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
+    if won:
+      temp_streak += 1
+      if temp_streak >= 3:
+        game_pts += 2
+    else:
+      temp_streak = 0
+
+    running_raw += game_pts
+    running_games += 1
+    cur_rating = calculate_rating(running_raw, running_games)
+    ratings_list.append(cur_rating)
+
+    # 2. محاسبه امتیاز پیشرفته Skill Score گام به گام
+    with sqlite3.connect("mafia_league.db") as conn2:
+      c2 = conn2.cursor()
+      c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
+      parts = c2.fetchall()
+      winners = [pt[0] for pt in parts if pt[1] == 1]
+      losers = [pt[0] for pt in parts if pt[1] == 0]
       
-      game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-      if won:
-        temp_streak += 1
-        if temp_streak >= 3:
-          game_pts += 2
+      player_scores_temp = {pt[0]: 1000.0 for pt in parts}
+      if winners and losers:
+        avg_w = sum(player_scores_temp.get(w, 1000.0) for w in winners) / len(winners)
+        avg_l = sum(player_scores_temp.get(l, 1000.0) for l in losers) / len(losers)
+        dyn = max(-4.0, min(4.0, (avg_l - avg_w) / 50.0))
       else:
-        temp_streak = 0
+        dyn = 0.0
 
-      running_raw += game_pts
-      running_games += 1
+      if won == 1:
+        base_delta = 10.0 + dyn
+      else:
+        base_delta = -8.0 + dyn
+
+      bonus_mvp = (4.0 if mvp else 0.0)
+      penalty_axe = (-3.0 if axe else 0.0)
+      penalty_unfair = (-6.0 if unfair else 0.0)
+      penalty_artin = (-8.0 if artin else 0.0)
       
-      cur_rating = calculate_rating(running_raw, running_games)
-      values_list.append(cur_rating)
+      current_adv += (base_delta + bonus_mvp + penalty_axe + penalty_unfair + penalty_artin)
+    adv_list.append(round(current_adv, 2))
 
-  matches_count = list(range(1, len(values_list) + 1))
+  matches_count = list(range(1, len(rows) + 1))
 
-  fig, ax1 = plt.subplots(figsize=(8.5, 4.5), dpi=120)
+  # ترسیم دو نمودار در یک تصویر واحد (با دو محور عمودی یا دو ساب‌پلات)
+  fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8.5, 7.0), dpi=120, sharex=True)
 
-  ax1.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
-  ax1.set_ylabel(y_label, color=line_color, fontsize=11, fontweight="bold")
-  ax1.plot(
-      matches_count,
-      values_list,
-      color=line_color,
-      marker="o",
-      linewidth=2.5,
-      label=line_label,
-  )
-  ax1.tick_params(axis="y", labelcolor=line_color)
+  # نمودار اول: ریتینگ هوشمند
+  color_rate = "#1f77b4"
+  ax1.set_ylabel("Smart Rating", color=color_rate, fontsize=10, fontweight="bold")
+  ax1.plot(matches_count, ratings_list, color=color_rate, marker="o", linewidth=2.2, label="Smart Rating")
+  ax1.tick_params(axis="y", labelcolor=color_rate)
   ax1.grid(True, linestyle="--", alpha=0.4)
-
   ax1.legend(loc="upper left", framealpha=0.85)
+  ax1.set_title(f"Performance Trends: {name} ({range_desc})", fontsize=12, fontweight="bold", pad=10)
 
-  plt.title(
-      f"Performance Trend: {title_label}",
-      fontsize=12,
-      fontweight="bold",
-      pad=12,
-  )
+  # نمودار دوم: امتیاز مهارت پیشرفته
+  color_adv = "#2ca02c"
+  ax2.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
+  ax2.set_ylabel("Advanced Skill", color=color_adv, fontsize=10, fontweight="bold")
+  ax2.plot(matches_count, adv_list, color=color_adv, marker="s", linestyle="--", linewidth=2.2, label="Advanced Skill Score")
+  ax2.tick_params(axis="y", labelcolor=color_adv)
+  ax2.grid(True, linestyle="--", alpha=0.4)
+  ax2.legend(loc="upper left", framealpha=0.85)
+
+  plt.tight_layout()
 
   buf = io.BytesIO()
   plt.savefig(buf, format="png", bbox_inches="tight")
   buf.seek(0)
   plt.close()
 
-  desc_line = "🔵 **خط آبی:** روند نوسان ریتینگ هوشمند" if chart_type == "rating" else "🟢 **خط سبز:** روند امتیاز مهارت و ارزش برد پیشرفته"
   caption = (
-      f"📈 **نمودار پیشرفت و رشد {name}**\n"
+      f"📈 **نمودار ترکیبی پیشرفت و رشد {name}**\n"
       f"🗓 **بازه:** `{range_desc}`\n\n"
-      f"{desc_line}"
+      f"🔵 **نمودار بالا:** روند نوسان ریتینگ هوشمند\n"
+      f"🟢 **نمودار پایین:** روند تغییرات امتیاز مهارت پیشرفته (Skill Score)"
   )
   keyboard = [
       [
           InlineKeyboardButton(
-              "🔄 تغییر نوع یا فصل نمودار", callback_data=f"ask_chart_season:{user_id}"
+              "🔄 انتخاب بازه‌ای دیگر", callback_data=f"ask_chart_season:{user_id}"
           )
       ],
       [
@@ -4930,8 +4898,7 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     parts = data.split(":")
     u_id = int(parts[1])
     s_filt = parts[2]
-    c_type = parts[3] if len(parts) > 3 else "rating"
-    await render_and_send_chart_filtered(update, u_id, s_filt, c_type)
+    await render_and_send_chart_filtered(update, u_id, s_filt)
     return
 
   if data == "open_admin_panel":
