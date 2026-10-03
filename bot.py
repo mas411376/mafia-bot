@@ -4235,7 +4235,7 @@ def main():
   app.add_handler(CommandHandler("axes", axes_leaderboard))
   app.add_handler(CommandHandler("unfair", unfair_leaderboard))
   app.add_handler(CommandHandler("artin", artin_leaderboard))
-  app.add_handler(CommandHandler->("teammates", ask_teammates_season_choice))
+  app.add_handler(CommandHandler("teammates", ask_teammates_season_choice))
   app.add_handler(CommandHandler("streaks", ask_streaks_season_choice))
   app.add_handler(CommandHandler("shots_top", ask_shots_season_choice))
   app.add_handler(CommandHandler("stats", stats))
