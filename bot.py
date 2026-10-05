@@ -4,6 +4,10 @@ import os
 import logging
 import random
 import html
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 from datetime import datetime
 from telegram import (
     Update,
@@ -99,7 +103,8 @@ def init_db():
                 chaos_count INTEGER DEFAULT 0,
                 chaos_selected_count INTEGER DEFAULT 0,
                 chaos_win_impact_count INTEGER DEFAULT 0,
-                advanced_skill_score REAL DEFAULT 1000.0
+                advanced_skill_score REAL DEFAULT 1000.0,
+                is_restricted INTEGER DEFAULT 0
             )
         """)
     c.execute("""
@@ -167,6 +172,8 @@ def init_db():
       c.execute("ALTER TABLE players ADD COLUMN unfair_count INTEGER DEFAULT 0")
     if "artin_count" not in pl_cols:
       c.execute("ALTER TABLE players ADD COLUMN artin_count INTEGER DEFAULT 0")
+    if "is_restricted" not in pl_cols:
+      c.execute("ALTER TABLE players ADD COLUMN is_restricted INTEGER DEFAULT 0")
 
     c.execute("PRAGMA table_info(match_participants)")
     p_cols = [col[1] for col in c.fetchall()]
@@ -415,6 +422,13 @@ def recalculate_all_players():
 recalculate_all_players()
 
 
+def get_all_player_names():
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT name FROM players WHERE is_restricted = 0 ORDER BY name ASC")
+    return [r[0] for r in c.fetchall()]
+
+
 async def check_channel_membership(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
   user_id = update.effective_user.id
   if user_id in [ADMIN_ID, ADMIN_ID_2]:
@@ -492,13 +506,6 @@ async def post_init(application):
   await application.bot.set_my_commands(commands, scope=BotCommandScopeDefault())
 
 
-def get_all_player_names():
-  with sqlite3.connect("mafia_league.db") as conn:
-    c = conn.cursor()
-    c.execute("SELECT name FROM players ORDER BY name ASC")
-    return [r[0] for r in c.fetchall()]
-
-
 async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if not await enforce_channel_lock(update, context, check_lock=True):
     return
@@ -519,7 +526,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول تبر طلایی: 🐻 **خاله خرسه**\n"
       "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
-      "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
+      "▫️️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
       "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
       "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
@@ -675,7 +682,7 @@ async def show_rule_detail(update: Update, sec_num: str):
           "      - بار اول: دریافت یک اخطار\n"
           "      - بار دوم: سلب حق رأی\n"
           "      - بار سوم: خروج انضباطی\n"
-          "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد)؛ در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
+          "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد); در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
@@ -802,7 +809,7 @@ async def render_axes_page_filtered(update: Update, season_filter: str, page: in
         c.execute("""
                     SELECT name, axe_count, total_games
                     FROM players
-                    WHERE axe_count > 0
+                    WHERE axe_count > 0 AND is_restricted = 0
                     ORDER BY axe_count DESC, total_games ASC
                 """)
         rows = c.fetchall()
@@ -934,7 +941,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
         c.execute("""
                     SELECT name, unfair_count, total_games
                     FROM players
-                    WHERE unfair_count > 0
+                    WHERE unfair_count > 0 AND is_restricted = 0
                     ORDER BY unfair_count DESC, total_games ASC
                 """)
         rows = c.fetchall()
@@ -1003,7 +1010,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1066,7 +1073,7 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
         c.execute("""
                     SELECT name, artin_count, total_games
                     FROM players
-                    WHERE artin_count > 0
+                    WHERE artin_count > 0 AND is_restricted = 0
                     ORDER BY artin_count DESC, total_games ASC
                 """)
         rows = c.fetchall()
@@ -1135,7 +1142,7 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1253,7 +1260,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1334,7 +1341,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
         c.execute("""
             SELECT name, best_streak, total_games, wins 
             FROM players 
-            WHERE best_streak > 0 
+            WHERE best_streak > 0 AND is_restricted = 0
             ORDER BY best_streak DESC, wins DESC
         """)
         rows = c.fetchall()
@@ -1421,7 +1428,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1469,14 +1476,14 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
     c = conn.cursor()
     if season_filter == "all":
       season_title = "کل تاریخچه (All-Time)"
-      c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC")
+      c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 AND is_restricted = 0 ORDER BY advanced_skill_score DESC")
       rows = c.fetchall()
     else:
       s_int = int(season_filter)
       season_title = f"فصل {s_int}"
       cur_season = get_current_season()
       if s_int == cur_season:
-        c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC")
+        c.execute("SELECT name, advanced_skill_score, total_games, wins, losses FROM players WHERE total_games > 0 AND is_restricted = 0 ORDER BY advanced_skill_score DESC")
         rows = c.fetchall()
       else:
         c.execute("""
@@ -1540,7 +1547,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1748,6 +1755,12 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton(
+                "🚫 مدیریت محدودیت بازیکنان",
+                callback_data="open_restrict_picker",
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 f"🏁 بستن فصل {cur_season} و شروع رسمی فصل {next_season}",
                 callback_data="confirm_finish_season_prompt",
             )
@@ -1822,6 +1835,75 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
       )
     except Exception:
       pass
+
+
+async def show_restrict_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if update.effective_user.id != ADMIN_ID:
+    return
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT user_id, name, is_restricted FROM players ORDER BY name ASC")
+    rows = c.fetchall()
+
+  if not rows:
+    msg = "هنوز بازیکنی در سیستم ثبت نشده است."
+    if update.callback_query:
+      await update.callback_query.message.reply_text(msg)
+    return
+
+  keyboard = []
+  row = []
+  for u_id, p_name, restricted in rows:
+    status_icon = "🔴 [محدود]" if restricted == 1 else "🟢 [آزاد]"
+    label = f"{p_name[:14]} {status_icon}"
+    row.append(
+        InlineKeyboardButton(label, callback_data=f"toggle_restrict:{u_id}")
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
+  text = (
+      "🚫 **مدیریت محدودیت بازیکنان:**\n\n"
+      "روی نام هر بازیکن کلیک کنید تا وضعیت محدودیت او تغییر کند (تغییر از آزاد به محدود و بالعکس).\n"
+      "بازیکنان محدودشده در ثبت مسابقه و بخش آمار نمایش داده نخواهند شد."
+  )
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def toggle_player_restriction(update: Update, context: ContextTypes.DEFAULT_TYPE, user_id: int):
+  if update.effective_user.id != ADMIN_ID:
+    return
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT name, is_restricted FROM players WHERE user_id = ?", (user_id,))
+    row = c.fetchone()
+    if not row:
+      return
+    name, current_status = row
+    new_status = 0 if current_status == 1 else 1
+    
+    c.execute("UPDATE players SET is_restricted = ? WHERE user_id = ?", (new_status, user_id))
+    conn.commit()
+
+  status_text = "محدود شد 🔴" if new_status == 1 else "از محدودیت خارج شد 🟢"
+  try:
+    await update.callback_query.answer(f"بازیکن «{name}» {status_text}", show_alert=True)
+  except Exception:
+    pass
+
+  await show_restrict_picker(update, context)
 
 
 async def show_analytics_report(update: Update):
@@ -1994,7 +2076,7 @@ async def execute_finish_season(
       f"🏆 **پرونده فصل {cur_season} با موفقیت بسته شد و به آرشیو منتقل"
       f" گردید!**\n\n"
       f"🚀 **فصل {next_season} رسماً آغاز شد!**\n"
-      f"▫️️ جدول بازیکنان برای فصل جدید صفر شد.\n"
+      f"▫ جدول بازیکنان برای فصل جدید صفر شد.\n"
       f"▫️ اعضای لیگ بدون نیاز به عضویت مجدد در سیستم باقی مانده‌اند."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
@@ -2573,7 +2655,7 @@ async def delete_match_by_id(update: Update, match_id: int):
 
 async def delete_match_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.effective_user.id not in [ADMIN_ID, ADMIN_ID_2]:
-    await update.message.reply_text("⛔️ فقط ادمین لیگ اجازه دسترسی دارد.")
+    await update.message.reply_text("⛔️️ فقط ادمین لیگ اجازه دسترسی دارد.")
     return
 
   if not context.args:
@@ -2989,7 +3071,7 @@ async def render_table_page_filtered(
       c.execute("SELECT DISTINCT player_name FROM match_participants")
       active_players = [r[0] for r in c.fetchall()]
 
-      c.execute("SELECT name FROM players")
+      c.execute("SELECT name FROM players WHERE is_restricted = 0")
       all_db_players = [r[0] for r in c.fetchall()]
       players_pool = sorted(list(set(active_players + all_db_players)))
 
@@ -3055,7 +3137,7 @@ async def render_table_page_filtered(
       if s_int == cur_season:
         c.execute(
             "SELECT name, raw_score, total_games, wins, losses, mvp_count,"
-            " axe_count, unfair_count, artin_count, current_streak FROM players"
+            " axe_count, unfair_count, artin_count, current_streak FROM players WHERE is_restricted = 0"
         )
         rows = c.fetchall()
         ranking = []
@@ -3159,7 +3241,7 @@ async def render_table_page_filtered(
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
         f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
+        f"   ▫️️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
         f"────────────────────\n"
     )
 
@@ -3273,7 +3355,7 @@ async def render_bests_page_filtered(
         c.execute("""
                     SELECT name, mvp_count, mvp_count as total_bests, total_games
                     FROM players
-                    WHERE mvp_count > 0
+                    WHERE mvp_count > 0 AND is_restricted = 0
                     ORDER BY mvp_count DESC, total_games ASC
                 """)
         rows = c.fetchall()
@@ -3465,11 +3547,11 @@ async def show_vs_picker_first(
   log_feature_click(update.effective_user.id, "دوئل و تقابل رودررو")
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
-    c.execute("SELECT user_id, name FROM players ORDER BY name ASC")
+    c.execute("SELECT user_id, name FROM players WHERE is_restricted = 0 ORDER BY name ASC")
     rows = c.fetchall()
 
   if len(rows) < 2:
-    msg = "❌ برای تقابل، حداقل باید ۲ بازیکن در لیگ ثبت شده باشند."
+    msg = "❌ برای تقابل، حداقل باید ۲ بازیکن آزاد در لیگ ثبت شده باشند."
     if update.message:
       await update.message.reply_text(msg)
     elif update.callback_query:
@@ -3485,7 +3567,7 @@ async def show_vs_picker_first(
     label = p_name[:18] + ("..." if len(p_name) > 18 else "")
     row.append(
         InlineKeyboardButton(
-            f"⚔️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
+            f"⚔️️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
         )
     )
     if len(row) == 2:
@@ -3533,7 +3615,7 @@ async def show_vs_picker_second(
     first_name = first_row[0] if first_row else "مبارز اول"
 
     c.execute(
-        "SELECT user_id, name FROM players WHERE user_id != ? ORDER BY name ASC",
+        "SELECT user_id, name FROM players WHERE user_id != ? AND is_restricted = 0 ORDER BY name ASC",
         (first_uid,),
     )
     rows = c.fetchall()
@@ -3740,7 +3822,7 @@ async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
   log_feature_click(update.effective_user.id, "آمار بازیکنان")
   with sqlite3.connect("mafia_league.db") as conn:
     c = conn.cursor()
-    c.execute("SELECT user_id, name FROM players ORDER BY name ASC")
+    c.execute("SELECT user_id, name FROM players WHERE is_restricted = 0 ORDER BY name ASC")
     rows = c.fetchall()
 
   if not rows:
@@ -3998,7 +4080,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
         if ranking_data[0][0] == name:
           earned_titles.append("🏛 **امپراطور لیگ**")
 
-      c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+      c.execute("SELECT name FROM players WHERE total_games > 0 AND is_restricted = 0 ORDER BY advanced_skill_score DESC LIMIT 1")
       top_adv = c.fetchone()
       if top_adv and top_adv[0] == name:
         earned_titles.append("🧠 **مغز متفکر**")
@@ -4007,7 +4089,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       s_int = int(season_filter)
       cur_season = get_current_season()
       if s_int == cur_season:
-        c.execute("SELECT name, raw_score, total_games, wins FROM players WHERE total_games > 0")
+        c.execute("SELECT name, raw_score, total_games, wins FROM players WHERE total_games > 0 AND is_restricted = 0")
         p_rows = c.fetchall()
         r_list = []
         for r in p_rows:
@@ -4018,7 +4100,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
           if r_list[0][0] == name:
             earned_titles.append("🏛 **امپراطور لیگ**")
 
-        c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+        c.execute("SELECT name FROM players WHERE total_games > 0 AND is_restricted = 0 ORDER BY advanced_skill_score DESC LIMIT 1")
         top_adv = c.fetchone()
         if top_adv and top_adv[0] == name:
           earned_titles.append("🧠 **مغز متفکر**")
@@ -4109,7 +4191,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       s_int = int(season_filter)
       cur_season = get_current_season()
       if s_int == cur_season:
-        c.execute("SELECT name FROM players WHERE best_streak > 0 ORDER BY best_streak DESC, wins DESC LIMIT 1")
+        c.execute("SELECT name FROM players WHERE best_streak > 0 AND is_restricted = 0 ORDER BY best_streak DESC, wins DESC LIMIT 1")
         top_strk = c.fetchone()
         if top_strk and top_strk[0] == name and best_streak > 0:
           earned_titles.append("⚔️ **ماشین کشتار**")
@@ -4279,7 +4361,6 @@ async def render_and_send_chart_filtered(
     unfair = r[4]
     artin = r[5]
     
-    # 1. محاسبه ریتینگ هوشمند گام به گام
     game_pts = (10 if won else 0) + (4 if mvp else 0) + (-3 if axe else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
     if won:
       temp_streak += 1
@@ -4293,7 +4374,6 @@ async def render_and_send_chart_filtered(
     cur_rating = calculate_rating(running_raw, running_games)
     ratings_list.append(cur_rating)
 
-    # 2. محاسبه پویای امتیاز مهارت پیشرفته (Advanced Skill) بر اساس دینامیک تیم‌ها و پنالتی‌ها
     with sqlite3.connect("mafia_league.db") as conn2:
       c2 = conn2.cursor()
       c2.execute("SELECT player_name, won, is_mvp, is_axe, is_unfair, is_artin FROM match_participants WHERE match_id = ?", (m_id,))
@@ -4322,10 +4402,8 @@ async def render_and_send_chart_filtered(
 
   matches_count = list(range(1, len(rows) + 1))
 
-  # ایجاد تصویر ترکیبی با دو ساب‌پلات کاملاً مجزا
   fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8.5, 7.0), dpi=120, sharex=True)
 
-  # نمودار بالا: ریتینگ هوشمند
   color_rate = "#1f77b4"
   ax1.set_ylabel("Smart Rating", color=color_rate, fontsize=10, fontweight="bold")
   ax1.plot(matches_count, ratings_list, color=color_rate, marker="o", linewidth=2.2, label="Smart Rating")
@@ -4334,7 +4412,6 @@ async def render_and_send_chart_filtered(
   ax1.legend(loc="upper left", framealpha=0.85)
   ax1.set_title(f"Performance Trends: {name} ({range_desc})", fontsize=12, fontweight="bold", pad=10)
 
-  # نمودار پایین: امتیاز مهارت پیشرفته (با رنگ سبز و مقادیر کاملاً مستقل)
   color_adv = "#2ca02c"
   ax2.set_xlabel("Matches Played", fontsize=11, fontweight="bold")
   ax2.set_ylabel("Advanced Skill Score", color=color_adv, fontsize=10, fontweight="bold")
@@ -4473,7 +4550,7 @@ async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   all_players = get_all_player_names()
   if len(all_players) < 4:
-    msg = "❌ برای ثبت مسابقه، حداقل باید ۴ بازیکن عضو لیگ شده باشند."
+    msg = "❌ برای ثبت مسابقه، حداقل باید ۴ بازیکن آزاد عضو لیگ شده باشند."
     if update.message:
       await update.message.reply_text(msg)
     elif update.callback_query:
@@ -4794,6 +4871,13 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   if data == "open_admin_panel":
     await admin_panel(update, context)
+    return
+  if data == "open_restrict_picker":
+    await show_restrict_picker(update, context)
+    return
+  if data.startswith("toggle_restrict:"):
+    u_id = int(data.split(":", 1)[1])
+    await toggle_player_restriction(update, context, u_id)
     return
   if data == "open_matches_list":
     await show_matches_list(update, context)
