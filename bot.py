@@ -492,7 +492,7 @@ async def post_init(application):
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
       BotCommand("scoring", "راهنمای امتیازدهی لیگ 📜"),
-      BotCommand("admin", "پنل مدیریت ادمین ⚙️"),
+      BotCommand("admin", "پنل مدیریت ادمین ⚙️️"),
       BotCommand("matches", "حذف و مدیریت بازی‌ها (ادمین) 🛠"),
       BotCommand("submit_game", "ثبت مسابقه با دکمه (ادمین)"),
       BotCommand("add_player", "افزودن دستی بازیکن (ادمین) ➕"),
@@ -515,7 +515,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
       "▫️ شکست در مسابقه: `۰` امتیاز\n"
-      "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
+      "▫️️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
       "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
       "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
@@ -682,11 +682,11 @@ async def show_rule_detail(update: Update, sec_num: str):
           "      - بار اول: دریافت یک اخطار\n"
           "      - بار دوم: سلب حق رأی\n"
           "      - بار سوم: خروج انضباطی\n"
-          "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد); در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
+          "   ▫️ محتوای صحبت در زمان تارگت یا کاور باید دقیقاً در جهت فرد هدف باشد (تارگت برای رأی جمع کردن علیه فرد / کاور در جهت دفاع از فرد)؛ در غیر این صورت فاقد اعتبار است و می‌سوزد.\n\n"
           "🔹 **شهروندنمایی (ممنوع و دارای کیک مستقیم):** هرگونه فریب نامتعارف برای اثبات بی‌گناهی، از جمله:\n"
           "   ▫️ تظاهر به بی‌خبری از کشته‌های شب، دیالوگ یا تارگت زدن به فرد خارج‌شده.\n"
           "   ▫️ اعلام بی‌تفاوتی به بازی، عدم مشارکت در چالش و رأی‌گیری به قصد اثبات شهروندی.\n"
-          "   ▫️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
+          "   ▫️️ اشاره به نقش‌های سناریوهای دیگر در جریان بازی جاری.\n\n"
           "🔹 **اکت در دفاعیه:** هرگونه اکت دادن در فاز دفاعیه ممنوع بوده و موجب سلب حق رأی می‌شود (مگر در سناریوهایی با قانون اکت آزاد یا میتیک که کیک مستقیم دارد)."
       ),
       "6": (
@@ -730,7 +730,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       [InlineKeyboardButton("🪓 جدول تبر طلایی (پلیر تبر)", callback_data="ask_axes_season")],
       [InlineKeyboardButton("🐍 جدول نامرد طلایی (پلیر آنفیر)", callback_data="ask_unfair_season")],
       [InlineKeyboardButton("👑 جدول آرتین طلایی (آرتین بازی)", callback_data="ask_artin_season")],
-      [InlineKeyboardButton("👥 رده‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
+      [InlineKeyboardButton("👥 رده‌‌بندی بهترین هم‌تیمی‌ها", callback_data="ask_teammates_season")],
       [InlineKeyboardButton("🔥 رده‌بندی بهترین استریک‌ها", callback_data="ask_streaks_season")],
       [InlineKeyboardButton("🎯 برترین شات‌شده‌های شب اول", callback_data="show_shots_lb")],
       [InlineKeyboardButton("⚔️ دوئل و تقابل رودررو", callback_data="ask_vs_season")],
@@ -997,7 +997,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
 
   nav_row = []
   if page > 1:
-    nav_row.append(InlineKeyboardButton("⬅️ صفحه قبل", callback_data=f"unfair_page:{season_filter}:{page - 1}"))
+    nav_row.append(InlineKeyboardButton("⬅️️ صفحه قبل", callback_data=f"unfair_page:{season_filter}:{page - 1}"))
   if page < total_pages:
     nav_row.append(InlineKeyboardButton("صفحه بعد ➡️", callback_data=f"unfair_page:{season_filter}:{page + 1}"))
 
@@ -1010,7 +1010,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1168,7 +1168,7 @@ async def ask_teammates_season_choice(update: Update):
     keyboard.append(row)
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-  text = "👥 **رده‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
+  text = "👥 **رده‌‌بندی بهترین هم‌تیمی‌ها (بیشترین برد مشترک):**\n\nلطفاً بازه مورد نظر را انتخاب فرمایید:"
 
   if update.callback_query:
     try:
@@ -1241,7 +1241,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
     title_badge = " ⟨ 🤝 **اتحاد آهنین** ⟩" if i == 1 else ""
     text += (
         f"{medal} **{r[0]}** 🤝 **{r[1]}**{title_badge}\n"
-        f"   ▫️ بردهای مشترک: `{r[2]}` پیروزی\n"
+        f"   ▫️️ بردهای مشترک: `{r[2]}` پیروزی\n"
         f"────────────────────\n"
     )
 
@@ -1428,7 +1428,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -2092,22 +2092,32 @@ async def process_join_user(
     user, context: ContextTypes.DEFAULT_TYPE, reply_func=None, alert_func=None
 ):
   user_id = user.id
-  display_name = (
+  base_name = (
       user.full_name.strip()
       if user.full_name
       else (user.username or f"Player_{user_id}")
   )
   username = user.username or ""
 
-  try:
-    with sqlite3.connect("mafia_league.db") as conn:
-      c = conn.cursor()
-      c.execute(
-          "INSERT INTO players (user_id, username, name) VALUES (?, ?, ?)",
-          (user_id, username, display_name),
-      )
-      conn.commit()
+  display_name = base_name
+  success = False
 
+  for attempt in range(5):
+    try:
+      with sqlite3.connect("mafia_league.db") as conn:
+        c = conn.cursor()
+        c.execute(
+            "INSERT INTO players (user_id, username, name) VALUES (?, ?, ?)",
+            (user_id, username, display_name),
+        )
+        conn.commit()
+      success = True
+      break
+    except sqlite3.IntegrityError:
+      random_suffix = random.randint(10, 99)
+      display_name = f"{base_name}_{random_suffix}"
+
+  if success:
     log_feature_click(user_id, "عضویت در لیگ")
     msg = (
         f"✅ شما با نام «**{display_name}**» در لیگ ثبت شدید!\nدر صورت نیاز"
@@ -2131,11 +2141,9 @@ async def process_join_user(
       )
     except Exception as e:
       logging.error(f"Error notifying admin: {e}")
-
-  except sqlite3.IntegrityError:
+  else:
     msg = (
-        "ℹ️ شما قبلاً در لیگ عضو شده‌اید. برای تغییر نام از دستور `/rename`"
-        " استفاده کنید."
+        "ℹ️ ثبت‌نام با خطا مواجه شد. لطفاً دوباره تلاش کنید یا نام خود را با دستور `/rename` تغییر دهید."
     )
     if alert_func:
       await alert_func(msg, show_alert=True)
@@ -2655,7 +2663,7 @@ async def delete_match_by_id(update: Update, match_id: int):
 
 async def delete_match_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if update.effective_user.id not in [ADMIN_ID, ADMIN_ID_2]:
-    await update.message.reply_text("⛔️️ فقط ادمین لیگ اجازه دسترسی دارد.")
+    await update.message.reply_text("⛔️ فقط ادمین لیگ اجازه دسترسی دارد.")
     return
 
   if not context.args:
@@ -3043,7 +3051,7 @@ async def ask_table_season_choice(update: Update):
 
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
   text = (
-      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌بندی"
+      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌‌بندی"
       " انتخاب فرمایید:"
   )
 
@@ -3241,7 +3249,7 @@ async def render_table_page_filtered(
         f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
         f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
         f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
+        f"   ▫️ بست‌ها: 🌟`{p['mvp']}` | تبرها: 🪓`{p['axe']}` | نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
         f"────────────────────\n"
     )
 
@@ -3567,7 +3575,7 @@ async def show_vs_picker_first(
     label = p_name[:18] + ("..." if len(p_name) > 18 else "")
     row.append(
         InlineKeyboardButton(
-            f"⚔️️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
+            f"⚔️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
         )
     )
     if len(row) == 2:
@@ -3779,7 +3787,7 @@ async def render_vs_comparison_filtered(
       f"▫️ 🟥 {name2}: `{r2}` ریتینگ {r2_crown}\n\n"
       f"🥊 **تاریخچه رویارویی مستقیم (ساید مخالف):**\n"
       f"▫️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
-      f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
+      f"▫️️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
       f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
       f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
       f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
