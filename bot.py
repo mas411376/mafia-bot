@@ -488,7 +488,7 @@ async def post_init(application):
       BotCommand("shots_top", "برترین سوءقصدشده‌های شب اول 🎯"),
       BotCommand("vs", "تقابل دوئل و رودررو ⚔️"),
       BotCommand("scoring", "راهنمای امتیازدهی لیگ 📜"),
-      BotCommand("admin", "پنل مدیریت ادمین ⚙️"),
+      BotCommand("admin", "پنل مدیریت ادمین ⚙️️"),
       BotCommand("matches", "حذف و مدیریت بازی‌ها (ادمین) 🛠"),
       BotCommand("submit_game", "ثبت مسابقه با دکمه (ادمین)"),
       BotCommand("add_player", "افزودن دستی بازیکن (ادمین) ➕"),
@@ -510,7 +510,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
       "🎖 **امتیازات هر مسابقه:**\n"
       "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️️ شکست در مسابقه: `۰` امتیاز\n"
+      "▫️ شکست در مسابقه: `۰` امتیاز\n"
       "▫️ بست پلیر بازی (MVP): `+۴` امتیاز پاداش\n"
       "▫️ پلیر تبر بازی (برگزیده تبر): `-۳` امتیاز جریمه\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
@@ -523,7 +523,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول نامرد طلایی (آنفیر): 🐍 **پیتون اعظم**\n"
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
       "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
-      "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️️ **ماشین کشتار**\n"
+      "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
       "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
       "⚖️ **نحوه تعیین عناوین (MVP، تبر، آنفیر و آرتین):**\n"
       "▫️ انتخاب بازیکنان برتر، تبر، آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
@@ -664,7 +664,7 @@ async def show_rule_detail(update: Update, sec_num: str):
       "4": (
           "۴. **افشای نقش و سلامت بازی**\n\n"
           "🔹 **افشای نقش (Look/Reveal):** فاش کردن نقش خود یا دیگران (حتی با اشاره)، تهدید به افشا یا خروج بی‌دلیل از بازی ممنوع است:\n"
-          "   ▫️️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
+          "   ▫️ بار اول: کیک و ۴۸ ساعت محرومیت\n"
           "   ▫️ بار دوم: ۷۲ ساعت محرومیت\n\n"
           "🔹 **نقش چسباندن:** نسبت دادن نقش به دیگران (به‌جز سناریوهای مجاز) ممنوع است:\n"
           "   ▫️ بار اول: اخطار | بار دوم: سلب حق رای | بار سوم: کیک\n\n"
@@ -713,7 +713,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
   if not await enforce_channel_lock(update, context, check_lock=True):
     return
 
-  log_feature_click(update.effective_user.id, "منوی اصلی آمار و رده‌‌بندی")
+  log_feature_click(update.effective_user.id, "منوی اصلی آمار و رده‌بندی")
   text = (
       "📊 **بخش آمار، اطلاعات و رده‌بندی لیگ مافیا تکامل** 📊\n\n"
       "لطفاً بخش مورد نظر خود را از دکمه‌های زیر انتخاب کنید:"
@@ -874,7 +874,7 @@ async def render_axes_page_filtered(update: Update, season_filter: str, page: in
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1006,7 +1006,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1138,7 +1138,7 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1491,7 +1491,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
         rows = c.fetchall()
 
   if not rows:
-    text = f"هنوز داده‌ای در رده‌‌بندی پیشرفته {season_title} ثبت نشده است."
+    text = f"هنوز داده‌ای در رده‌بندی پیشرفته {season_title} ثبت نشده است."
     keyboard = [
         [InlineKeyboardButton("🔄 انتخاب فصلی دیگر", callback_data="ask_advanced_season")],
         [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
@@ -1543,7 +1543,7 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -1668,7 +1668,7 @@ async def send_takamol_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
   reply_markup = InlineKeyboardMarkup(keyboard)
 
   caption_text = (
-      "🔥 **به ربات بهترین پلتفرم مافیای خودکار و بدون گرداننده خوش آمدید❗️️**"
+      "🔥 **به ربات بهترین پلتفرم مافیای خودکار و بدون گرداننده خوش آمدید❗️**"
       " 🔥\n\n"
       "🧠 **هوشمند بازی کن، حرفه‌ای ببر** 🏆"
   )
@@ -1751,6 +1751,12 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton(
+                "➕ افزودن بازیکن به مسابقه ثبت‌شده",
+                callback_data="open_add_to_match_list",
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 "🚫 مدیریت محدودیت بازیکنان",
                 callback_data="open_restrict_picker",
             )
@@ -1807,6 +1813,12 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton(
+                "➕ افزودن بازیکن به مسابقه ثبت‌شده",
+                callback_data="open_add_to_match_list",
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 "📋 فهرست بازیکنان لیگ",
                 callback_data="show_players_info",
             )
@@ -1828,6 +1840,159 @@ async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
       await update.callback_query.message.reply_text(
           text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def show_add_to_match_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if update.effective_user.id not in [ADMIN_ID, ADMIN_ID_2]:
+    return
+
+  cur_season = get_current_season()
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute(
+        "SELECT match_id, scenario_name, winning_side, created_at FROM match_history WHERE season = ? ORDER BY match_id DESC",
+        (cur_season,),
+    )
+    rows = c.fetchall()
+
+  if not rows:
+    msg = f"هنوز مسابقه‌ای در فصل {cur_season} ثبت نشده است."
+    if update.callback_query:
+      await update.callback_query.answer(msg, show_alert=True)
+    return
+
+  keyboard = []
+  for m_id, scen, win_side, dt in rows:
+    time_clean = dt.split()[0] if dt else ""
+    btn_text = f"🎮 بازی #{m_id} | {scen} | برنده: {win_side} ({time_clean})"
+    keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"add_to_match_sel:{m_id}")])
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
+  text = "➕ **انتخاب مسابقه:**\n\nمسابقه‌ای که می‌خواهید به آن بازیکن اضافه کنید را انتخاب کنید:"
+  
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def show_add_player_side_picker(update: Update, context: ContextTypes.DEFAULT_TYPE, match_id: int):
+  context.user_data["add_to_match_id"] = match_id
+  
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT winning_side FROM match_history WHERE match_id = ?", (match_id,))
+    m = c.fetchone()
+    winning_side = m[0] if m else "شهروند"
+
+  keyboard = [
+      [InlineKeyboardButton("🏙 شهروند", callback_data="atm_side:شهروند")],
+      [InlineKeyboardButton("🔪 مافیا", callback_data="atm_side:مافیا")],
+      [InlineKeyboardButton("🃏 مستقل", callback_data="atm_side:مستقل")],
+      [InlineKeyboardButton("🔙 بازگشت به لیست مسابقات", callback_data="open_add_to_match_list")]
+  ]
+  text = (
+      f"🎮 **مسابقه شماره #{match_id}**\n\n"
+      f"انتخاب کنید بازیکن جدید به کدام **ساید** اضافه شود؟\n"
+      f"(توجه: اگر ساید انتخاب‌شده با ساید برنده مسابقه مطابقت داشته باشد، امتیاز برد به این بازیکن هم تعلق خواهد گرفت)"
+  )
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def show_add_player_player_picker(update: Update, context: ContextTypes.DEFAULT_TYPE, side: str):
+  context.user_data["add_to_match_side"] = side
+  match_id = context.user_data.get("add_to_match_id")
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    # بازیکنانی که هم‌اکنون در این مسابقه حضور دارند را پیدا کنیم تا مجدد نشان ندهیم
+    c.execute("SELECT player_name FROM match_participants WHERE match_id = ?", (match_id,))
+    existing = [r[0] for r in c.fetchall()]
+
+    c.execute("SELECT name FROM players WHERE is_restricted = 0 ORDER BY name ASC")
+    all_players = [r[0] for r in c.fetchall()]
+
+  available_players = [p for p in all_players if p not in existing]
+
+  if not available_players:
+    keyboard = [[InlineKeyboardButton("🔙 بازگشت", callback_data=f"add_to_match_sel:{match_id}")]]
+    if update.callback_query:
+      await update.callback_query.message.reply_text("❌ تمامی بازیکنان آزاد فعال هم‌اکنون در این مسابقه حضور دارند.", reply_markup=InlineKeyboardMarkup(keyboard))
+    return
+
+  keyboard = []
+  row = []
+  for p_name in available_players:
+    label = p_name[:18] + ("..." if len(p_name) > 18 else "")
+    row.append(InlineKeyboardButton(f"👤 {label}", callback_data=f"atm_player:{p_name}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به انتخاب ساید", callback_data=f"add_to_match_sel:{match_id}")])
+  text = f"➕ **افزودن به ساید [{side}]**\n\nبازیکن مورد نظر را انتخاب کنید:"
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def execute_add_player_to_match(update: Update, context: ContextTypes.DEFAULT_TYPE, player_name: str):
+  match_id = context.user_data.get("add_to_match_id")
+  side = context.user_data.get("add_to_match_side")
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT winning_side FROM match_history WHERE match_id = ?", (match_id,))
+    row = c.fetchone()
+    if not row:
+      if update.callback_query:
+        await update.callback_query.answer("❌ مسابقه یافت نشد.", show_alert=True)
+      return
+    winning_side = row[0]
+    won = 1 if side == winning_side else 0
+
+    c.execute(
+        "INSERT INTO match_participants (match_id, player_name, side, won, is_mvp, is_axe, is_unfair, is_artin, night1_shot, night1_out) VALUES (?, ?, ?, ?, 0, 0, 0, 0, 0, 0)",
+        (match_id, player_name, side, won)
+    )
+    conn.commit()
+
+  recalculate_all_players()
+
+  msg = (
+      f"🎉 **بازیکن با موفقیت به مسابقه اضافه شد!**\n\n"
+      f"👤 نام بازیکن: **{player_name}**\n"
+      f"🎭 ساید: **{side}**\n"
+      f"🏆 وضعیت برد در این مسابقه: **{'پیروز ✅' if won == 1 else 'شکست ❌'}**\n\n"
+      f"امتیازات و ریتینگ‌های لیگ مجدداً محاسبه و به‌روزرسانی شدند."
+  )
+  keyboard = [
+      [InlineKeyboardButton("➕ افزودن بازیکن دیگر به این مسابقه", callback_data=f"add_to_match_sel:{match_id}")],
+      [InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]
+  ]
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          msg, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
       )
     except Exception:
       pass
@@ -2224,7 +2389,7 @@ async def render_public_history_page(update: Update, page: int):
   if page < total_pages:
     nav_row.append(
         InlineKeyboardButton(
-            "صفحه بعد ➡️", callback_data=f"pub_history_page:{page + 1}"
+            "صفحه بعد ➡️️", callback_data=f"pub_history_page:{page + 1}"
         )
     )
 
@@ -2384,7 +2549,7 @@ async def show_merge_picker_old(update: Update, context: ContextTypes.DEFAULT_TY
   keyboard.append([InlineKeyboardButton("🔙 بازگشت به پنل ادمین", callback_data="open_admin_panel")])
   text = (
       "🔄 **مرحله ۱ ادغام (حذف شونده):**\n\n"
-      "لطفاً **نام قدیمی / ثبت دستی** که می‌خواهید تمام سوابقش منتقل و خودش"
+      "لطفاً **نام قدیمی / ثبت دستی** که می‌‌خواهید تمام سوابقش منتقل و خودش"
       " **حذف** شود را انتخاب کنید:"
   )
   if update.callback_query:
@@ -3571,7 +3736,7 @@ async def show_vs_picker_first(
     label = p_name[:18] + ("..." if len(p_name) > 18 else "")
     row.append(
         InlineKeyboardButton(
-            f"⚔️️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
+            f"⚔️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
         )
     )
     if len(row) == 2:
@@ -4687,6 +4852,21 @@ async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     u_id = int(data.split(":", 1)[1])
     await toggle_player_restriction(update, context, u_id)
     return
+  if data == "open_add_to_match_list":
+    await show_add_to_match_list(update, context)
+    return
+  if data.startswith("add_to_match_sel:"):
+    m_id = int(data.split(":", 1)[1])
+    await show_add_player_side_picker(update, context, m_id)
+    return
+  if data.startswith("atm_side:"):
+    side_name = data.split(":", 1)[1]
+    await show_add_player_player_picker(update, context, side_name)
+    return
+  if data.startswith("atm_player:"):
+    player_name = data.split(":", 1)[1]
+    await execute_add_player_to_match(update, context, player_name)
+    return
   if data == "open_matches_list":
     await show_matches_list(update, context)
     return
@@ -5111,7 +5291,7 @@ async def refresh_multiselect_mafias(query, flow):
   
   keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مافیاها", callback_data="m_maf_done")])
 
-  selected_str = ", ".join(selected) if selected else "هیچ‌‌کس انتخاب نشده"
+  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
   try:
     await query.edit_message_text(
         f"🔪 مافیاهای تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
