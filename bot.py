@@ -563,7 +563,11 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   log_feature_click(update.effective_user.id, "راهنمای امتیازدهی")
   text = (
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
-      "🎖 **مدل جدید و جامع امتیازدهی و ضرایب لیگ تکامل:**\n\n"
+      "🎖 **مدل جامع امتیازدهی و ضرایب لیگ تکامل:**\n"
+      "▫️ امتیاز پایه هر برد: `۱۰` امتیاز (قابل تعدیل بر اساس ضریب قدرت حریف، نوع پیروزی و سناریو)\n"
+      "▫️ شکست در مسابقه: `۰` امتیاز\n"
+      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
+      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
       "🔥 **۱. پاداش استریک‌های پیاپی (پلکانی و تصاعدی):**\n"
       "▫️ برد ۱ و ۲: بدون پاداش استریک (ضریب پایه)\n"
       "▫️ برد ۳ متوالی: `+۲` امتیاز اضافه\n"
@@ -574,15 +578,12 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ برد در برابر تیم هم‌سطح: ضریب `1.0` (امتیاز استاندارد)\n"
       "▫️ برد در برابر تیم ضعیف‌تر: ضریب `0.8` (پاداش کمتر برای بردهای قابل پیش‌بینی)\n\n"
       "🏁 **۳. پاداش نوع پیروزی (کلین‌شیت و کی‌آس):**\n"
-      "▫️ کلین‌شیت شهروندی (برد قاطع بدون تلفات): ضریب `2.0`\n"
-      "▫️ کلین‌شیت مافیایی (برد قاطع مافیا): ضریب `1.4`\n"
-      "▫️ پیروزی در حالت کی‌آس (Chaos): ضریب `0.7`\n\n"
+      "▫️ کلین‌شیت شهروندی (برد قاطع بدون تلفات): ضریب `2.0` (دو برابر امتیاز برد عادی)\n"
+      "▫️ کلین‌شیت مافیایی (برد قاطع مافیا): ضریب `1.4` (پاداش بیشتر نسبت به برد معمولی)\n"
+      "▫️ پیروزی در حالت کی‌آس (Chaos): ضریب `0.7` (چون بازی از حالت استاندارد خارج شده و شانس هم دخیل بوده، پاداش کمتری برای تعادل لحاظ می‌شود)\n\n"
       "🎬 **۴. ضریب سختی و جذابیت سناریوها:**\n"
-      "▫️ سناریوهای ویژه (ضریب `1.3`): شاهنامه، رنک، هانیبال، اختاپوس مخوف، جایزه سر رئیس، میتیک، ارتش سری، نقابدار، دربار، پرطرفدار\n"
+      "▫️ سناریوهای ویژه (ضریب `1.3`): شاهنامه، رنک، هانیبال، اختاپوس مخوف (سندیکا)، جایزه سر رئیس، میتیک، ارتش سری، نقابدار، دربار، پرطرفدار\n"
       "▫️ سایر سناریوهای استاندارد: ضریب `1.0`\n\n"
-      "❌ **جریمه‌ها:**\n"
-      "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
-      "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
       "👑 **القاب اختصاصی نفرات اول هر جدول در هر فصل:**\n"
       "▫️ نفر اول جدول رده‌بندی لیگ: 🏛 **امپراطور لیگ**\n"
       "▫️ نفر اول رده‌بندی پیشرفته (ارزش برد): 🧠 **مغز متفکر**\n"
@@ -590,7 +591,17 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
       "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
       "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
-      "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**"
+      "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
+      "⚖️ **نحوه تعیین عناوین (آنفیر و آرتین):**\n"
+      "▫️ انتخاب بازیکنان آنفیر و آرتین بر عهده مدیر بازی و در صورت نداشتن مدیر، بر عهده گرداننده (گاد) داخل بازی است.\n\n"
+      "📌 **قوانین و شرایط خاص یارفروشی و خودزنی:**\n"
+      "▫️ اگر تصمیم یارفروشی یا خودزنی، تصمیم کل تیم باشد، جریمه برای همه اعضای تیم لحاظ می‌شود؛ در این حالت تیم با توجه به امتیاز برد و جریمه کسر شده، پاداش بسیار کمی از آن برد نصیبش خواهد شد.\n"
+      "▫️ اما اگر یارفروشی یا خودزنی تصمیم فردی باشد، جریمه صرفاً شامل حال همان فرد خواهد شد.\n"
+      "▫️ در نتیجه، یارفروشی اصلاً توصیه نمی‌شود، اما بازیکن می‌تواند با انجام این کار امتیاز برد را دریافت کند و حتی اگر روی نوار استریک برد باشد، با حفظ آن نوار امتیاز بیشتری کسب کند.\n\n"
+      "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
+      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
+      "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
+      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر مجموع امتیازات خام اصلاح‌شده، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد."
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")]]
   if update.message:
@@ -3133,257 +3144,6 @@ async def ask_table_season_choice(update: Update):
 
 
 PAGE_SIZE = 10
-
-
-async def render_table_page_filtered(
-    update: Update, season_filter: str, page: int
-):
-  log_feature_click(update.effective_user.id, f"جدول لیگ ({season_filter})")
-
-  with sqlite3.connect("mafia_league.db") as conn:
-    c = conn.cursor()
-    if season_filter == "all":
-      season_title = "کل تاریخچه (All-Time)"
-      c.execute("SELECT DISTINCT player_name FROM match_participants")
-      active_players = [r[0] for r in c.fetchall()]
-
-      c.execute("SELECT name FROM players")
-      all_db_players = [r[0] for r in c.fetchall()]
-      players_pool = sorted(list(set(active_players + all_db_players)))
-
-      ranking = []
-      for p_name in players_pool:
-        c.execute(
-            """
-                    SELECT p.won, p.is_unfair, p.is_artin, p.side, m.match_id, m.scenario_name, m.end_mode 
-                    FROM match_participants p
-                    JOIN match_history m ON p.match_id = m.match_id
-                    WHERE p.player_name = ?
-                    ORDER BY m.match_id ASC
-                """,
-            (p_name,),
-        )
-        matches = c.fetchall()
-        total_g = len(matches)
-        wins = sum(1 for m in matches if m[0] == 1)
-        losses = total_g - wins
-        unfairs = sum(1 for m in matches if m[1] == 1)
-        artins = sum(1 for m in matches if m[2] == 1)
-
-        raw = 0.0
-        cur_streak = 0
-        for m in matches:
-          won = m[0]
-          unfair = m[1]
-          artin = m[2]
-          side = m[3]
-          m_id = m[4]
-          scen_name = m[5]
-          end_mode = m[6]
-
-          if won == 1:
-            cur_streak += 1
-            if cur_streak == 3:
-              streak_bonus = 2.0
-            elif cur_streak == 4:
-              streak_bonus = 4.0
-            elif cur_streak >= 5:
-              streak_bonus = 6.0
-            else:
-              streak_bonus = 0.0
-
-            opp_mult = get_opponent_strength_multiplier(conn, m_id, p_name, side)
-
-            if end_mode == "کلین شیت":
-              if side == "شهروند":
-                win_type_mult = 2.0
-              elif side == "مافیا":
-                win_type_mult = 1.4
-              else:
-                win_type_mult = 1.0
-            elif end_mode == "کی آس":
-              win_type_mult = 0.7
-            else:
-              win_type_mult = 1.0
-
-            scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
-            game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
-          else:
-            cur_streak = 0
-            game_pts = 0.0
-
-          if unfair:
-            game_pts -= 6.0
-          if artin:
-            game_pts -= 8.0
-
-          raw += game_pts
-
-        rate = calculate_rating(raw, total_g)
-        win_rate = round((wins / total_g * 100), 1) if total_g > 0 else 0
-        ranking.append({
-            "name": p_name,
-            "rating": rate,
-            "raw_score": round(raw, 2),
-            "total_games": total_g,
-            "wins": wins,
-            "losses": losses,
-            "unfair": unfairs,
-            "artin": artins,
-            "streak": cur_streak,
-            "win_rate": win_rate,
-        })
-    else:
-      s_int = int(season_filter)
-      season_title = f"فصل {s_int}"
-      cur_season = get_current_season()
-
-      if s_int == cur_season:
-        c.execute(
-            "SELECT name, raw_score, total_games, wins, losses,"
-            " unfair_count, artin_count, current_streak FROM players"
-        )
-        rows = c.fetchall()
-        ranking = []
-        for r in rows:
-          rate = calculate_rating(r[1], r[2])
-          win_rate = round((r[3] / r[2] * 100), 1) if r[2] > 0 else 0
-          ranking.append({
-              "name": r[0],
-              "rating": rate,
-              "raw_score": r[1],
-              "total_games": r[2],
-              "wins": r[3],
-              "losses": r[4],
-              "unfair": r[5],
-              "artin": r[6],
-              "streak": r[7],
-              "win_rate": win_rate,
-          })
-      else:
-        c.execute(
-            """
-                    SELECT player_name, final_rating, raw_score, total_games, wins, losses, unfair_count, artin_count 
-                    FROM season_archives 
-                    WHERE season = ? 
-                    ORDER BY final_rank ASC
-                """,
-            (s_int,),
-        )
-        rows = c.fetchall()
-        ranking = []
-        for r in rows:
-          win_rate = round((r[4] / r[3] * 100), 1) if r[3] > 0 else 0
-          ranking.append({
-              "name": r[0],
-              "rating": r[1],
-              "raw_score": r[2],
-              "total_games": r[3],
-              "wins": r[4],
-              "losses": r[5],
-              "unfair": r[6],
-              "artin": r[7],
-              "streak": 0,
-              "win_rate": win_rate,
-          })
-
-  if not ranking:
-    text = f"هنوز داده‌ای در جدول {season_title} ثبت نشده است."
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🔄 انتخاب فصلی دیگر", callback_data="ask_table_season"
-            )
-        ],
-        [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
-    ]
-    if update.callback_query:
-      try:
-        await update.callback_query.message.reply_text(
-            text, reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-      except Exception:
-        pass
-    elif update.message:
-      await update.message.reply_text(
-          text, reply_markup=InlineKeyboardMarkup(keyboard)
-      )
-    return
-
-  ranking.sort(key=lambda x: (x["rating"], x["raw_score"], x["wins"]), reverse=True)
-
-  total_players = len(ranking)
-  total_pages = max(1, math.ceil(total_players / PAGE_SIZE))
-  page = max(1, min(page, total_pages))
-
-  start_idx = (page - 1) * PAGE_SIZE
-  end_idx = min(start_idx + PAGE_SIZE, total_players)
-  page_players = ranking[start_idx:end_idx]
-
-  text = (
-      f"🏆 **جدول رده‌بندی لیگ تکامل ({season_title})** 🏆\n"
-      f"صفحه {page} از {total_pages}\n"
-      f"➖➖➖➖➖➖➖➖➖➖\n\n"
-  )
-
-  for i, p in enumerate(page_players, start=start_idx + 1):
-    medal = (
-        "🥇"
-        if i == 1
-        else "🥈" if i == 2 else "🥉" if i == 3 else f"`#{i:02d}`"
-    )
-    crown = " 👑" if i == 1 else ""
-    streak_badge = f" 🔥`{p['streak']}`" if p["streak"] > 1 else ""
-    title_badge = " ⟨ 🏛 **امپراطور لیگ** ⟩" if i == 1 else ""
-
-    text += (
-        f"{medal} **{p['name']}**{crown}{title_badge}{streak_badge}\n"
-        f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
-        f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
-        f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
-        f"   ▫️ نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
-        f"────────────────────\n"
-    )
-
-  text += f"👥 کل شرکت‌کنندگان این بازه: `{total_players}` نفر"
-
-  nav_row = []
-  if page > 1:
-    nav_row.append(
-        InlineKeyboardButton(
-            "⬅️ صفحه قبل", callback_data=f"table_page:{season_filter}:{page - 1}"
-        )
-    )
-  if page < total_pages:
-    nav_row.append(
-        InlineKeyboardButton(
-            "صفحه بعد ➡️", callback_data=f"table_page:{season_filter}:{page + 1}"
-        )
-    )
-
-  keyboard = []
-  if nav_row:
-    keyboard.append(nav_row)
-  keyboard.append([
-      InlineKeyboardButton(
-          "🔄 تغییر فصل / بازه جدول", callback_data="ask_table_season"
-      )
-  ])
-  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
-
-  reply_markup = InlineKeyboardMarkup(keyboard)
-
-  if update.callback_query:
-    try:
-      await update.callback_query.message.reply_text(
-          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-      )
-    except Exception:
-      pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard)
-    )
 
 
 async def table(update: Update, context: ContextTypes.DEFAULT_TYPE):
