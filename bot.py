@@ -23,7 +23,7 @@ from telegram.ext import (
 
 TOKEN = "8842154275:AAFW0Pi9C6TDbCYMtgRJexpel3ut2BIS_M4"
 ADMIN_ID = 61730708
-ADMIN_ID_2 = 5525697104  # ادمین دوم با دسترسی محدود به ثبت و مدیریت بازی‌ها
+ADMIN_ID_2 = 5525697104
 
 TUTORIAL_CHANNEL_URL = "https://t.me/MASamoozesh"
 GROUP_INVITE_URL = "https://t.me/+cvkbTFtXhqhkZGI0"
@@ -58,6 +58,19 @@ SCENARIO_LIST = [
     "میتیک",
 ]
 
+SPECIAL_SCENARIOS = [
+    "شاهنامه",
+    "رنک",
+    "هانیبال",
+    "اختاپوس مخوف (سندیکا)",
+    "جایزه سر رئیس",
+    "میتیک",
+    "ارتش سری",
+    "نقابدار",
+    "دربار",
+    "پرطرفدار",
+]
+
 
 def init_db():
   with sqlite3.connect("mafia_league.db") as conn:
@@ -78,7 +91,7 @@ def init_db():
                 user_id INTEGER PRIMARY KEY,
                 username TEXT,
                 name TEXT UNIQUE,
-                raw_score INTEGER DEFAULT 0,
+                raw_score REAL DEFAULT 0.0,
                 total_games INTEGER DEFAULT 0,
                 wins INTEGER DEFAULT 0,
                 losses INTEGER DEFAULT 0,
@@ -135,7 +148,7 @@ def init_db():
                 player_name TEXT,
                 final_rank INTEGER,
                 final_rating REAL,
-                raw_score INTEGER,
+                raw_score REAL,
                 total_games INTEGER,
                 wins INTEGER,
                 losses INTEGER,
@@ -235,6 +248,36 @@ def calculate_rating(raw_score, total_games):
   return round(base + bonus, 2)
 
 
+def get_opponent_strength_multiplier(conn, match_id, player_name, player_side):
+  c = conn.cursor()
+  c.execute("SELECT player_name, side, won FROM match_participants WHERE match_id = ?", (match_id,))
+  parts = c.fetchall()
+  
+  opp_ratings = []
+  for p_name, side, won in parts:
+    if side != player_side:
+      c.execute("SELECT advanced_skill_score FROM players WHERE name = ?", (p_name,))
+      r_row = c.fetchone()
+      opp_ratings.append(r_row[0] if r_row else 1000.0)
+      
+  c.execute("SELECT advanced_skill_score FROM players WHERE name = ?", (player_name,))
+  p_row = c.fetchone()
+  p_rating = p_row[0] if p_row else 1000.0
+  
+  if not opp_ratings:
+    return 1.0
+    
+  avg_opp_rating = sum(opp_ratings) / len(opp_ratings)
+  diff = avg_opp_rating - p_rating
+  
+  if diff > 30.0:
+    return 1.3
+  elif diff < -30.0:
+    return 0.8
+  else:
+    return 1.0
+
+
 def recalculate_all_players():
   cur_season = get_current_season()
   with sqlite3.connect("mafia_league.db") as conn:
@@ -284,7 +327,7 @@ def recalculate_all_players():
     for p_name in players:
       c.execute(
           """
-                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.night1_shot, p.night1_out, p.match_id
+                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.night1_shot, p.night1_out, p.match_id, m.scenario_name, m.end_0, m.end_mode
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -327,7 +370,7 @@ def recalculate_all_players():
           if ch_impact == "بله":
             c_impact_count += 1
 
-      raw = 0
+      raw = 0.0
       cur_streak = 0
       best_streak = 0
 
@@ -335,15 +378,49 @@ def recalculate_all_players():
         won = m[1]
         unfair = m[2]
         artin = m[3]
-        
-        game_pts = (10 if won else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-        if won:
+        m_id = m[6]
+        scen_name = m[7]
+        end_mode = m[9]
+        side = m[0]
+
+        if won == 1:
           cur_streak += 1
-          if cur_streak >= 3:
-            game_pts += 2
           best_streak = max(best_streak, cur_streak)
+          
+          if cur_streak == 3:
+            streak_bonus = 2.0
+          elif cur_streak == 4:
+            streak_bonus = 4.0
+          elif cur_streak >= 5:
+            streak_bonus = 6.0
+          else:
+            streak_bonus = 0.0
+
+          opp_mult = get_opponent_strength_multiplier(conn, m_id, p_name, side)
+
+          if end_mode == "کلین شیت":
+            if side == "شهروند":
+              win_type_mult = 2.0
+            elif side == "مافیا":
+              win_type_mult = 1.4
+            else:
+              win_type_mult = 1.0
+          elif end_mode == "کی آس":
+            win_type_mult = 0.7
+          else:
+            win_type_mult = 1.0
+
+          scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
+
+          game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
         else:
           cur_streak = 0
+          game_pts = 0.0
+
+        if unfair:
+          game_pts -= 6.0
+        if artin:
+          game_pts -= 8.0
 
         raw += game_pts
 
@@ -369,7 +446,7 @@ def recalculate_all_players():
                 WHERE name = ?
             """,
           (
-              raw,
+              round(raw, 2),
               total_g,
               wins,
               losses,
@@ -486,9 +563,24 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
   log_feature_click(update.effective_user.id, "راهنمای امتیازدهی")
   text = (
       "📜 **راهنمای سیستم امتیازدهی و ریتینگ لیگ:**\n\n"
-      "🎖 **امتیازات هر مسابقه:**\n"
-      "▫️ پیروزی در مسابقه: `+۱۰` امتیاز\n"
-      "▫️ شکست در مسابقه: `۰` امتیاز\n"
+      "🎖 **مدل جدید و جامع امتیازدهی و ضرایب لیگ تکامل:**\n\n"
+      "🔥 **۱. پاداش استریک‌های پیاپی (پلکانی و تصاعدی):**\n"
+      "▫️ برد ۱ و ۲: بدون پاداش استریک (ضریب پایه)\n"
+      "▫️ برد ۳ متوالی: `+۲` امتیاز اضافه\n"
+      "▫️ برد ۴ متوالی: `+۴` امتیاز اضافه\n"
+      "▫️ برد ۵ و بالاتر: `+۶` امتیاز اضافه به ازای هر برد متوالی\n\n"
+      "⚖️ **۲. ضریب قدرت حریف (توازن مهارت تیم‌ها):**\n"
+      "▫️ برد در برابر تیم قوی‌تر: ضریب `1.3` (پاداش ویژه به خاطر تسخیر حریف قدرتمند)\n"
+      "▫️ برد در برابر تیم هم‌سطح: ضریب `1.0` (امتیاز استاندارد)\n"
+      "▫️ برد در برابر تیم ضعیف‌تر: ضریب `0.8` (پاداش کمتر برای بردهای قابل پیش‌بینی)\n\n"
+      "🏁 **۳. پاداش نوع پیروزی (کلین‌شیت و کی‌آس):**\n"
+      "▫️ کلین‌شیت شهروندی (برد قاطع بدون تلفات): ضریب `2.0`\n"
+      "▫️ کلین‌شیت مافیایی (برد قاطع مافیا): ضریب `1.4`\n"
+      "▫️ پیروزی در حالت کی‌آس (Chaos): ضریب `0.7`\n\n"
+      "🎬 **۴. ضریب سختی و جذابیت سناریوها:**\n"
+      "▫️ سناریوهای ویژه (ضریب `1.3`): شاهنامه، رنک، هانیبال، اختاپوس مخوف، جایزه سر رئیس، میتیک، ارتش سری، نقابدار، دربار، پرطرفدار\n"
+      "▫️ سایر سناریوهای استاندارد: ضریب `1.0`\n\n"
+      "❌ **جریمه‌ها:**\n"
       "▫️ پلیر آنفیر (نامرد بازی): `-۶` امتیاز جریمه\n"
       "▫️ پلیر آرتین (یارفروش): `-۸` امتیاز جریمه\n\n"
       "👑 **القاب اختصاصی نفرات اول هر جدول در هر فصل:**\n"
@@ -498,19 +590,7 @@ async def scoring_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
       "▫️ نفر اول جدول آرتین طلایی: 🐺 **کفتار تنها**\n"
       "▫️ نفر اول رده‌بندی بهترین هم‌تیمی‌ها: 🤝 **اتحاد آهنین**\n"
       "▫️ نفر اول رده‌بندی بهترین استریک‌ها: ⚔️ **ماشین کشتار**\n"
-      "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**\n\n"
-      "⚖️ **نحوه تعیین عناوین (آنفیر و آرتین):**\n"
-      "▫️ انتخاب بازیکنان آنفیر و آرتین **بر عهده مدیر بازی** و در صورت نداشتن مدیر، **بر عهده گرداننده (گاد)** داخل بازی است.\n\n"
-      "📌 **قوانین و شرایط خاص یارفروشی و خودزنی:**\n"
-      "▫️ اگر تصمیم یارفروشی یا خودزنی، **تصمیم کل تیم** باشد، جریمه برای همه اعضای تیم لحاظ می‌شود؛ در این حالت تیم با توجه به امتیاز برد و جریمه کسر شده، پاداش بسیار کمی از آن برد نصیبش خواهد شد.\n"
-      "▫️ اما اگر یارفروشی یا خودزنی **تصمیم فردی** باشد، جریمه صرفاً شامل حال همان فرد خواهد شد.\n"
-      "▫️ در نتیجه، یارفروشی اصلاً توصیه نمی‌شود، اما بازیکن می‌تواند با انجام این کار امتیاز برد را دریافت کند و حتی اگر روی نوار استریک برد باشد، با حفظ آن نوار امتیاز بیشتری کسب کند.\n\n"
-      "🔥 **پاداش ویژه کمبو (StreaK Bonus):**\n"
-      "▫️ کسب بردهای پیاپی (۳ برد و بیشتر): پاداش ویژه `+۲` امتیاز اضافی به ازای هر برد متوالی از برد سوم به بعد!\n\n"
-      "⭐ **رده‌بندی پیشرفته (پویا و مهارت‌محور):**\n"
-      "در این بخش امتیازات بر اساس میانگین مهارت تیم‌ها محاسبه می‌شود؛ برد در برابر تیم‌های قوی‌تر پاداش بیشتری دارد و باخت در برابر تیم‌های ضعیف‌تر جریمه سنگین‌تری به همراه خواهد داشت.\n\n"
-      "⚖️ **نحوه محاسبه ریتینگ در جدول رده‌بندی:**\n"
-      "رتبه نهایی بازیکنان بر اساس «ریتینگ هوشمند» محاسبه می‌شود که علاوه بر مجموع امتیازات، تعداد بازی‌ها و کیفیت عملکرد را در نظر می‌گیرد."
+      "▫️ نفر اول برترین شات‌شده‌های شب اول: 🎯 **کابوس مافیا**"
   )
   keyboard = [[InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")]]
   if update.message:
@@ -2059,7 +2139,7 @@ async def execute_finish_season(
 
     c.execute("""
             UPDATE players SET
-                raw_score = 0, total_games = 0, wins = 0, losses = 0,
+                raw_score = 0.0, total_games = 0, wins = 0, losses = 0,
                 unfair_count = 0, artin_count = 0, citizen_games = 0, citizen_wins = 0,
                 mafia_games = 0, mafia_wins = 0, independent_games = 0, independent_wins = 0,
                 current_streak = 0, best_streak = 0, night1_shots = 0, night1_outs = 0,
@@ -3075,10 +3155,11 @@ async def render_table_page_filtered(
       for p_name in players_pool:
         c.execute(
             """
-                    SELECT won, is_unfair, is_artin 
-                    FROM match_participants 
-                    WHERE player_name = ?
-                    ORDER BY match_id ASC
+                    SELECT p.won, p.is_unfair, p.is_artin, p.side, m.match_id, m.scenario_name, m.end_mode 
+                    FROM match_participants p
+                    JOIN match_history m ON p.match_id = m.match_id
+                    WHERE p.player_name = ?
+                    ORDER BY m.match_id ASC
                 """,
             (p_name,),
         )
@@ -3089,20 +3170,53 @@ async def render_table_page_filtered(
         unfairs = sum(1 for m in matches if m[1] == 1)
         artins = sum(1 for m in matches if m[2] == 1)
 
-        raw = 0
+        raw = 0.0
         cur_streak = 0
         for m in matches:
-          game_pts = (
-              (10 if m[0] == 1 else 0)
-              + (-6 if m[1] == 1 else 0)
-              + (-8 if m[2] == 1 else 0)
-          )
-          if m[0] == 1:
+          won = m[0]
+          unfair = m[1]
+          artin = m[2]
+          side = m[3]
+          m_id = m[4]
+          scen_name = m[5]
+          end_mode = m[6]
+
+          if won == 1:
             cur_streak += 1
-            if cur_streak >= 3:
-              game_pts += 2
+            if cur_streak == 3:
+              streak_bonus = 2.0
+            elif cur_streak == 4:
+              streak_bonus = 4.0
+            elif cur_streak >= 5:
+              streak_bonus = 6.0
+            else:
+              streak_bonus = 0.0
+
+            opp_mult = get_opponent_strength_multiplier(conn, m_id, p_name, side)
+
+            if end_mode == "کلین شیت":
+              if side == "شهروند":
+                win_type_mult = 2.0
+              elif side == "مافیا":
+                win_type_mult = 1.4
+              else:
+                win_type_mult = 1.0
+            elif end_mode == "کی آس":
+              win_type_mult = 0.7
+            else:
+              win_type_mult = 1.0
+
+            scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
+            game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
           else:
             cur_streak = 0
+            game_pts = 0.0
+
+          if unfair:
+            game_pts -= 6.0
+          if artin:
+            game_pts -= 8.0
+
           raw += game_pts
 
         rate = calculate_rating(raw, total_g)
@@ -3110,7 +3224,7 @@ async def render_table_page_filtered(
         ranking.append({
             "name": p_name,
             "rating": rate,
-            "raw_score": raw,
+            "raw_score": round(raw, 2),
             "total_games": total_g,
             "wins": wins,
             "losses": losses,
@@ -3726,7 +3840,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
 
     if season_filter == "all":
       query = """
-                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out
+                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out, m.scenario_name, m.end_mode
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ?
@@ -3741,7 +3855,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
     else:
       s_int = int(season_filter)
       query = """
-                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out
+                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out, m.scenario_name, m.end_mode
                 FROM match_participants p
                 JOIN match_history m ON p.match_id = m.match_id
                 WHERE p.player_name = ? AND m.season = ?
@@ -3791,7 +3905,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
         if ch_i == "بله":
           ch_impact_count += 1
 
-    raw = 0
+    raw = 0.0
     cur_streak = 0
     best_streak = 0
 
@@ -3799,15 +3913,49 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       won = m[1]
       unfair = m[2]
       artin = m[3]
-      
-      game_pts = (10 if won else 0) + (-6 if unfair else 0) + (-8 if artin else 0)
-      if won:
+      m_id = m[4]
+      scen_name = m[7]
+      end_mode = m[8]
+      side = m[0]
+
+      if won == 1:
         cur_streak += 1
-        if cur_streak >= 3:
-          game_pts += 2
         best_streak = max(best_streak, cur_streak)
+        
+        if cur_streak == 3:
+          streak_bonus = 2.0
+        elif cur_streak == 4:
+          streak_bonus = 4.0
+        elif cur_streak >= 5:
+          streak_bonus = 6.0
+        else:
+          streak_bonus = 0.0
+
+        opp_mult = get_opponent_strength_multiplier(conn, m_id, name, side)
+
+        if end_mode == "کلین شیت":
+          if side == "شهروند":
+            win_type_mult = 2.0
+          elif side == "مافیا":
+            win_type_mult = 1.4
+          else:
+            win_type_mult = 1.0
+        elif end_mode == "کی آس":
+          win_type_mult = 0.7
+        else:
+          win_type_mult = 1.0
+
+        scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
+        game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
       else:
         cur_streak = 0
+        game_pts = 0.0
+
+      if unfair:
+        game_pts -= 6.0
+      if artin:
+        game_pts -= 8.0
+
       raw += game_pts
 
     cit_games = sum(1 for m in matches if m[0] == "شهروند")
@@ -3852,12 +4000,44 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       all_p_names = [r[0] for r in c.fetchall()]
       ranking_data = []
       for p_n in all_p_names:
-        c.execute("SELECT won, is_unfair, is_artin FROM match_participants WHERE player_name = ?", (p_n,))
+        c.execute("""
+            SELECT p.won, p.is_unfair, p.is_artin, p.side, m.match_id, m.scenario_name, m.end_mode 
+            FROM match_participants p 
+            JOIN match_history m ON p.match_id = m.match_id 
+            WHERE p.player_name = ?
+        """, (p_n,))
         p_matches = c.fetchall()
         p_g = len(p_matches)
-        p_raw = sum((10 if m[0] == 1 else 0) + (-6 if m[1] == 1 else 0) + (-8 if m[2] == 1 else 0) for m in p_matches)
+        
+        p_raw = 0.0
+        p_strk = 0
+        for pm in p_matches:
+          p_w = pm[0]
+          p_unf = pm[1]
+          p_art = pm[2]
+          p_side = pm[3]
+          pm_id = pm[4]
+          psc_name = pm[5]
+          pend_mode = pm[6]
+          
+          if p_w == 1:
+            p_strk += 1
+            st_b = 2.0 if p_strk == 3 else (4.0 if p_strk == 4 else (6.0 if p_strk >= 5 else 0.0))
+            op_m = get_opponent_strength_multiplier(conn, pm_id, p_n, p_side)
+            wt_m = 2.0 if pend_mode == "کلین شیت" and p_side == "شهروند" else (1.4 if pend_mode == "کلین شیت" and p_side == "مافیا" else (0.7 if pend_mode == "کی آس" else 1.0))
+            sc_m = 1.3 if psc_name in SPECIAL_SCENARIOS else 1.0
+            pts = ((10.0 * op_m * wt_m) + st_b) * sc_m
+          else:
+            p_strk = 0
+            pts = 0.0
+          if p_unf:
+            pts -= 6.0
+          if p_art:
+            pts -= 8.0
+          p_raw += pts
+
         p_rate = calculate_rating(p_raw, p_g)
-        p_wins = sum(1 for m in p_matches if m[0] == 1)
+        p_wins = sum(1 for pm in p_matches if pm[0] == 1)
         ranking_data.append((p_n, p_rate, p_raw, p_wins))
       
       if ranking_data:
@@ -4010,7 +4190,7 @@ async def render_player_stats(update: Update, user_id: int, season_filter: str):
       f"📅 **بازه گزارش:** `{title_suffix}`\n"
       f"────────────────────────\n"
       f"⭐ **ریتینگ عملکرد:** `{rating}`\n"
-      f"📊 **مجموع امتیاز خام:** `{raw}`\n"
+      f"📊 **مجموع امتیاز خام:** `{round(raw, 2)}`\n"
       f"🎮 **بازی‌ها:** `{total_g}` (برد: `{wins}` | باخت: `{losses}` | نرخ برد: `{win_rate}%`)\n"
       f"────────────────────────\n"
       f"👑 **القاب و عناوین کسب‌شده در این بازه:**\n"
