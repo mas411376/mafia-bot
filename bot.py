@@ -810,7 +810,7 @@ async def show_stats_hub(update: Update, context: ContextTypes.DEFAULT_TYPE):
       pass
 
 
-async def ask_unfair_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE = None):
+async def ask_unfair_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
@@ -842,16 +842,6 @@ async def ask_unfair_season_choice(update: Update, context: ContextTypes.DEFAULT
       )
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-
-
-async def unfair_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context, check_lock=True):
-    return
-  await ask_unfair_season_choice(update, context)
 
 
 async def render_unfair_page_filtered(update: Update, season_filter: str, page: int):
@@ -952,7 +942,7 @@ async def render_unfair_page_filtered(update: Update, season_filter: str, page: 
       pass
 
 
-async def ask_artin_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE = None):
+async def ask_artin_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
@@ -984,16 +974,6 @@ async def ask_artin_season_choice(update: Update, context: ContextTypes.DEFAULT_
       )
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-
-
-async def artin_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context, check_lock=True):
-    return
-  await ask_artin_season_choice(update, context)
 
 
 async def render_artin_page_filtered(update: Update, season_filter: str, page: int):
@@ -1094,7 +1074,7 @@ async def render_artin_page_filtered(update: Update, season_filter: str, page: i
       pass
 
 
-async def ask_teammates_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE = None):
+async def ask_teammates_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
@@ -1124,16 +1104,6 @@ async def ask_teammates_season_choice(update: Update, context: ContextTypes.DEFA
       )
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-
-
-async def teammates_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context, check_lock=True):
-    return
-  await ask_teammates_season_choice(update, context)
 
 
 async def render_teammates_leaderboard_filtered(update: Update, season_filter: str, page: int):
@@ -1222,7 +1192,7 @@ async def render_teammates_leaderboard_filtered(update: Update, season_filter: s
       pass
 
 
-async def ask_streaks_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE = None):
+async def ask_streaks_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
@@ -1252,16 +1222,6 @@ async def ask_streaks_season_choice(update: Update, context: ContextTypes.DEFAUL
       )
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-
-
-async def streaks_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context, check_lock=True):
-    return
-  await ask_streaks_season_choice(update, context)
 
 
 async def render_streaks_leaderboard_filtered(update: Update, season_filter: str, page: int):
@@ -1400,7 +1360,7 @@ async def render_streaks_leaderboard_filtered(update: Update, season_filter: str
       pass
 
 
-async def ask_advanced_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE = None):
+async def ask_advanced_season_choice(update: Update):
   seasons = get_available_seasons()
   keyboard = [[
       InlineKeyboardButton(
@@ -1434,16 +1394,6 @@ async def ask_advanced_season_choice(update: Update, context: ContextTypes.DEFAU
       )
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(
-        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
-    )
-
-
-async def advanced_table_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  if not await enforce_channel_lock(update, context, check_lock=True):
-    return
-  await ask_advanced_season_choice(update, context)
 
 
 async def render_advanced_table_page(update: Update, season_filter: str, page: int):
@@ -1524,11 +1474,9 @@ async def render_advanced_table_page(update: Update, season_filter: str, page: i
   reply_markup = InlineKeyboardMarkup(keyboard)
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
-  elif update.message:
-    await update.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
 
 
 async def ask_shots_season_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1613,7 +1561,7 @@ async def render_shots_leaderboard_filtered(update: Update, season_filter: str):
 
   if update.callback_query:
     try:
-      await update.callback_query.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+      await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
     except Exception:
       pass
 
@@ -3160,6 +3108,2243 @@ async def players_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
   await render_players_list_page(update, context, 1)
 
 
+async def ask_table_season_choice(update: Update):
+  seasons = get_available_seasons()
+  keyboard = [[
+      InlineKeyboardButton(
+          "🌐 جدول کل تاریخچه (All-Time)", callback_data="table_page:all:1"
+      )
+  ]]
+  row = []
+  for s_num in seasons:
+    row.append(
+        InlineKeyboardButton(
+            f"🏆 فصل {s_num}", callback_data=f"table_page:{s_num}:1"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+  text = (
+      "🏆 **جدول رده‌بندی لیگ:**\n\nلطفاً بازه مورد نظر را برای مشاهده رده‌بندی"
+      " انتخاب فرمایید:"
+  )
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+PAGE_SIZE = 10
+
+
+async def render_table_page_filtered(
+    update: Update, season_filter: str, page: int
+):
+  log_feature_click(update.effective_user.id, f"جدول لیگ ({season_filter})")
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    if season_filter == "all":
+      season_title = "کل تاریخچه (All-Time)"
+      c.execute("SELECT DISTINCT player_name FROM match_participants")
+      active_players = [r[0] for r in c.fetchall()]
+
+      c.execute("SELECT name FROM players")
+      all_db_players = [r[0] for r in c.fetchall()]
+      players_pool = sorted(list(set(active_players + all_db_players)))
+
+      ranking = []
+      for p_name in players_pool:
+        c.execute(
+            """
+                    SELECT p.won, p.is_unfair, p.is_artin, p.side, m.match_id, m.scenario_name, m.end_mode 
+                    FROM match_participants p
+                    JOIN match_history m ON p.match_id = m.match_id
+                    WHERE p.player_name = ?
+                    ORDER BY m.match_id ASC
+                """,
+            (p_name,),
+        )
+        matches = c.fetchall()
+        total_g = len(matches)
+        wins = sum(1 for m in matches if m[0] == 1)
+        losses = total_g - wins
+        unfairs = sum(1 for m in matches if m[1] == 1)
+        artins = sum(1 for m in matches if m[2] == 1)
+
+        raw = 0.0
+        cur_streak = 0
+        for m in matches:
+          won = m[0]
+          unfair = m[1]
+          artin = m[2]
+          side = m[3]
+          m_id = m[4]
+          scen_name = m[5]
+          end_mode = m[6]
+
+          if won == 1:
+            cur_streak += 1
+            if cur_streak == 3:
+              streak_bonus = 2.0
+            elif cur_streak == 4:
+              streak_bonus = 4.0
+            elif cur_streak >= 5:
+              streak_bonus = 6.0
+            else:
+              streak_bonus = 0.0
+
+            opp_mult = get_opponent_strength_multiplier(conn, m_id, p_name, side)
+
+            if end_mode == "کلین شیت":
+              if side == "شهروند":
+                win_type_mult = 2.0
+              elif side == "مافیا":
+                win_type_mult = 1.4
+              else:
+                win_type_mult = 1.0
+            elif end_mode == "کی آس":
+              win_type_mult = 0.7
+            else:
+              win_type_mult = 1.0
+
+            scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
+            game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
+          else:
+            cur_streak = 0
+            game_pts = 0.0
+
+          if unfair:
+            game_pts -= 6.0
+          if artin:
+            game_pts -= 8.0
+
+          raw += game_pts
+
+        rate = calculate_rating(raw, total_g)
+        win_rate = round((wins / total_g * 100), 1) if total_g > 0 else 0
+        ranking.append({
+            "name": p_name,
+            "rating": rate,
+            "raw_score": round(raw, 2),
+            "total_games": total_g,
+            "wins": wins,
+            "losses": losses,
+            "unfair": unfairs,
+            "artin": artins,
+            "streak": cur_streak,
+            "win_rate": win_rate,
+        })
+    else:
+      s_int = int(season_filter)
+      season_title = f"فصل {s_int}"
+      cur_season = get_current_season()
+
+      if s_int == cur_season:
+        c.execute(
+            "SELECT name, raw_score, total_games, wins, losses,"
+            " unfair_count, artin_count, current_streak FROM players"
+        )
+        rows = c.fetchall()
+        ranking = []
+        for r in rows:
+          rate = calculate_rating(r[1], r[2])
+          win_rate = round((r[3] / r[2] * 100), 1) if r[2] > 0 else 0
+          ranking.append({
+              "name": r[0],
+              "rating": rate,
+              "raw_score": r[1],
+              "total_games": r[2],
+              "wins": r[3],
+              "losses": r[4],
+              "unfair": r[5],
+              "artin": r[6],
+              "streak": r[7],
+              "win_rate": win_rate,
+          })
+      else:
+        c.execute(
+            """
+                    SELECT player_name, final_rating, raw_score, total_games, wins, losses, unfair_count, artin_count 
+                    FROM season_archives 
+                    WHERE season = ? 
+                    ORDER BY final_rank ASC
+                """,
+            (s_int,),
+        )
+        rows = c.fetchall()
+        ranking = []
+        for r in rows:
+          win_rate = round((r[4] / r[3] * 100), 1) if r[3] > 0 else 0
+          ranking.append({
+              "name": r[0],
+              "rating": r[1],
+              "raw_score": r[2],
+              "total_games": r[3],
+              "wins": r[4],
+              "losses": r[5],
+              "unfair": r[6],
+              "artin": r[7],
+              "streak": 0,
+              "win_rate": win_rate,
+          })
+
+  if not ranking:
+    text = f"هنوز داده‌ای در جدول {season_title} ثبت نشده است."
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔄 انتخاب فصلی دیگر", callback_data="ask_table_season"
+            )
+        ],
+        [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
+    ]
+    if update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(
+            text, reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+      except Exception:
+        pass
+    elif update.message:
+      await update.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard)
+      )
+    return
+
+  ranking.sort(key=lambda x: (x["rating"], x["raw_score"], x["wins"]), reverse=True)
+
+  total_players = len(ranking)
+  total_pages = max(1, math.ceil(total_players / PAGE_SIZE))
+  page = max(1, min(page, total_pages))
+
+  start_idx = (page - 1) * PAGE_SIZE
+  end_idx = min(start_idx + PAGE_SIZE, total_players)
+  page_players = ranking[start_idx:end_idx]
+
+  text = (
+      f"🏆 **جدول رده‌بندی لیگ تکامل ({season_title})** 🏆\n"
+      f"صفحه {page} از {total_pages}\n"
+      f"➖➖➖➖➖➖➖➖➖➖\n\n"
+  )
+
+  for i, p in enumerate(page_players, start=start_idx + 1):
+    medal = (
+        "🥇"
+        if i == 1
+        else "🥈" if i == 2 else "🥉" if i == 3 else f"`#{i:02d}`"
+    )
+    crown = " 👑" if i == 1 else ""
+    streak_badge = f" 🔥`{p['streak']}`" if p["streak"] > 1 else ""
+    title_badge = " ⟨ 🏛 **امپراطور لیگ** ⟩" if i == 1 else ""
+
+    text += (
+        f"{medal} **{p['name']}**{crown}{title_badge}{streak_badge}\n"
+        f"   ▫️ ریتینگ: `{p['rating']}` | امتیاز: `{p['raw_score']}`\n"
+        f"   ▫️ بازی: `{p['total_games']}` (برد: `{p['wins']}` / باخت:"
+        f" `{p['losses']}`) | WR: `{p['win_rate']}%`\n"
+        f"   ▫️ نامردها: 🐍`{p['unfair']}` | آرتین‌ها: 👑`{p['artin']}`\n"
+        f"────────────────────\n"
+    )
+
+  text += f"👥 کل شرکت‌کنندگان این بازه: `{total_players}` نفر"
+
+  nav_row = []
+  if page > 1:
+    nav_row.append(
+        InlineKeyboardButton(
+            "⬅️ صفحه قبل", callback_data=f"table_page:{season_filter}:{page - 1}"
+        )
+    )
+  if page < total_pages:
+    nav_row.append(
+        InlineKeyboardButton(
+            "صفحه بعد ➡️", callback_data=f"table_page:{season_filter}:{page + 1}"
+        )
+    )
+
+  keyboard = []
+  if nav_row:
+    keyboard.append(nav_row)
+  keyboard.append([
+      InlineKeyboardButton(
+          "🔄 تغییر فصل / بازه جدول", callback_data="ask_table_season"
+      )
+  ])
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+
+  reply_markup = InlineKeyboardMarkup(keyboard)
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+  elif update.message:
+    if update.effective_chat.type in ["group", "supergroup"]:
+      await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+    else:
+      await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+
+
+async def table(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  cur_season = get_current_season()
+  await render_table_page_filtered(update, str(cur_season), 1)
+
+
+async def unfair_leaderboard(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  cur_season = get_current_season()
+  await render_unfair_page_filtered(update, str(cur_season), 1)
+
+
+async def artin_leaderboard(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  cur_season = get_current_season()
+  await render_artin_page_filtered(update, str(cur_season), 1)
+
+
+async def ask_vs_season_choice(update: Update):
+  seasons = get_available_seasons()
+  keyboard = [[
+      InlineKeyboardButton(
+          "🌐 تقابل در کل تاریخچه (All-Time)",
+          callback_data="open_vs_picker_1:all",
+      )
+  ]]
+  row = []
+  for s_num in seasons:
+    row.append(
+        InlineKeyboardButton(
+            f"⚔️ تقابل در فصل {s_num}", callback_data=f"open_vs_picker_1:{s_num}"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+  text = (
+      "⚔️ **دوئل و تقابل دو نفره:**\n\nمایلید آمار رودرروی دو بازیکن در چه"
+      " بازه‌ای مقایسه شود؟"
+  )
+
+  if update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def show_vs_picker_first(
+    update: Update, context: ContextTypes.DEFAULT_TYPE, season_filter: str
+):
+  log_feature_click(update.effective_user.id, "دوئل و تقابل رودررو")
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT user_id, name FROM players ORDER BY name ASC")
+    rows = c.fetchall()
+
+  if len(rows) < 2:
+    msg = "❌ برای تقابل، حداقل باید ۲ بازیکن در لیگ ثبت شده باشند."
+    if update.message:
+      await update.message.reply_text(msg)
+    elif update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(msg)
+      except Exception:
+        pass
+    return
+
+  keyboard = []
+  row = []
+  for u_id, p_name in rows:
+    label = p_name[:18] + ("..." if len(p_name) > 18 else "")
+    row.append(
+        InlineKeyboardButton(
+            f"⚔️ {label}", callback_data=f"vs_p1:{season_filter}:{u_id}"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([
+      InlineKeyboardButton(
+          "🔄 تغییر فصل دوئل", callback_data="ask_vs_season"
+      )
+  ])
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+
+  b_title = "کل تاریخچه" if season_filter == "all" else f"فصل {season_filter}"
+  text = (
+      f"⚔️ **دوئل و تقابل دو نفره ({b_title}):**\n\nمبارز **اول** را انتخاب"
+      " فرمایید:"
+  )
+
+  if update.message:
+    await update.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  elif update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def show_vs_picker_second(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    season_filter: str,
+    first_uid: int,
+):
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT name FROM players WHERE user_id = ?", (first_uid,))
+    first_row = c.fetchone()
+    first_name = first_row[0] if first_row else "مبارز اول"
+
+    c.execute(
+        "SELECT user_id, name FROM players WHERE user_id != ? ORDER BY name ASC",
+        (first_uid,),
+    )
+    rows = c.fetchall()
+
+  keyboard = []
+  row = []
+  for u_id, p_name in rows:
+    label = p_name[:18] + ("..." if len(p_name) > 18 else "")
+    row.append(
+        InlineKeyboardButton(
+            f"⚔️ {label}",
+            callback_data=f"vs_p2:{season_filter}:{first_uid}:{u_id}",
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([
+      InlineKeyboardButton(
+          "🔙 تغییر مبارز اول",
+          callback_data=f"open_vs_picker_1:{season_filter}",
+      )
+  ])
+  text = (
+      f"⚔️ مبارز اول: **{first_name}**\n\nحریف و مبارز **دوم** را انتخاب کنید:"
+  )
+
+  try:
+    await update.callback_query.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def render_vs_comparison_filtered(
+    update: Update, season_filter: str, uid1: int, uid2: int
+):
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT * FROM players WHERE user_id = ?", (uid1,))
+    p1 = c.fetchone()
+    c.execute("SELECT * FROM players WHERE user_id = ?", (uid2,))
+    p2 = c.fetchone()
+
+    if not p1 or not p2:
+      try:
+        await update.callback_query.message.reply_text("بازیکنان پیدا نشدند.")
+      except Exception:
+        pass
+      return
+
+    name1, name2 = p1[2], p2[2]
+
+    if season_filter == "all":
+      season_label = "کل تاریخچه (All-Time)"
+      season_cond = ""
+      params_rival = (name1, name2)
+      params_coop = (name1, name2)
+      p1_match_query = (
+          "SELECT won FROM match_participants WHERE player_name"
+          " = ?"
+      )
+      p2_match_query = (
+          "SELECT won FROM match_participants WHERE player_name"
+          " = ?"
+      )
+      p1_params = (name1,)
+      p2_params = (name2,)
+    else:
+      s_int = int(season_filter)
+      season_label = f"فصل {s_int}"
+      season_cond = "AND m.season = ?"
+      params_rival = (name1, name2, s_int)
+      params_coop = (name1, name2, s_int)
+      p1_match_query = (
+          "SELECT p.won FROM match_participants p JOIN"
+          " match_history m ON p.match_id = m.match_id WHERE p.player_name = ?"
+          " AND m.season = ?"
+      )
+      p2_match_query = (
+          "SELECT p.won FROM match_participants p JOIN"
+          " match_history m ON p.match_id = m.match_id WHERE p.player_name = ?"
+          " AND m.season = ?"
+      )
+      p1_params = (name1, s_int)
+      p2_params = (name2, s_int)
+
+    c.execute(
+        f"""
+            SELECT p1.won, p2.won
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name = ? AND p2.player_name = ? AND p1.side != p2.side {season_cond}
+        """,
+        params_rival,
+    )
+    rival_matches = c.fetchall()
+    p1_direct_wins = sum(1 for m in rival_matches if m[0] == 1)
+    p2_direct_wins = sum(1 for m in rival_matches if m[1] == 1)
+    total_rival_games = len(rival_matches)
+
+    c.execute(
+        f"""
+            SELECT p1.won
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name = ? AND p2.player_name = ? AND p1.side = p2.side {season_cond}
+        """,
+        params_coop,
+    )
+    coop_matches = c.fetchall()
+    coop_wins = sum(1 for m in coop_matches if m[0] == 1)
+    total_coop = len(coop_matches)
+
+    c.execute(p1_match_query, p1_params)
+    p1_matches = c.fetchall()
+    p1_g = len(p1_matches)
+    p1_w = sum(1 for m in p1_matches if m[0] == 1)
+    p1_raw = sum(
+        (10 if m[0] == 1 else 0)
+        for m in p1_matches
+    )
+    r1 = calculate_rating(p1_raw, p1_g)
+
+    c.execute(p2_match_query, p2_params)
+    p2_matches = c.fetchall()
+    p2_g = len(p2_matches)
+    p2_w = sum(1 for m in p2_matches if m[0] == 1)
+    p2_raw = sum(
+        (10 if m[0] == 1 else 0)
+        for m in p2_matches
+    )
+    r2 = calculate_rating(p2_raw, p2_g)
+
+  win_rate1 = round((p1_w / p1_g * 100), 1) if p1_g > 0 else 0
+  win_rate2 = round((p2_w / p2_g * 100), 1) if p2_g > 0 else 0
+
+  total_rate = (r1 + r2) if (r1 + r2) > 0 else 1
+  p1_bar_len = int(round((r1 / total_rate) * 10))
+  p2_bar_len = 10 - p1_bar_len
+  power_bar = ("🟩" * p1_bar_len) + ("🟥" * p2_bar_len)
+
+  r1_crown = "👑 " if r1 > r2 else ""
+  r2_crown = "👑 " if r2 > r1 else ""
+
+  text = (
+      f"⚔️ **دوئل نفس‌گیر و تقابل رودررو:**\n"
+      f"🟩 **{name1}** VS 🟥 **{name2}**\n"
+      f"🗓 **بازه مقایسه:** `{season_label}`\n\n"
+      f"📊 **شاخص برتری قدرت:**\n"
+      f"[{power_bar}]\n"
+      f"▫️ 🟩 {name1}: `{r1}` ریتینگ {r1_crown}\n"
+      f"▫️ 🟥 {name2}: `{r2}` ریتینگ {r2_crown}\n\n"
+      f"🥊 **تاریخچه رویارویی مستقیم (ساید مخالف):**\n"
+      f"▫️ کل مسابقات روبه‌رو: `{total_rival_games}` دست\n"
+      f"▫️ بردهای 🟩 {name1}: `{p1_direct_wins}` پیروزی\n"
+      f"▫️ بردهای 🟥 {name2}: `{p2_direct_wins}` پیروزی\n\n"
+      f"🤝 **همکاری در یک تیم (ساید مشترک):**\n"
+      f"▫️ بازی‌های هم‌تیمی: `{total_coop}` دست (`{coop_wins}` برد مشترک)\n\n"
+      f"📋 **مقایسه فاکتورهای کلیدی در این بازه:**\n"
+      f"▫️ **نرخ برد:** 🟩 `{win_rate1}%` | 🟥 `{win_rate2}%`\n"
+      f"▫️ **تعداد کل بردها:** 🟩 `{p1_w}` برد | 🟥 `{p2_w}` برد\n"
+      f"▫️ **کل بازی‌های انجام داده:** 🟩 `{p1_g}` دست | 🟥 `{p2_g}` دست\n"
+  )
+
+  keyboard = [
+      [
+          InlineKeyboardButton(
+              "⚔️ انتخاب تقابل دونفره دیگر",
+              callback_data=f"open_vs_picker_1:{season_filter}",
+          )
+      ],
+      [
+          InlineKeyboardButton(
+              "🔄 تغییر فصل / بازه دوئل", callback_data="ask_vs_season"
+          )
+      ],
+      [InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")],
+  ]
+  try:
+    await update.callback_query.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def vs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  await ask_vs_season_choice(update)
+
+
+async def show_stats_picker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  log_feature_click(update.effective_user.id, "آمار بازیکنان")
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT user_id, name FROM players WHERE is_restricted = 0 ORDER BY name ASC")
+    rows = c.fetchall()
+
+  if not rows:
+    msg = "هنوز بازیکنی ثبت نشده است."
+    if update.message:
+      await update.message.reply_text(msg)
+    elif update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(msg)
+      except Exception:
+        pass
+    return
+
+  keyboard = []
+  row = []
+  for u_id, p_name in rows:
+    label = p_name[:18] + ("..." if len(p_name) > 18 else "")
+    row.append(
+        InlineKeyboardButton(
+            f"👤 {label}", callback_data=f"ask_stat_season:{u_id}"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی آمار", callback_data="open_stats_hub")])
+  text = "👤 **روی نام بازیکن مورد نظر کلیک کنید تا آمار او را بررسی کنید:**"
+
+  if update.message:
+    await update.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  elif update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def ask_stat_season_choice(update: Update, user_id: int):
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute("SELECT name FROM players WHERE user_id = ?", (user_id,))
+    p = c.fetchone()
+    if not p:
+      try:
+        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
+      except Exception:
+        pass
+      return
+    name = p[0]
+
+  seasons = get_available_seasons()
+  keyboard = [[
+      InlineKeyboardButton(
+          "🌐 آمار کل تاریخچه (All-Time)",
+          callback_data=f"view_stat_target:{user_id}:all",
+      )
+  ]]
+  row = []
+  for s_num in seasons:
+    row.append(
+        InlineKeyboardButton(
+            f"🏆 فصل {s_num}", callback_data=f"view_stat_target:{user_id}:{s_num}"
+        )
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  keyboard.append([
+      InlineKeyboardButton(
+          "🔙 بازگشت به انتخاب بازیکن", callback_data="open_stats_picker"
+      )
+  ])
+
+  text = (
+      f"👤 بازیکن انتخابی: **{name}**\n\nلطفاً مشخص کنید مایل به مشاهده آمار"
+      f" **کل تاریخچه** هستید یا یک **فصل خاص**؟"
+  )
+  try:
+    await update.callback_query.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def render_player_stats(update: Update, user_id: int, season_filter: str):
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute(
+        "SELECT user_id, username, name FROM players WHERE user_id = ?",
+        (user_id,),
+    )
+    p = c.fetchone()
+    if not p:
+      try:
+        await update.callback_query.message.reply_text("بازیکن پیدا نشد.")
+      except Exception:
+        pass
+      return
+
+    name = p[2]
+
+    if season_filter == "all":
+      query = """
+                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out, m.scenario_name, m.end_mode
+                FROM match_participants p
+                JOIN match_history m ON p.match_id = m.match_id
+                WHERE p.player_name = ?
+                ORDER BY p.match_id ASC
+            """
+      params = (name,)
+      title_suffix = "کل تاریخچه لیگ (All-Time)"
+      team_condition = ""
+      team_params = (name, name)
+      nem_condition = ""
+      nem_params = (name,)
+    else:
+      s_int = int(season_filter)
+      query = """
+                SELECT p.side, p.won, p.is_unfair, p.is_artin, p.match_id, p.night1_shot, p.night1_out, m.scenario_name, m.end_mode
+                FROM match_participants p
+                JOIN match_history m ON p.match_id = m.match_id
+                WHERE p.player_name = ? AND m.season = ?
+                ORDER BY p.match_id ASC
+            """
+      params = (name, s_int)
+      title_suffix = f"فصل {s_int}"
+      team_condition = "AND m.season = ?"
+      team_params = (name, name, s_int)
+      nem_condition = "AND m.season = ?"
+      nem_params = (name, s_int)
+
+    c.execute(query, params)
+    matches = c.fetchall()
+
+    total_g = len(matches)
+    wins = sum(1 for m in matches if m[1] == 1)
+    losses = total_g - wins
+    unfairs = sum(1 for m in matches if m[2] == 1)
+    artins = sum(1 for m in matches if m[3] == 1)
+    n1_shots_cnt = sum(1 for m in matches if m[5] == 1)
+    n1_outs_cnt = sum(1 for m in matches if m[6] == 1)
+
+    if season_filter == "all":
+      c.execute("""
+            SELECT chaos_players, chaos_selected, chaos_win_impact 
+            FROM match_history 
+            WHERE end_mode = 'کی آس'
+        """)
+    else:
+      c.execute("""
+            SELECT chaos_players, chaos_selected, chaos_win_impact 
+            FROM match_history 
+            WHERE end_mode = 'کی آس' AND season = ?
+        """, (int(season_filter),))
+    
+    ch_rows = c.fetchall()
+    ch_count = 0
+    ch_sel_count = 0
+    ch_impact_count = 0
+
+    for ch_p, ch_s, ch_i in ch_rows:
+      if ch_p and name in ch_p.split(","):
+        ch_count += 1
+      if ch_s == name:
+        ch_sel_count += 1
+        if ch_i == "بله":
+          ch_impact_count += 1
+
+    raw = 0.0
+    cur_streak = 0
+    best_streak = 0
+
+    for m in matches:
+      won = m[1]
+      unfair = m[2]
+      artin = m[3]
+      m_id = m[4]
+      scen_name = m[7]
+      end_mode = m[8]
+      side = m[0]
+
+      if won == 1:
+        cur_streak += 1
+        best_streak = max(best_streak, cur_streak)
+        
+        if cur_streak == 3:
+          streak_bonus = 2.0
+        elif cur_streak == 4:
+          streak_bonus = 4.0
+        elif cur_streak >= 5:
+          streak_bonus = 6.0
+        else:
+          streak_bonus = 0.0
+
+        opp_mult = get_opponent_strength_multiplier(conn, m_id, name, side)
+
+        if end_mode == "کلین شیت":
+          if side == "شهروند":
+            win_type_mult = 2.0
+          elif side == "مافیا":
+            win_type_mult = 1.4
+          else:
+            win_type_mult = 1.0
+        elif end_mode == "کی آس":
+          win_type_mult = 0.7
+        else:
+          win_type_mult = 1.0
+
+        scen_mult = 1.3 if scen_name in SPECIAL_SCENARIOS else 1.0
+        game_pts = ((10.0 * opp_mult * win_type_mult) + streak_bonus) * scen_mult
+      else:
+        cur_streak = 0
+        game_pts = 0.0
+
+      if unfair:
+        game_pts -= 6.0
+      if artin:
+        game_pts -= 8.0
+
+      raw += game_pts
+
+    cit_games = sum(1 for m in matches if m[0] == "شهروند")
+    cit_wins = sum(1 for m in matches if m[0] == "شهروند" and m[1] == 1)
+    maf_games = sum(1 for m in matches if m[0] == "مافیا")
+    maf_wins = sum(1 for m in matches if m[0] == "مافیا" and m[1] == 1)
+    ind_games = sum(1 for m in matches if m[0] == "مستقل")
+    ind_wins = sum(1 for m in matches if m[0] == "مستقل" and m[1] == 1)
+
+    c.execute(
+        f"""
+            SELECT p2.player_name, COUNT(*), SUM(p2.won)
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name = ? AND p2.player_name != ? {team_condition}
+            GROUP BY p2.player_name
+            ORDER BY SUM(p2.won) DESC LIMIT 1
+        """,
+        team_params,
+    )
+    best_teammate = c.fetchone()
+
+    c.execute(
+        f"""
+            SELECT p2.player_name, COUNT(*)
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side != p2.side
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name = ? AND p1.won = 0 {nem_condition}
+            GROUP BY p2.player_name
+            ORDER BY COUNT(*) DESC LIMIT 1
+        """,
+        nem_params,
+    )
+    nemesis = c.fetchone()
+
+    earned_titles = []
+
+    if season_filter == "all":
+      c.execute("SELECT DISTINCT player_name FROM match_participants")
+      all_p_names = [r[0] for r in c.fetchall()]
+      ranking_data = []
+      for p_n in all_p_names:
+        c.execute("""
+            SELECT p.won, p.is_unfair, p.is_artin, p.side, m.match_id, m.scenario_name, m.end_mode 
+            FROM match_participants p 
+            JOIN match_history m ON p.match_id = m.match_id 
+            WHERE p.player_name = ?
+        """, (p_n,))
+        p_matches = c.fetchall()
+        p_g = len(p_matches)
+        
+        p_raw = 0.0
+        p_strk = 0
+        for pm in p_matches:
+          p_w = pm[0]
+          p_unf = pm[1]
+          p_art = pm[2]
+          p_side = pm[3]
+          pm_id = pm[4]
+          psc_name = pm[5]
+          pend_mode = pm[6]
+          
+          if p_w == 1:
+            p_strk += 1
+            st_b = 2.0 if p_strk == 3 else (4.0 if p_strk == 4 else (6.0 if p_strk >= 5 else 0.0))
+            op_m = get_opponent_strength_multiplier(conn, pm_id, p_n, p_side)
+            wt_m = 2.0 if pend_mode == "کلین شیت" and p_side == "شهروند" else (1.4 if pend_mode == "کلین شیت" and p_side == "مافیا" else (0.7 if pend_mode == "کی آس" else 1.0))
+            sc_m = 1.3 if psc_name in SPECIAL_SCENARIOS else 1.0
+            pts = ((10.0 * op_m * wt_m) + st_b) * sc_m
+          else:
+            p_strk = 0
+            pts = 0.0
+          if p_unf:
+            pts -= 6.0
+          if p_art:
+            pts -= 8.0
+          p_raw += pts
+
+        p_rate = calculate_rating(p_raw, p_g)
+        p_wins = sum(1 for pm in p_matches if pm[0] == 1)
+        ranking_data.append((p_n, p_rate, p_raw, p_wins))
+      
+      if ranking_data:
+        ranking_data.sort(key=lambda x: (x[1], x[2], x[3]), reverse=True)
+        if ranking_data[0][0] == name:
+          earned_titles.append("🏛 **امپراطور لیگ**")
+
+      c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+      top_adv = c.fetchone()
+      if top_adv and top_adv[0] == name:
+        earned_titles.append("🧠 **مغز متفکر**")
+
+    else:
+      s_int = int(season_filter)
+      cur_season = get_current_season()
+      if s_int == cur_season:
+        c.execute("SELECT name, raw_score, total_games, wins FROM players WHERE total_games > 0")
+        p_rows = c.fetchall()
+        r_list = []
+        for r in p_rows:
+          rt = calculate_rating(r[1], r[2])
+          r_list.append((r[0], rt, r[1], r[3]))
+        if r_list:
+          r_list.sort(key=lambda x: (x[1], x[2], x[3]), reverse=True)
+          if r_list[0][0] == name:
+            earned_titles.append("🏛 **امپراطور لیگ**")
+
+        c.execute("SELECT name FROM players WHERE total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1")
+        top_adv = c.fetchone()
+        if top_adv and top_adv[0] == name:
+          earned_titles.append("🧠 **مغز متفکر**")
+      else:
+        c.execute("SELECT player_name FROM season_archives WHERE season = ? ORDER BY final_rank ASC LIMIT 1", (s_int,))
+        top_arch = c.fetchone()
+        if top_arch and top_arch[0] == name:
+          earned_titles.append("🏛 **امپراطور لیگ**")
+
+        c.execute("SELECT player_name FROM season_archives WHERE season = ? AND total_games > 0 ORDER BY advanced_skill_score DESC LIMIT 1", (s_int,))
+        top_adv_arch = c.fetchone()
+        if top_adv_arch and top_adv_arch[0] == name:
+          earned_titles.append("🧠 **مغز متفکر**")
+
+    if season_filter == "all":
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_unfair) DESC, COUNT(*) ASC LIMIT 1")
+    else:
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_unfair) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
+    top_unfair = c.fetchone()
+    if top_unfair and top_unfair[0] == name and unfairs > 0:
+      earned_titles.append("🐍 **پیتون اعظم**")
+
+    if season_filter == "all":
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(is_artin) DESC, COUNT(*) ASC LIMIT 1")
+    else:
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(is_artin) DESC, COUNT(*) ASC LIMIT 1", (int(season_filter),))
+    top_artin = c.fetchone()
+    if top_artin and top_artin[0] == name and artins > 0:
+      earned_titles.append("🐺 **کفتار تنها**")
+
+    if season_filter == "all":
+      c.execute("""
+            SELECT p1.player_name, p2.player_name 
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC LIMIT 1
+      """)
+    else:
+      c.execute("""
+            SELECT p1.player_name, p2.player_name 
+            FROM match_participants p1
+            JOIN match_participants p2 ON p1.match_id = p2.match_id AND p1.side = p2.side
+            JOIN match_history m ON p1.match_id = m.match_id
+            WHERE p1.player_name < p2.player_name AND p1.won = 1 AND p2.won = 1 AND m.season = ?
+            GROUP BY p1.player_name, p2.player_name
+            ORDER BY COUNT(*) DESC LIMIT 1
+      """, (int(season_filter),))
+    top_pair = c.fetchone()
+    if top_pair and name in top_pair:
+      earned_titles.append("🤝 **اتحاد آهنین**")
+
+    if season_filter == "all":
+      c.execute("SELECT p.player_name, p.won, m.created_at FROM match_participants p JOIN match_history m ON p.match_id = m.match_id ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC")
+      all_recs = c.fetchall()
+      p_streaks = {}
+      for p_n, w_val, _ in all_recs:
+        if p_n not in p_streaks:
+          p_streaks[p_n] = {"best": 0, "curr": 0, "wins": 0}
+        p_streaks[p_n]["wins"] += (1 if w_val == 1 else 0)
+        if w_val == 1:
+          p_streaks[p_n]["curr"] += 1
+          if p_streaks[p_n]["curr"] > p_streaks[p_n]["best"]:
+            p_streaks[p_n]["best"] = p_streaks[p_n]["curr"]
+        else:
+          p_streaks[p_n]["curr"] = 0
+      sorted_str = sorted(p_streaks.items(), key=lambda x: (x[1]["best"], x[1]["wins"]), reverse=True)
+      if sorted_str and sorted_str[0][0] == name and sorted_str[0][1]["best"] > 0:
+        earned_titles.append("⚔️ **ماشین کشتار**")
+    else:
+      s_int = int(season_filter)
+      cur_season = get_current_season()
+      if s_int == cur_season:
+        c.execute("SELECT name FROM players WHERE best_streak > 0 ORDER BY best_streak DESC, wins DESC LIMIT 1")
+        top_strk = c.fetchone()
+        if top_strk and top_strk[0] == name and best_streak > 0:
+          earned_titles.append("⚔️ **ماشین کشتار**")
+      else:
+        c.execute("SELECT p.player_name, p.won, m.created_at FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? ORDER BY p.player_name ASC, m.created_at ASC, p.match_id ASC", (s_int,))
+        s_recs = c.fetchall()
+        s_streaks = {}
+        for p_n, w_val, _ in s_recs:
+          if p_n not in s_streaks:
+            s_streaks[p_n] = {"best": 0, "curr": 0, "wins": 0}
+          s_streaks[p_n]["wins"] += (1 if w_val == 1 else 0)
+          if w_val == 1:
+            s_streaks[p_n]["curr"] += 1
+            if s_streaks[p_n]["curr"] > s_streaks[p_n]["best"]:
+              s_streaks[p_n]["best"] = s_streaks[p_n]["curr"]
+          else:
+            s_streaks[p_n]["curr"] = 0
+        sorted_s = sorted(s_streaks.items(), key=lambda x: (x[1]["best"], x[1]["wins"]), reverse=True)
+        if sorted_s and sorted_s[0][0] == name and sorted_s[0][1]["best"] > 0:
+          earned_titles.append("⚔️ **ماشین کشتار**")
+
+    if season_filter == "all":
+      c.execute("SELECT player_name FROM match_participants GROUP BY player_name ORDER BY SUM(night1_shot) DESC LIMIT 1")
+    else:
+      c.execute("SELECT player_name FROM match_participants p JOIN match_history m ON p.match_id = m.match_id WHERE m.season = ? GROUP BY player_name ORDER BY SUM(night1_shot) DESC LIMIT 1", (int(season_filter),))
+    top_shot = c.fetchone()
+    if top_shot and top_shot[0] == name and n1_shots_cnt > 0:
+      earned_titles.append("🎯 **کابوس مافیا**")
+
+  rating = calculate_rating(raw, total_g)
+  win_rate = round((wins / total_g * 100), 1) if total_g > 0 else 0
+  cit_rate = round((cit_wins / cit_games * 100), 1) if cit_games > 0 else 0
+  maf_rate = round((maf_wins / maf_games * 100), 1) if maf_games > 0 else 0
+  ind_rate = round((ind_wins / ind_games * 100), 1) if ind_games > 0 else 0
+
+  tm_text = (
+      f"{best_teammate[0]} ({best_teammate[2]} برد مشترک)"
+      if best_teammate
+      else "ثبت نشده"
+  )
+  nem_text = f"{nemesis[0]} ({nemesis[1]} باخت مقابلش)" if nemesis else "ثبت نشده"
+
+  titles_str = "\n".join([f"▫️ {t}" for t in earned_titles]) if earned_titles else "▫️ فعلاً عنوانی در این بازه ثبت نشده است."
+
+  text = (
+      f"👤 **پروفایل عملکرد: {name}**\n"
+      f"📅 **بازه گزارش:** `{title_suffix}`\n"
+      f"────────────────────────\n"
+      f"⭐ **ریتینگ عملکرد:** `{rating}`\n"
+      f"📊 **مجموع امتیاز خام:** `{round(raw, 2)}`\n"
+      f"🎮 **بازی‌ها:** `{total_g}` (برد: `{wins}` | باخت: `{losses}` | نرخ برد: `{win_rate}%`)\n"
+      f"────────────────────────\n"
+      f"👑 **القاب و عناوین کسب‌شده در این بازه:**\n"
+      f"{titles_str}\n"
+      f"────────────────────────\n"
+      f"🐍 **آنفیر:** `{unfairs}` بار\n"
+      f"👑 **آرتین:** `{artins}` بار\n"
+      f"🌪 **حضور در کِی‌آس:** `{ch_count}` بار\n"
+      f"🎯 **فرد منتخب کِی‌آس:** `{ch_sel_count}` بار\n"
+      f"💡 **تاثیر در برد کِی‌آس:** `{ch_impact_count}` بار\n"
+      f"🎯 **شات شب اول:** `{n1_shots_cnt}` بار\n"
+      f"🚪 **خروج شب اول:** `{n1_outs_cnt}` بار\n"
+      f"🔥 **استریک:** فعلی: `{cur_streak}` | رکورد: `{best_streak}`\n"
+      f"────────────────────────\n"
+      f"🎭 **تخصص سایدها:**\n"
+      f"▫️ شهروند: `{cit_games}` بازی (برد: `{cit_rate}%`)\n"
+      f"▫️ مافیا: `{maf_games}` بازی (برد: `{maf_rate}%`)\n"
+      f"▫️ مستقل: `{ind_games}` بازی (برد: `{ind_rate}%`)\n"
+      f"────────────────────────\n"
+      f"🤝 **بهترین هم‌تیمی:** {tm_text}\n"
+      f"⚔️ **بدترین رقیب:** {nem_text}"
+  )
+
+  keyboard = [
+      [
+          InlineKeyboardButton(
+              "🔄 تغییر فصل / بازه",
+              callback_data=f"ask_stat_season:{user_id}",
+          )
+      ],
+      [
+          InlineKeyboardButton(
+              "🔙 بازگشت به منوی آمار", callback_data="open_stats_hub"
+          )
+      ],
+  ]
+  try:
+    await update.callback_query.message.reply_text(
+        text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=True):
+    return
+  await show_stats_picker(update, context)
+
+
+async def sides(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=False):
+    return
+  cur_season = get_current_season()
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute(
+        "SELECT winning_side, COUNT(*) FROM match_history WHERE season = ?"
+        " GROUP BY winning_side",
+        (cur_season,),
+    )
+    rows = c.fetchall()
+
+  if not rows:
+    await update.message.reply_text(
+        f"هنوز هیچ مسابقه‌ای در فصل {cur_season} ثبت نشده است."
+    )
+    return
+
+  total = sum(r[1] for r in rows)
+  text = f"⚖️ **آمار پیروزی سایدها در فصل {cur_season}** (کل بازی‌ها: {total})\n\n"
+  for side, count in rows:
+    pct = round((count / total) * 100, 1)
+    text += f"▫️ {side}: `{count}` برد ({pct}%)\n"
+
+  await update.message.reply_text(text, parse_mode="Markdown")
+
+
+async def scenarios_stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if not await enforce_channel_lock(update, context, check_lock=False):
+    return
+  cur_season = get_current_season()
+  try:
+    with sqlite3.connect("mafia_league.db") as conn:
+      c = conn.cursor()
+      c.execute(
+          "SELECT scenario_name, COUNT(*) FROM match_history WHERE"
+          " scenario_name IS NOT NULL AND season = ? GROUP BY scenario_name"
+          " ORDER BY COUNT(*) DESC",
+          (cur_season,),
+      )
+      rows = c.fetchall()
+
+    if not rows:
+      await update.message.reply_text(
+          f"🎬 هنوز مسابقه‌ای با سناریوها در فصل {cur_season} ثبت نشده است."
+      )
+      return
+
+    total = sum(r[1] for r in rows)
+    text = (
+        f"🎬 **آمار تعداد دفعات اجرای سناریوها در فصل {cur_season}** (کل بازی‌ها:"
+        f" {total})\n\n"
+    )
+    for scen, count in rows:
+      pct = round((count / total) * 100, 1)
+      text += f"▫️ سناریو **{scen}**: `{count}` بار ({pct}%)\n"
+
+    await update.message.reply_text(text, parse_mode="Markdown")
+  except Exception:
+    await update.message.reply_text(
+        "🎬 هنوز بازی‌ای برای نمایش آمار سناریوها وجود ندارد."
+    )
+
+
+async def submit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  if update.effective_user.id not in [ADMIN_ID, ADMIN_ID_2]:
+    if update.message:
+      await update.message.reply_text(
+          "⛔️ فقط ادمین لیگ اجازه ثبت مسابقات را دارد."
+      )
+    elif update.callback_query:
+      try:
+        await update.callback_query.answer("⛔️ فقط ادمین اجازه دارد.", show_alert=True)
+      except Exception:
+        pass
+    return
+
+  all_players = get_all_player_names()
+  if len(all_players) < 4:
+    msg = "❌ برای ثبت مسابقه، حداقل باید ۴ بازیکن آزاد عضو لیگ شده باشند."
+    if update.message:
+      await update.message.reply_text(msg)
+    elif update.callback_query:
+      try:
+        await update.callback_query.message.reply_text(msg)
+      except Exception:
+        pass
+    return
+
+  context.user_data["game_flow"] = {
+      "scenario": None,
+      "has_independent": False,
+      "winner_side": None,
+      "end_mode": None,
+      "chaos_players": [],
+      "chaos_selected": None,
+      "chaos_win_impact": None,
+      "citizens": [],
+      "mafias": [],
+      "independents": [],
+      "night1_shot": None,
+      "night1_out": False,
+      "unfairs": [],
+      "artins": [],
+  }
+
+  keyboard = []
+  row = []
+  for s_name in SCENARIO_LIST:
+    row.append(
+        InlineKeyboardButton(f"🎬 {s_name}", callback_data=f"scen_pick:{s_name}")
+    )
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  cur_season = get_current_season()
+  prompt = f"🎬 **مرحله ۱:** سناریوی بازی را انتخاب کنید (فصل {cur_season}):"
+  if update.message:
+    await update.message.reply_text(
+        prompt, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  elif update.callback_query:
+    try:
+      await update.callback_query.message.reply_text(
+          prompt, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+      )
+    except Exception:
+      pass
+
+
+async def game_flow_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  query = update.callback_query
+  try:
+    await query.answer()
+  except Exception:
+    pass
+
+  data = query.data
+
+  if data == "open_community_links":
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    await show_links_menu(update, context)
+    return
+
+  if data == "open_rules_menu":
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    await show_rules_menu(update, context)
+    return
+
+  if data.startswith("rule_sec:"):
+    sec_n = data.split(":", 1)[1]
+    await show_rule_detail(update, sec_n)
+    return
+
+  if data == "open_stats_hub":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await show_stats_hub(update, context)
+    return
+
+  if data == "ask_advanced_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_advanced_season_choice(update)
+    return
+
+  if data.startswith("adv_table_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_advanced_table_page(update, s_filt, p_num)
+    return
+
+  if data == "ask_teammates_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_teammates_season_choice(update)
+    return
+
+  if data.startswith("teammates_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_teammates_leaderboard_filtered(update, s_filt, p_num)
+    return
+
+  if data == "ask_streaks_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_streaks_season_choice(update)
+    return
+
+  if data.startswith("streaks_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_streaks_leaderboard_filtered(update, s_filt, p_num)
+    return
+
+  if data == "show_shots_lb":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_shots_season_choice(update, context)
+    return
+
+  if data.startswith("shots_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    s_filt = data.split(":", 1)[1]
+    await render_shots_leaderboard_filtered(update, s_filt)
+    return
+
+  if data == "show_admin_analytics":
+    await show_analytics_report(update)
+    return
+
+  if data == "show_scoring_info":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await scoring_guide(update, context)
+    return
+
+  if data == "ask_table_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_table_season_choice(update)
+    return
+  if data.startswith("table_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_table_page_filtered(update, s_filt, p_num)
+    return
+
+  if data == "ask_unfair_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_unfair_season_choice(update)
+    return
+  if data.startswith("unfair_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_unfair_page_filtered(update, s_filt, p_num)
+    return
+
+  if data == "ask_artin_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_artin_season_choice(update)
+    return
+  if data.startswith("artin_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    parts = data.split(":")
+    s_filt = parts[1]
+    p_num = int(parts[2])
+    await render_artin_page_filtered(update, s_filt, p_num)
+    return
+
+  if data == "ask_vs_season":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await ask_vs_season_choice(update)
+    return
+  if data.startswith("open_vs_picker_1:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    s_filt = data.split(":", 1)[1]
+    await show_vs_picker_first(update, context, s_filt)
+    return
+  if data.startswith("vs_p1:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    _, s_filt, uid1 = data.split(":")
+    await show_vs_picker_second(update, context, s_filt, int(uid1))
+    return
+  if data.startswith("vs_p2:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    _, s_filt, uid1, uid2 = data.split(":")
+    await render_vs_comparison_filtered(update, s_filt, int(uid1), int(uid2))
+    return
+
+  if data == "confirm_finish_season_prompt":
+    await prompt_finish_season(update)
+    return
+  if data == "do_finish_season_action":
+    await execute_finish_season(update, context)
+    return
+
+  if data.startswith("pub_history_page:"):
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    p_num = int(data.split(":", 1)[1])
+    await render_public_history_page(update, p_num)
+    return
+  if data.startswith("pub_match_view:"):
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    parts = data.split(":")
+    m_id = int(parts[1])
+    b_page = int(parts[2]) if len(parts) > 2 else 1
+    await show_public_match_details(update, m_id, b_page)
+    return
+
+  if data == "show_players_info":
+    await render_players_list_page(update, context, 1)
+    return
+  if data.startswith("players_page:"):
+    p_num = int(data.split(":", 1)[1])
+    await render_players_list_page(update, context, p_num)
+    return
+
+  if data == "open_stats_picker":
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    await show_stats_picker(update, context)
+    return
+
+  if data.startswith("ask_stat_season:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    u_id = int(data.split(":", 1)[1])
+    await ask_stat_season_choice(update, u_id)
+    return
+  if data.startswith("view_stat_target:"):
+    if not await enforce_channel_lock(update, context, check_lock=True):
+      return
+    _, u_id, s_filt = data.split(":")
+    await render_player_stats(update, int(u_id), s_filt)
+    return
+
+  if data == "open_admin_panel":
+    await admin_panel(update, context)
+    return
+  if data == "open_restrict_picker":
+    await show_restrict_picker(update, context)
+    return
+  if data.startswith("toggle_restrict:"):
+    u_id = int(data.split(":", 1)[1])
+    await toggle_player_restriction(update, context, u_id)
+    return
+  if data == "open_add_to_match_list":
+    await show_add_to_match_list(update, context)
+    return
+  if data.startswith("add_to_match_sel:"):
+    m_id = int(data.split(":", 1)[1])
+    await show_add_player_side_picker(update, context, m_id)
+    return
+  if data.startswith("atm_side:"):
+    side_name = data.split(":", 1)[1]
+    await show_add_player_player_picker(update, context, side_name)
+    return
+  if data.startswith("atm_player:"):
+    player_name = data.split(":", 1)[1]
+    await execute_add_player_to_match(update, context, player_name)
+    return
+  if data == "open_matches_list":
+    await show_matches_list(update, context)
+    return
+  if data.startswith("detail_match:"):
+    m_id = int(data.split(":", 1)[1])
+    await show_match_details(update, m_id)
+    return
+  if data.startswith("del_match_confirm:"):
+    m_id = int(data.split(":", 1)[1])
+    await delete_match_by_id(update, m_id)
+    return
+
+  if data == "open_merge_picker_old":
+    await show_merge_picker_old(update, context)
+    return
+  if data.startswith("sel_mrg_old:"):
+    old_uid = int(data.split(":", 1)[1])
+    await show_merge_picker_new(update, context, old_uid)
+    return
+  if data.startswith("do_merge_final:"):
+    _, old_uid, new_uid = data.split(":")
+    await execute_final_merge(update, int(old_uid), int(new_uid))
+    return
+
+  if data == "admin_btn_add":
+    context.user_data["waiting_for_manual_add"] = True
+    try:
+      await query.message.reply_text(
+          "➕ لطفاً **نام بازیکن قدیمی** را ارسال کنید تا دستی به لیگ اضافه شود:"
+      )
+    except Exception:
+      pass
+    return
+  if data == "admin_btn_remove_list":
+    await show_remove_player_buttons(update, context)
+    return
+  if data.startswith("del_id:"):
+    u_id = int(data.split(":", 1)[1])
+    await apply_remove_player_by_id(update, u_id)
+    return
+  if data == "admin_btn_submit":
+    await submit_game(update, context)
+    return
+  if data == "back_to_start":
+    await send_takamol_menu(update, context)
+    return
+
+  if data == "btn_join_league":
+    if not await enforce_channel_lock(update, context, check_lock=False):
+      return
+    await process_join_user(query.from_user, context, alert_func=query.answer)
+    return
+
+  flow = context.user_data.get("game_flow")
+  if flow is not None:
+    if data.startswith("scen_pick:"):
+      scen = data.split(":", 1)[1]
+      flow["scenario"] = scen
+      
+      keyboard = [
+          [
+              InlineKeyboardButton("✅ بله، ساید مستقل دارد", callback_data="indep_yes"),
+              InlineKeyboardButton("❌ خیر، ندارد", callback_data="indep_no")
+          ]
+      ]
+      try:
+        await query.edit_message_text(
+            f"🎬 سناریو: **{scen}**\n\n🃏 **مرحله ۲:** آیا این بازی ساید مستقل دارد؟",
+            reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+        )
+      except Exception:
+        pass
+      return
+
+    elif data in ["indep_yes", "indep_no"]:
+      flow["has_independent"] = (data == "indep_yes")
+      
+      sides_list = [
+          [InlineKeyboardButton("🏙 شهروند", callback_data="win_side:شهروند")],
+          [InlineKeyboardButton("🔪 مافیا", callback_data="win_side:مافیا")]
+      ]
+      if flow["has_independent"]:
+        sides_list.append([InlineKeyboardButton("🃏 مستقل", callback_data="win_side:مستقل")])
+      
+      try:
+        await query.edit_message_text(
+            "🏆 **مرحله ۳:** ساید برنده مسابقه را انتخاب کنید:",
+            reply_markup=InlineKeyboardMarkup(sides_list), parse_mode="Markdown"
+        )
+      except Exception:
+        pass
+      return
+
+    elif data.startswith("win_side:"):
+      w_side = data.split(":", 1)[1]
+      flow["winner_side"] = w_side
+      
+      end_modes = [
+          [InlineKeyboardButton("🛡 کلین شیت", callback_data="end_mode:کلین شیت")],
+          [InlineKeyboardButton("📈 روند عادی", callback_data="end_mode:روند عادی")],
+          [InlineKeyboardButton("🌪 کِی‌آس (Chaos)", callback_data="end_mode:کی آس")]
+      ]
+      try:
+        await query.edit_message_text(
+            f"🏆 ساید برنده: **{w_side}**\n\n🏁 **مرحله ۴:** بازی در چه حالتی به پایان یافت؟",
+            reply_markup=InlineKeyboardMarkup(end_modes), parse_mode="Markdown"
+        )
+      except Exception:
+        pass
+      return
+
+    elif data.startswith("end_mode:"):
+      e_mode = data.split(":", 1)[1]
+      flow["end_mode"] = e_mode
+
+      if e_mode == "کی آس":
+        await prompt_chaos_player_selection(query, flow)
+      else:
+        await prompt_multiselect_citizens(query, flow)
+      return
+
+    elif data.startswith("chaos_pick:"):
+      p_name = data.split(":", 1)[1]
+      if p_name not in flow["chaos_players"]:
+        flow["chaos_players"].append(p_name)
+      
+      if len(flow["chaos_players"]) < 3:
+        await prompt_chaos_player_selection(query, flow)
+      else:
+        await prompt_chaos_selected_player(query, flow)
+      return
+
+    elif data.startswith("chaos_select_one:"):
+      selected_p = data.split(":", 1)[1]
+      flow["chaos_selected"] = selected_p
+
+      keyboard = [
+          [
+              InlineKeyboardButton("✅ بله", callback_data="chaos_impact:بله"),
+              InlineKeyboardButton("❌ خیر", callback_data="chaos_impact:خیر")
+          ]
+      ]
+      try:
+        await query.edit_message_text(
+            f"🎯 فرد منتخب بین ۳ نفر: **{selected_p}**\n\n"
+            f"💡 آیا عملکرد این فرد باعث برد سایدش شد؟",
+            reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+        )
+      except Exception:
+        pass
+      return
+
+    elif data.startswith("chaos_impact:"):
+      impact = data.split(":", 1)[1]
+      flow["chaos_win_impact"] = impact
+
+      await prompt_multiselect_citizens(query, flow)
+      return
+
+    elif data.startswith("m_cit_toggle:"):
+      p_name = data.split(":", 1)[1]
+      if "temp_citizens" not in flow:
+        flow["temp_citizens"] = []
+      if p_name in flow["temp_citizens"]:
+        flow["temp_citizens"].remove(p_name)
+      else:
+        flow["temp_citizens"].append(p_name)
+      await refresh_multiselect_citizens(query, flow)
+      return
+
+    elif data == "m_cit_done":
+      selected = flow.get("temp_citizens", [])
+      if not selected:
+        try:
+          await query.answer("❌ حداقل یک شهروند باید انتخاب شود.", show_alert=True)
+        except Exception:
+          pass
+        return
+      flow["citizens"] = selected
+      flow.pop("temp_citizens", None)
+      await prompt_multiselect_mafias(query, flow)
+      return
+
+    elif data.startswith("m_maf_toggle:"):
+      p_name = data.split(":", 1)[1]
+      if "temp_mafias" not in flow:
+        flow["temp_mafias"] = []
+      if p_name in flow["temp_mafias"]:
+        flow["temp_mafias"].remove(p_name)
+      else:
+        flow["temp_mafias"].append(p_name)
+      await refresh_multiselect_mafias(query, flow)
+      return
+
+    elif data == "m_maf_done":
+      selected = flow.get("temp_mafias", [])
+      if not selected:
+        try:
+          await query.answer("❌ حداقل یک مافیا باید انتخاب شود.", show_alert=True)
+        except Exception:
+          pass
+        return
+      flow["mafias"] = selected
+      flow.pop("temp_mafias", None)
+
+      if flow["has_independent"]:
+        await prompt_multiselect_independents(query, flow)
+      else:
+        await prompt_night1_shot(query, flow)
+      return
+
+    elif data.startswith("m_ind_toggle:"):
+      p_name = data.split(":", 1)[1]
+      if "temp_independents" not in flow:
+        flow["temp_independents"] = []
+      if p_name in flow["temp_independents"]:
+        flow["temp_independents"].remove(p_name)
+      else:
+        flow["temp_independents"].append(p_name)
+      await refresh_multiselect_independents(query, flow)
+      return
+
+    elif data == "m_ind_done":
+      selected = flow.get("temp_independents", [])
+      flow["independents"] = selected
+      flow.pop("temp_independents", None)
+      await prompt_night1_shot(query, flow)
+      return
+
+    elif data.startswith("n1_shot_pick:"):
+      shot_target = data.split(":", 1)[1]
+      flow["night1_shot"] = shot_target
+      
+      if shot_target == "none":
+        flow["night1_out"] = False
+        await prompt_unfair_selection(query, flow)
+      else:
+        keyboard = [
+            [
+                InlineKeyboardButton("✅ بله، خارج شد", callback_data="n1_out:yes"),
+                InlineKeyboardButton("❌ خیر، نرفت/ماند", callback_data="n1_out:no")
+            ]
+        ]
+        try:
+          await query.edit_message_text(
+              f"🎯 شات شب اول مافیا روی: **{shot_target}** ثبت شد.\n\n"
+              f"🚪 آیا این فرد در شب اول خارج شد؟",
+              reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+          )
+        except Exception:
+          pass
+      return
+
+    elif data.startswith("n1_out:"):
+      out_status = data.split(":", 1)[1]
+      flow["night1_out"] = (out_status == "yes")
+      await prompt_unfair_selection(query, flow)
+      return
+
+    elif data.startswith("unfair_pick:"):
+      p_name = data.split(":", 1)[1]
+      if p_name in flow["unfairs"]:
+        flow["unfairs"].remove(p_name)
+      else:
+        flow["unfairs"].append(p_name)
+      
+      await refresh_unfair_keyboard(query, flow)
+      return
+
+    elif data == "done_unfairs":
+      await prompt_artin_selection(query, flow)
+      return
+
+    elif data.startswith("artin_pick:"):
+      p_name = data.split(":", 1)[1]
+      if p_name in flow["artins"]:
+        flow["artins"].remove(p_name)
+      else:
+        flow["artins"].append(p_name)
+      
+      await refresh_artin_keyboard(query, flow)
+      return
+
+    elif data == "done_artins":
+      await finalize_and_save_game(query, flow, context)
+      return
+
+
+async def prompt_multiselect_citizens(query, flow):
+  all_p = get_all_player_names()
+  if "temp_citizens" not in flow:
+    flow["temp_citizens"] = []
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    is_selected = p in flow["temp_citizens"]
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_cit_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
+
+  try:
+    await query.edit_message_text(
+        "🏙 **انتخاب ساید شهروند:**\nروی نام هر بازیکن کلیک کنید تا تیک بخورد، سپس دکمه اتمام را بزنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def refresh_multiselect_citizens(query, flow):
+  all_p = get_all_player_names()
+  selected = flow.get("temp_citizens", [])
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    is_selected = p in selected
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_cit_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب شهروندان", callback_data="m_cit_done")])
+
+  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
+  try:
+    await query.edit_message_text(
+        f"🏙 شهروندان تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_multiselect_mafias(query, flow):
+  all_p = get_all_player_names()
+  already_chosen = flow.get("citizens", [])
+  if "temp_mafias" not in flow:
+    flow["temp_mafias"] = []
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    if p in already_chosen:
+      continue
+    is_selected = p in flow["temp_mafias"]
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_maf_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مافیاها", callback_data="m_maf_done")])
+
+  try:
+    await query.edit_message_text(
+        "🔪 **انتخاب ساید مافیا:**\nروی نام بازیکنان مافیا کلیک کنید تا تیک بخورند:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def refresh_multiselect_mafias(query, flow):
+  all_p = get_all_player_names()
+  already_chosen = flow.get("citizens", [])
+  selected = flow.get("temp_mafias", [])
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    if p in already_chosen:
+      continue
+    is_selected = p in selected
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_maf_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مافیاها", callback_data="m_maf_done")])
+
+  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
+  try:
+    await query.edit_message_text(
+        f"🔪 مافیاهای تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_multiselect_independents(query, flow):
+  all_p = get_all_player_names()
+  already_chosen = flow.get("citizens", []) + flow.get("mafias", [])
+  if "temp_independents" not in flow:
+    flow["temp_independents"] = []
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    if p in already_chosen:
+      continue
+    is_selected = p in flow["temp_independents"]
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_ind_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مستقل‌ها", callback_data="m_ind_done")])
+
+  try:
+    await query.edit_message_text(
+        "🃏 **انتخاب ساید مستقل:**\nروی نام بازیکنان مستقل کلیک کنید تا تیک بخورند:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def refresh_multiselect_independents(query, flow):
+  all_p = get_all_player_names()
+  already_chosen = flow.get("citizens", []) + flow.get("mafias", [])
+  selected = flow.get("temp_independents", [])
+  
+  keyboard = []
+  row = []
+  for p in all_p:
+    if p in already_chosen:
+      continue
+    is_selected = p in selected
+    mark = "✅ " if is_selected else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"m_ind_toggle:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب مستقل‌ها", callback_data="m_ind_done")])
+
+  selected_str = ", ".join(selected) if selected else "هیچ‌کس انتخاب نشده"
+  try:
+    await query.edit_message_text(
+        f"🃏 مستقل‌های تیک‌خورده: `{selected_str}`\n\nبرای تغییر انتخاب‌ها دکمه‌ها را لمس کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_chaos_player_selection(query, flow):
+  all_players = get_all_player_names()
+  keyboard = []
+  row = []
+  for p in all_players:
+    if p not in flow["chaos_players"]:
+      row.append(InlineKeyboardButton(p, callback_data=f"chaos_pick:{p}"))
+      if len(row) == 2:
+        keyboard.append(row)
+        row = []
+  if row:
+    keyboard.append(row)
+
+  current_count = len(flow["chaos_players"]) + 1
+  selected_str = ", ".join(flow["chaos_players"]) if flow["chaos_players"] else "هنوز انتخابی نشده"
+  
+  try:
+    await query.edit_message_text(
+        f"🌪 بازیکنان منتخب کِی‌آس تا اینجا: `{selected_str}`\n\n"
+        f"لطفاً بازیکن شماره **{current_count}** از ۳ نفر کِی‌آس را انتخاب کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_chaos_selected_player(query, flow):
+  keyboard = []
+  row = []
+  for p in flow["chaos_players"]:
+    row.append(InlineKeyboardButton(p, callback_data=f"chaos_select_one:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+
+  try:
+    await query.edit_message_text(
+        f"🌪 ۳ بازیکن کِی‌آس: `{', '.join(flow['chaos_players'])}`\n\n"
+        f"🎯 لطفاً **فرد منتخب** را از بین این سه نفر مشخص کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_night1_shot(query, flow):
+  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
+  keyboard = []
+  row = []
+  for p in all_players_in_game:
+    row.append(InlineKeyboardButton(p, callback_data=f"n1_shot_pick:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  keyboard.append([InlineKeyboardButton("🚫 شات شب اول نداشت / ثبت نشد", callback_data="n1_shot_pick:none")])
+
+  try:
+    await query.edit_message_text(
+        "🎯 شات شب اول توسط مافیا روی چه کسی بوده است؟",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_unfair_selection(query, flow):
+  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
+  keyboard = []
+  row = []
+  for p in all_players_in_game:
+    mark = "🐍 " if p in flow["unfairs"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"unfair_pick:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب آنفیر", callback_data="done_unfairs")])
+
+  try:
+    await query.edit_message_text(
+        "🐍 پلیر(های) آنفیر (نامرد) بازی را انتخاب کنید (اختیاری - دارای امتیاز منفی):",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def refresh_unfair_keyboard(query, flow):
+  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
+  keyboard = []
+  row = []
+  for p in all_players_in_game:
+    mark = "🐍 " if p in flow["unfairs"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"unfair_pick:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  keyboard.append([InlineKeyboardButton("✅ اتمام انتخاب آنفیر", callback_data="done_unfairs")])
+
+  unfair_str = ", ".join(flow["unfairs"]) if flow["unfairs"] else "بدون آنفیر"
+  try:
+    await query.edit_message_text(
+        f"🐍 افراد انتخاب شده به عنوان آنفیر: {unfair_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def prompt_artin_selection(query, flow):
+  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
+  keyboard = []
+  row = []
+  for p in all_players_in_game:
+    mark = "👑 " if p in flow["artins"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"artin_pick:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  keyboard.append([InlineKeyboardButton("✅ اتمام و ذخیره نهایی بازی", callback_data="done_artins")])
+
+  try:
+    await query.edit_message_text(
+        "👑 پلیر(های) آرتین (یارفروش) بازی را انتخاب کنید (اختیاری - دارای امتیاز منفی سنگین):",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def refresh_artin_keyboard(query, flow):
+  all_players_in_game = flow["citizens"] + flow["mafias"] + flow["independents"]
+  keyboard = []
+  row = []
+  for p in all_players_in_game:
+    mark = "👑 " if p in flow["artins"] else ""
+    row.append(InlineKeyboardButton(f"{mark}{p}", callback_data=f"artin_pick:{p}"))
+    if len(row) == 2:
+      keyboard.append(row)
+      row = []
+  if row:
+    keyboard.append(row)
+  keyboard.append([InlineKeyboardButton("✅ اتمام و ذخیره نهایی بازی", callback_data="done_artins")])
+
+  artin_str = ", ".join(flow["artins"]) if flow["artins"] else "بدون آرتین"
+  try:
+    await query.edit_message_text(
+        f"👑 افراد انتخاب شده به عنوان آرتین: {artin_str}\n\nبرای تغییر یا اتمام دکمه‌ها را لمس کنید:",
+        reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown"
+    )
+  except Exception:
+    pass
+
+
+async def finalize_and_save_game(query, flow, context):
+  cur_season = get_current_season()
+  scen = flow["scenario"]
+  winner = flow["winner_side"]
+  end_mode = flow["end_mode"]
+  chaos_players_str = ",".join(flow["chaos_players"]) if flow["chaos_players"] else None
+  chaos_selected = flow["chaos_selected"]
+  chaos_win_impact = flow["chaos_win_impact"]
+
+  citizens = flow["citizens"]
+  mafias = flow["mafias"]
+  independents = flow["independents"]
+  n1_shot = flow["night1_shot"]
+  n1_out = flow["night1_out"]
+  unfairs = flow["unfairs"]
+  artins = flow["artins"]
+
+  with sqlite3.connect("mafia_league.db") as conn:
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO match_history (season, scenario_name, winning_side, end_mode, chaos_players, chaos_selected, chaos_win_impact) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (cur_season, scen, winner, end_mode, chaos_players_str, chaos_selected, chaos_win_impact)
+    )
+    match_id = c.lastrowid
+
+    for p in citizens:
+      won = 1 if winner == "شهروند" else 0
+      is_unfair = 1 if p in unfairs else 0
+      is_artin = 1 if p in artins else 0
+      n1_s = 1 if (n1_shot == p) else 0
+      n1_o = 1 if (n1_shot == p and n1_out) else 0
+      c.execute(
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_unfair, is_artin, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "شهروند", won, is_unfair, is_artin, n1_s, n1_o)
+      )
+
+    for p in mafias:
+      won = 1 if winner == "مافیا" else 0
+      is_unfair = 1 if p in unfairs else 0
+      is_artin = 1 if p in artins else 0
+      n1_s = 1 if (n1_shot == p) else 0
+      n1_o = 1 if (n1_shot == p and n1_out) else 0
+      c.execute(
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_unfair, is_artin, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "مافیا", won, is_unfair, is_artin, n1_s, n1_o)
+      )
+
+    for p in independents:
+      won = 1 if winner == "مستقل" else 0
+      is_unfair = 1 if p in unfairs else 0
+      is_artin = 1 if p in artins else 0
+      n1_s = 1 if (n1_shot == p) else 0
+      n1_o = 1 if (n1_shot == p and n1_out) else 0
+      c.execute(
+          "INSERT INTO match_participants (match_id, player_name, side, won, is_unfair, is_artin, night1_shot, night1_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+          (match_id, p, "مستقل", won, is_unfair, is_artin, n1_s, n1_o)
+      )
+
+    conn.commit()
+
+  recalculate_all_players()
+
+  success_text = (
+      f"🎉 **مسابقه جدید با موفقیت ثبت و ذخیره شد!**\n\n"
+      f"🎬 سناریو: **{scen}**\n"
+      f"🏆 برنده: **{winner}**\n"
+      f"🏁 نحوه پایان: **{end_mode}**\n"
+  )
+  if end_mode == "کی آس":
+    success_text += (
+        f"🌪 بازیکنان کِی‌آس: `{chaos_players_str}`\n"
+        f"🎯 فرد منتخب: **{chaos_selected}**\n"
+        f"💡 باعث برد سایدش شد؟ **{chaos_win_impact}**\n"
+    )
+
+  success_text += (
+      f"🎯 شات شب اول: **{n1_shot if n1_shot != 'none' else 'ندارد'}** "
+      f"({'خارج شد ❌' if n1_out else ('ماند ✅' if n1_shot != 'none' else '')})\n\n"
+      "تمامی امتیازات، ریتینگ‌ها و آمار آنفیرها و آرتین‌های بازیکنان بروزرسانی گردید."
+  )
+  keyboard = [[InlineKeyboardButton("🔙 بازگشت به پنل مدیریت", callback_data="open_admin_panel")]]
+  try:
+    await query.edit_message_text(success_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+  except Exception:
+    pass
+
+
 def main():
   builder = ApplicationBuilder().token(TOKEN).post_init(post_init)
 
@@ -3181,13 +5366,14 @@ def main():
   app.add_handler(CommandHandler("add_player", add_player_manual))
   app.add_handler(CommandHandler("remove_player", remove_player_cmd))
   app.add_handler(CommandHandler("merge_player", merge_players_cmd))
+  app.add_handler(CommandHandler("rename", rename))
   app.add_handler(CommandHandler("players", players_list))
   app.add_handler(CommandHandler("table", table))
-  app.add_handler(CommandHandler("advanced_table", advanced_table_cmd))
+  app.add_handler(CommandHandler("advanced_table", ask_advanced_season_choice))
   app.add_handler(CommandHandler("unfair", unfair_leaderboard))
   app.add_handler(CommandHandler("artin", artin_leaderboard))
-  app.add_handler(CommandHandler("teammates", teammates_leaderboard))
-  app.add_handler(CommandHandler("streaks", streaks_leaderboard))
+  app.add_handler(CommandHandler("teammates", ask_teammates_season_choice))
+  app.add_handler(CommandHandler("streaks", ask_streaks_season_choice))
   app.add_handler(CommandHandler("shots_top", ask_shots_season_choice))
   app.add_handler(CommandHandler("stats", stats))
   app.add_handler(CommandHandler("vs", vs))
